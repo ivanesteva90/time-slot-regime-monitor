@@ -1,0 +1,3945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard SPX Iron Condor</title>
+  <style>
+    :root {
+      --bg: #f3ede2;
+      --bg-deep: #14202b;
+      --panel: rgba(255, 250, 242, 0.88);
+      --panel-strong: rgba(255, 255, 255, 0.96);
+      --line: rgba(20, 32, 43, 0.12);
+      --ink: #112130;
+      --muted: #51606f;
+      --teal: #0f766e;
+      --lime: #7aa43a;
+      --amber: #c7772d;
+      --coral: #b84f40;
+      --navy: #1f3242;
+      --shadow: 0 28px 60px rgba(20, 32, 43, 0.12);
+      --radius: 24px;
+      --mono: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
+      --sans: "Avenir Next", "Helvetica Neue", "Segoe UI", sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(122, 164, 58, 0.18), transparent 34%),
+        radial-gradient(circle at top right, rgba(15, 118, 110, 0.16), transparent 30%),
+        linear-gradient(180deg, #f5efe5 0%, #efe7d8 52%, #eadfce 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(17, 33, 48, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17, 33, 48, 0.03) 1px, transparent 1px);
+      background-size: 34px 34px;
+      pointer-events: none;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 92%);
+    }
+
+    main {
+      width: min(1380px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      animation: fade-up 0.6s ease both;
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 34%);
+      pointer-events: none;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .hero-copy {
+      padding: 28px 30px 30px;
+      background:
+        linear-gradient(135deg, rgba(20, 32, 43, 0.96), rgba(17, 33, 48, 0.86)),
+        linear-gradient(135deg, rgba(122, 164, 58, 0.18), transparent);
+      color: #f9f5ee;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .hero-copy h1 {
+      margin: 18px 0 14px;
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: clamp(2.4rem, 5vw, 4.8rem);
+      line-height: 0.94;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-copy p {
+      max-width: 720px;
+      margin: 0;
+      color: rgba(249, 245, 238, 0.84);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .hero-tag {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      font-size: 0.9rem;
+    }
+
+    .uploader {
+      padding: 24px;
+      background: var(--panel-strong);
+      display: flex;
+      align-items: center;
+    }
+
+    .uploader h2,
+    .panel-title {
+      margin: 0 0 10px;
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+    }
+
+    .uploader p,
+    .subtle {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .uploader-minimal {
+      width: 100%;
+    }
+
+    .dropzone {
+      display: grid;
+      place-items: center;
+      min-height: 310px;
+      padding: 34px 28px;
+      border-radius: 34px;
+      border: 2px dashed rgba(31, 50, 66, 0.18);
+      background:
+        radial-gradient(circle at top, rgba(207, 218, 221, 0.42), transparent 45%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(244, 238, 229, 0.92));
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .dropzone:hover,
+    .dropzone.is-dragging {
+      transform: translateY(-2px);
+      border-color: rgba(15, 118, 110, 0.55);
+      background:
+        radial-gradient(circle at top, rgba(15, 118, 110, 0.16), transparent 46%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(242, 247, 243, 0.94));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .dropzone-copy {
+      max-width: 660px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .dropzone-copy p {
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.35vw, 1.2rem);
+      line-height: 1.62;
+    }
+
+    .dropzone strong {
+      display: block;
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(1.8rem, 2.7vw, 2.45rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .dropzone small {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 1rem;
+    }
+
+    .dropzone-folder-link {
+      appearance: none;
+      background: transparent;
+      border: none;
+      padding: 0;
+      color: var(--navy);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(31, 50, 66, 0.18);
+    }
+
+    .dropzone-folder-link:hover {
+      color: var(--teal);
+      border-bottom-color: rgba(15, 118, 110, 0.34);
+    }
+
+    .uploader-status-shell {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.68);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    .uploader-status-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .uploader-status-meta {
+      color: var(--ink);
+      font-size: 0.96rem;
+      overflow-wrap: anywhere;
+    }
+
+    .uploader-status-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .uploader-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .uploader-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+
+    .status-pill.neutral {
+      background: rgba(31, 50, 66, 0.08);
+      color: var(--navy);
+      border-color: rgba(31, 50, 66, 0.12);
+    }
+
+    .status-pill.ok {
+      background: rgba(122, 164, 58, 0.14);
+      color: #4b6c1b;
+      border-color: rgba(122, 164, 58, 0.26);
+    }
+
+    .status-pill.warn {
+      background: rgba(199, 119, 45, 0.14);
+      color: #915414;
+      border-color: rgba(199, 119, 45, 0.26);
+    }
+
+    .status-pill.err {
+      background: rgba(184, 79, 64, 0.14);
+      color: #943c30;
+      border-color: rgba(184, 79, 64, 0.24);
+    }
+
+    .info-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+      padding: 18px;
+    }
+
+    .info-chip {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.58);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+    }
+
+    .info-chip strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.88rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--navy);
+    }
+
+    .info-chip span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .stat-card {
+      padding: 22px;
+    }
+
+    .stat-kicker {
+      font-size: 0.82rem;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .stat-main {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .stat-value {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    .stat-meta {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .signal-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .signal-chip,
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .signal-chip.neutral {
+      background: rgba(31, 50, 66, 0.07);
+      color: var(--navy);
+      border-color: rgba(31, 50, 66, 0.12);
+    }
+
+    .signal-chip.good,
+    .badge.KEEP {
+      background: rgba(122, 164, 58, 0.14);
+      color: #4b6c1b;
+      border-color: rgba(122, 164, 58, 0.24);
+    }
+
+    .signal-chip.warn,
+    .badge.WATCH {
+      background: rgba(199, 119, 45, 0.15);
+      color: #8c551a;
+      border-color: rgba(199, 119, 45, 0.25);
+    }
+
+    .signal-chip.bad,
+    .badge.ROTATE {
+      background: rgba(184, 79, 64, 0.15);
+      color: #943c30;
+      border-color: rgba(184, 79, 64, 0.24);
+    }
+
+    .content-grid,
+    .lower-grid {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .content-grid {
+      grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.95fr);
+    }
+
+    .lower-grid {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 24px 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .panel-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    .button-link {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      font: inherit;
+      transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    button:hover,
+    .button-link:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      border: 1px solid rgba(17, 33, 48, 0.1);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #173142, #0f766e);
+      color: #fff;
+      border-color: rgba(15, 118, 110, 0.3);
+    }
+
+    .btn.ghost {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--navy);
+    }
+
+    .table-wrap {
+      padding: 18px 24px 24px;
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 880px;
+      font-size: 0.94rem;
+    }
+
+    th,
+    td {
+      padding: 13px 10px;
+      border-bottom: 1px solid rgba(17, 33, 48, 0.08);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: rgba(252, 248, 242, 0.96);
+      backdrop-filter: blur(8px);
+      z-index: 1;
+      font-size: 0.78rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    tbody tr {
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(15, 118, 110, 0.05);
+    }
+
+    tbody tr.is-selected {
+      background: rgba(15, 118, 110, 0.08);
+    }
+
+    .slot-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      padding: 0;
+      background: transparent;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .slot-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--teal), var(--lime));
+      flex: 0 0 auto;
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-stack {
+      display: grid;
+      gap: 16px;
+      padding: 18px 24px 24px;
+    }
+
+    .detail-banner {
+      padding: 18px;
+      border-radius: 20px;
+      background:
+        linear-gradient(135deg, rgba(20, 32, 43, 0.95), rgba(15, 118, 110, 0.82)),
+        radial-gradient(circle at top left, rgba(122, 164, 58, 0.26), transparent 46%);
+      color: #f8f5ef;
+    }
+
+    .detail-banner-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .detail-banner h3 {
+      margin: 8px 0 0;
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+    }
+
+    .detail-banner p {
+      margin: 8px 0 0;
+      color: rgba(248, 245, 239, 0.82);
+      max-width: 680px;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+    }
+
+    .window-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mix-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mix-card {
+      display: grid;
+      gap: 14px;
+      min-width: 0;
+      min-height: 100%;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    }
+
+    .mix-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mix-role {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(17, 33, 48, 0.06);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      color: var(--navy);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .mix-weight {
+      font-family: var(--serif);
+      font-size: 1.95rem;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: var(--navy);
+    }
+
+    .mix-slot-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.10);
+      color: var(--teal);
+      font-weight: 800;
+      font-size: 0.98rem;
+      white-space: nowrap;
+      border: 1px solid rgba(15, 118, 110, 0.16);
+    }
+
+    .mix-identity {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .mix-identity strong {
+      display: block;
+      color: var(--ink);
+      font-size: 1.06rem;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .mix-identity span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .mix-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 14px;
+      min-width: 0;
+    }
+
+    .mix-metric {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .mix-metric span {
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .mix-metric strong {
+      font-size: 1.02rem;
+      line-height: 1.2;
+      color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+
+    .window-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+    }
+
+    .window-card strong {
+      display: block;
+      font-size: 0.84rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .window-card .number {
+      display: block;
+      font-family: var(--serif);
+      font-size: 1.7rem;
+      line-height: 1;
+      margin-bottom: 10px;
+      letter-spacing: -0.04em;
+    }
+
+    .window-card small {
+      display: block;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .spark-shell {
+      padding: 16px 18px 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+    }
+
+    .spark-shell .subtle {
+      overflow-wrap: anywhere;
+    }
+
+    .spark-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .sparkline {
+      width: 100%;
+      height: 140px;
+      display: block;
+    }
+
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .legend-row span::before {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 8px;
+      border-radius: 999px;
+      vertical-align: middle;
+      background: currentColor;
+    }
+
+    .legend-row .positive {
+      color: var(--lime);
+    }
+
+    .legend-row .negative {
+      color: var(--coral);
+    }
+
+    .legend-row .mean {
+      color: var(--teal);
+    }
+
+    .methodology {
+      margin-top: 18px;
+      padding: 24px;
+    }
+
+    details {
+      border-top: 1px solid rgba(17, 33, 48, 0.08);
+      padding: 14px 0;
+    }
+
+    details:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details p,
+    details li {
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    ul.clean {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+
+    .empty-state {
+      padding: 36px 24px 28px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--ink);
+      font-size: 1rem;
+    }
+
+    .screener-panel {
+      margin-top: 18px;
+      padding-bottom: 24px;
+      background:
+        linear-gradient(180deg, rgba(255, 251, 244, 0.96), rgba(243, 236, 224, 0.9)),
+        radial-gradient(circle at top left, rgba(122, 164, 58, 0.12), transparent 34%);
+    }
+
+    .screener-body {
+      padding: 0 24px 24px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .preset-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .preset-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(17, 33, 48, 0.10);
+      background: rgba(255, 255, 255, 0.68);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.9rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .preset-btn.is-active {
+      background: linear-gradient(135deg, #173142, #0f766e);
+      color: #fff;
+      border-color: rgba(15, 118, 110, 0.34);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 6px;
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.52);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+    }
+
+    .filter-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .filter-field span {
+      font-size: 0.8rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .filter-control {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(17, 33, 48, 0.12);
+      background: rgba(255, 255, 255, 0.94);
+      color: var(--ink);
+      font: inherit;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .choice-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    .choice-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(17, 33, 48, 0.1);
+      color: var(--navy);
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .choice-pill input {
+      margin: 0;
+      accent-color: #4c73df;
+    }
+
+    .choice-meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .screener-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .screener-actions .btn {
+      min-width: min(100%, 320px);
+    }
+
+    .screener-results {
+      padding: 0 24px;
+      overflow: hidden;
+    }
+
+    .screener-results-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .screener-summary {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .screener-summary .subtle {
+      max-width: 840px;
+      overflow-wrap: anywhere;
+    }
+
+    .rank-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .rank-card {
+      position: relative;
+      display: grid;
+      gap: 16px;
+      grid-template-rows: auto auto auto auto 1fr auto;
+      padding: 20px;
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 241, 232, 0.92)),
+        radial-gradient(circle at top left, rgba(122, 164, 58, 0.12), transparent 32%),
+        radial-gradient(circle at top right, rgba(76, 115, 223, 0.08), transparent 30%);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      box-shadow: 0 20px 44px rgba(17, 33, 48, 0.08);
+      min-height: 100%;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .rank-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      border-radius: 22px 0 0 22px;
+      background: linear-gradient(180deg, rgba(122, 164, 58, 0.7), rgba(15, 118, 110, 0.8));
+    }
+
+    .rank-card > * {
+      min-width: 0;
+    }
+
+    .rank-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      border: 1px solid rgba(17, 33, 48, 0.08);
+    }
+
+    .rank-badge.gold {
+      background: rgba(236, 185, 79, 0.18);
+      color: #9f6914;
+    }
+
+    .rank-badge.silver {
+      background: rgba(152, 169, 196, 0.16);
+      color: #5d6b86;
+    }
+
+    .rank-badge.bronze {
+      background: rgba(184, 122, 69, 0.16);
+      color: #9a4e18;
+    }
+
+    .rank-badge.default {
+      background: rgba(76, 115, 223, 0.12);
+      color: #3752a9;
+    }
+
+    .rank-score {
+      display: grid;
+      gap: 2px;
+      justify-items: end;
+      flex: 0 0 auto;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: rgba(17, 33, 48, 0.04);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      text-align: right;
+    }
+
+    .rank-score span {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .rank-score strong {
+      font-size: 1.3rem;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--navy);
+    }
+
+    .rank-title-block {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .rank-title-block h3 {
+      margin: 0;
+      font-size: 1.18rem;
+      line-height: 1.22;
+      letter-spacing: -0.03em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .rank-title-block p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 600;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .rank-slot {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .rank-slot::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--teal), var(--lime));
+      flex: 0 0 auto;
+    }
+
+    .rank-slot strong {
+      color: var(--navy);
+      font-size: 1.05rem;
+    }
+
+    .rank-amount {
+      font-family: var(--serif);
+      font-size: clamp(2.25rem, 3.8vw, 3.25rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      color: #4f8b4f;
+      overflow-wrap: anywhere;
+    }
+
+    .rank-amount.negative {
+      color: var(--coral);
+    }
+
+    .rank-card hr {
+      width: 100%;
+      border: none;
+      border-top: 1px solid rgba(17, 33, 48, 0.08);
+      margin: 0;
+    }
+
+    .rank-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 14px;
+    }
+
+    .mini-metric {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .mini-metric span {
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .mini-metric strong {
+      font-size: 1.15rem;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .mini-metric strong.negative {
+      color: var(--coral);
+    }
+
+    .rank-card .btn {
+      width: 100%;
+      margin-top: auto;
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(17, 33, 48, 0.08);
+    }
+
+    .footnote {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes fade-up {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .info-strip,
+      .stats-grid,
+      .window-grid,
+      .filter-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .content-grid,
+      .lower-grid,
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .mix-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 20px, 100%);
+      }
+
+      .hero-copy,
+      .uploader,
+      .stat-card,
+      .panel-head,
+      .table-wrap,
+      .metric-stack,
+      .methodology {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .info-strip,
+      .stats-grid,
+      .window-grid,
+      .filter-grid,
+      .rank-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy h1 {
+        font-size: 2.45rem;
+      }
+
+      .dropzone {
+        min-height: 220px;
+        padding: 26px 18px;
+        border-radius: 28px;
+      }
+
+      .screener-results {
+        padding: 0 18px;
+      }
+
+      .preset-group {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .mix-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .rank-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .rank-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <article class="panel hero-copy">
+        <div class="eyebrow">Dashboard local · un solo HTML</div>
+        <h1>Time-Slot Regime Monitor</h1>
+        <p>
+          Sube uno o varios CSV del universo de estrategias y el dashboard recalcula ranking de horarios,
+          comparacion entre datasets, estrategia combinada sugerida y validacion walk-forward sin depender
+          de librerias externas ni backend.
+        </p>
+        <div class="hero-tags">
+          <span class="hero-tag">Rolling metrics 10d / 21d / 63d / 126d / 252d</span>
+          <span class="hero-tag">Score interpretable 55 / 30 / 15</span>
+          <span class="hero-tag">Multi-CSV + carpeta data</span>
+          <span class="hero-tag">Sin servidor, sin backend</span>
+        </div>
+      </article>
+
+      <aside class="panel uploader">
+        <div class="uploader-minimal">
+          <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Subir uno o varios CSV">
+            <div class="dropzone-copy">
+              <strong>Sube uno o varios CSV</strong>
+              <p>Esperado: columnas <span class="mono">Date</span>, <span class="mono">Hora</span> y <span class="mono">P/L</span>.</p>
+              <p>Para analizar todo el universo, selecciona directamente la <button id="folderTrigger" class="dropzone-folder-link" type="button">carpeta data</button>.</p>
+            </div>
+          </div>
+        </div>
+        <input id="csvInput" type="file" accept=".csv,text/csv" multiple>
+        <input id="folderInput" type="file" accept=".csv,text/csv" multiple webkitdirectory directory>
+        <div class="uploader-status-shell">
+          <div class="uploader-status-top">
+            <div id="fileMeta" class="uploader-status-meta mono">Sin archivos cargados</div>
+            <div id="loadStatus" class="status-pill neutral">Esperando archivos</div>
+          </div>
+          <div class="uploader-status-note">El panel te ira mostrando seleccion, lectura, analisis y resumen final para que siempre sepas que esta pasando.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel info-strip">
+      <div class="info-chip">
+        <strong>Normalizacion</strong>
+        <span>Promedia duplicados del mismo dia-horario y usa el ultimo historial disponible por slot.</span>
+      </div>
+      <div class="info-chip">
+        <strong>Forecast</strong>
+        <span>Mezcla robustez estructural, regimen medio y momentum corto con pesos 55% / 30% / 15%.</span>
+      </div>
+      <div class="info-chip">
+        <strong>Agotamiento</strong>
+        <span>Mide perdida de rango, deterioro 10d vs 63d, caida frente al bloque previo y slip del win rate.</span>
+      </div>
+      <div class="info-chip">
+        <strong>Validacion</strong>
+        <span>Walk-forward diario usando solo historia previa para evitar look-ahead bias.</span>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <article class="panel stat-card">
+        <div class="stat-kicker">Datasets activos</div>
+        <div class="stat-main">
+          <div class="stat-value" id="datasetValue">-</div>
+          <div class="stat-meta" id="datasetMeta">Carga archivos CSV</div>
+        </div>
+        <div class="signal-row" id="datasetSignals">
+          <span class="signal-chip neutral">sin datos</span>
+        </div>
+      </article>
+
+      <article class="panel stat-card">
+        <div class="stat-kicker">Mejor setup global</div>
+        <div class="stat-main">
+          <div class="stat-value" id="leaderValue">-</div>
+          <div class="stat-meta" id="leaderMeta">forecast pendiente</div>
+        </div>
+        <div class="signal-row" id="leaderSignals">
+          <span class="signal-chip neutral">sin datos</span>
+        </div>
+      </article>
+
+      <article class="panel stat-card">
+        <div class="stat-kicker">Estrategia combinada</div>
+        <div class="stat-main">
+          <div class="stat-value" id="challengerValue">-</div>
+          <div class="stat-meta" id="challengerMeta">sin propuesta</div>
+        </div>
+        <div class="signal-row" id="challengerSignals">
+          <span class="signal-chip neutral">sin datos</span>
+        </div>
+      </article>
+
+      <article class="panel stat-card">
+        <div class="stat-kicker">Walk-forward medio</div>
+        <div class="stat-main">
+          <div class="stat-value" id="validationValue">-</div>
+          <div class="stat-meta" id="validationMeta">sin prueba</div>
+        </div>
+        <div class="signal-row" id="validationSignals">
+          <span class="signal-chip neutral">sin datos</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel screener-panel">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Top 5 estrategias</h2>
+          <p class="subtle">Modulo adicional para filtrar fechas y horas, priorizar criterios y comparar el mejor slot actual de cada estrategia sin sustituir el analisis profundo.</p>
+        </div>
+        <div class="preset-group" aria-label="Atajos de rango temporal">
+          <button id="preset1mBtn" class="preset-btn" type="button">1 Mes</button>
+          <button id="preset2mBtn" class="preset-btn" type="button">2 Meses</button>
+          <button id="preset3mBtn" class="preset-btn" type="button">3 Meses</button>
+          <button id="preset6mBtn" class="preset-btn" type="button">6 Meses</button>
+          <button id="presetAllBtn" class="preset-btn is-active" type="button">Todo</button>
+        </div>
+      </div>
+      <div class="screener-body">
+        <div class="filter-grid">
+          <label class="filter-field" for="screenerStartDate">
+            <span>Fecha inicio</span>
+            <input id="screenerStartDate" class="filter-control" type="date">
+          </label>
+          <label class="filter-field" for="screenerEndDate">
+            <span>Fecha fin</span>
+            <input id="screenerEndDate" class="filter-control" type="date">
+          </label>
+          <label class="filter-field" for="screenerStartTime">
+            <span>Hora inicio</span>
+            <select id="screenerStartTime" class="filter-control"></select>
+          </label>
+          <label class="filter-field" for="screenerEndTime">
+            <span>Hora fin</span>
+            <select id="screenerEndTime" class="filter-control"></select>
+          </label>
+        </div>
+        <div class="choice-row">
+          <label class="choice-pill" for="metricProfitability">
+            <input id="metricProfitability" type="checkbox" checked>
+            Rentabilidad
+          </label>
+          <label class="choice-pill" for="metricWinRate">
+            <input id="metricWinRate" type="checkbox">
+            Win rate
+          </label>
+          <label class="choice-pill" for="metricLowDrawdown">
+            <input id="metricLowDrawdown" type="checkbox">
+            Menor drawdown
+          </label>
+          <span class="choice-meta">Si marcas varios criterios, el score se mezcla por percentiles y se penaliza si la cobertura del slot es pobre.</span>
+        </div>
+        <div class="screener-actions">
+          <button id="calculateTopStrategiesBtn" class="btn primary" type="button">Calcular Top 5 estrategias</button>
+        </div>
+      </div>
+      <div id="topStrategiesWrap" class="screener-results">
+        <div class="empty-state">
+          <strong>El screener aparecera aqui.</strong>
+          Carga varios CSV para comparar estrategias y encontrar rapidamente los cinco mejores setups bajo el filtro elegido.
+        </div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Mapa de datasets</h2>
+            <p class="subtle">Comparacion transversal entre archivos. Pulsa un dataset para inspeccionar su ranking intradia.</p>
+          </div>
+          <div class="panel-actions">
+            <button id="downloadDatasetsBtn" class="btn ghost" type="button">Exportar datasets</button>
+          </div>
+        </div>
+        <div id="datasetWrap" class="table-wrap">
+          <div class="empty-state">
+            <strong>Esperando archivos para comparar datasets.</strong>
+            Al cargar varios CSV se construira un ranking global entre estrategias, perfiles y subyacentes.
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Estrategia combinada sugerida</h2>
+            <p class="subtle">Propuesta tipo core / satellite / diversifier basada en la fuerza relativa de cada dataset.</p>
+          </div>
+        </div>
+        <div id="strategyWrap" class="metric-stack">
+          <div class="empty-state">
+            <strong>Sin estrategia combinada todavia.</strong>
+            Cuando se carguen varios datasets, el dashboard sugerira una mezcla operativa con pesos y ventana horaria.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section id="analysisSection" class="content-grid">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Ranking del dataset seleccionado</h2>
+            <p id="selectedDatasetMeta" class="subtle">Selecciona un dataset para abrir su ranking intradia.</p>
+          </div>
+          <div class="panel-actions">
+            <button id="downloadRankingBtn" class="btn ghost" type="button">Exportar ranking</button>
+          </div>
+        </div>
+        <div id="rankingWrap" class="table-wrap">
+          <div class="empty-state">
+            <strong>Esperando archivos para calcular el ranking.</strong>
+            Una vez subas uno o varios CSV se generaran score forecast, score de agotamiento, ranking accionable y razonamiento resumido por cada horario.
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Detalle del horario</h2>
+            <p class="subtle">Vista de metricas rolling, estado actual y sparkline del horario dentro del dataset seleccionado.</p>
+          </div>
+        </div>
+        <div id="detailWrap" class="metric-stack">
+          <div class="empty-state">
+            <strong>No hay horario seleccionado.</strong>
+            Selecciona una fila del ranking para abrir su estado estructural, momentum reciente y senales de agotamiento.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="lower-grid">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Tabla de agotamiento</h2>
+            <p class="subtle">Ordenada dentro del dataset seleccionado, de mas deteriorado a mas sano segun las senales definidas.</p>
+          </div>
+          <div class="panel-actions">
+            <button id="downloadExhaustionBtn" class="btn ghost" type="button">Exportar agotamiento</button>
+          </div>
+        </div>
+        <div id="exhaustionWrap" class="table-wrap">
+          <div class="empty-state">
+            <strong>Sin tabla de agotamiento todavia.</strong>
+            El dashboard la genera automaticamente despues de cargar uno o varios archivos.
+          </div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Walk-forward del dataset</h2>
+            <p class="subtle">Backtest secuencial del top slot pronosticado usando solo la historia previa del dataset seleccionado.</p>
+          </div>
+        </div>
+        <div id="validationWrap" class="table-wrap">
+          <div class="empty-state">
+            <strong>La validacion aparecera aqui.</strong>
+            Mostrara hit rate, edge frente a la media diaria, cobertura top 3 y las predicciones mas recientes.
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel methodology">
+      <h2 class="panel-title">Metodologia embebida</h2>
+      <details open>
+        <summary>1. Como se calcula el forecast score</summary>
+        <p>
+          Cada horario recibe metricas rolling de 10, 21, 63, 126 y 252 observaciones. Luego se convierten
+          en percentiles cross-sectional para mezclar senales heterogeneas sin escalar a mano. El score final
+          prioriza robustez estructural (55%), regimen medio (30%) y momentum corto (15%).
+        </p>
+      </details>
+      <details>
+        <summary>2. Como se calcula el indice de agotamiento</summary>
+        <p>
+          El agotamiento sube cuando un slot pierde rango 21d frente a 63d, cuando el promedio 10d cae por
+          debajo de una fraccion del 63d, cuando el ultimo bloque de 10 observaciones empeora frente al bloque
+          anterior y cuando el win rate corto cede frente al mediano.
+        </p>
+      </details>
+      <details>
+        <summary>3. Reglas de etiqueta KEEP / WATCH / ROTATE</summary>
+        <p>
+          Las etiquetas son relativas al ranking actual. KEEP marca slots en el cuartil alto de forecast con
+          agotamiento controlado; WATCH captura candidatos razonables o lideres con alerta media; ROTATE senala
+          combinaciones de score flojo o deterioro alto.
+        </p>
+      </details>
+      <details>
+        <summary>4. Recomendaciones de uso en produccion</summary>
+        <ul class="clean">
+          <li>Actualiza tus CSV con disciplina diaria y vuelve a cargarlos para recalcular el tablero.</li>
+          <li>Si quieres comparar todo el universo, selecciona la carpeta <span class="mono">data</span> completa en vez de un archivo suelto.</li>
+          <li>Usa el ranking actual como vista principal, pero no ignores la tabla de agotamiento del lider.</li>
+          <li>Revisa siempre la validacion walk-forward antes de cambiar la logica o los pesos.</li>
+          <li>Si anades nuevas features, mantenlas interpretables y compite contra esta base simple.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>5. Como se arma la estrategia combinada</summary>
+        <p>
+          El mix combinado puntua cada dataset con metricas sin sesgo de escala entre subyacentes, combinando
+          calidad del lider, agotamiento, profundidad del top 3 y salud de la validacion. Luego propone un
+          esquema core / satellite / diversifier intentando repartir simbolo, estructura y nivel de riesgo.
+        </p>
+      </details>
+      <details>
+        <summary>6. Como funciona el Top 5 estrategias</summary>
+        <p>
+          El screener adicional filtra por rango de fechas y horas, busca el mejor slot de cada dataset dentro
+          de ese marco y luego rankea estrategias con los criterios marcados. Las tarjetas muestran P/L bruto,
+          win rate, drawdown, profit factor, desvio estandar y boton directo para abrir el analisis detallado.
+        </p>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      datasets: [],
+      aggregate: null,
+      selectedDatasetKey: null,
+      selectedSlot: null,
+      screener: {
+        startDate: "",
+        endDate: "",
+        startTime: "",
+        endTime: "",
+        rangePreset: "all",
+        profitability: true,
+        winRate: false,
+        lowDrawdown: false,
+        results: [],
+        totalCandidates: 0,
+        criteriaLabels: []
+      }
+    };
+
+    const els = {
+      csvInput: document.getElementById("csvInput"),
+      folderInput: document.getElementById("folderInput"),
+      dropzone: document.getElementById("dropzone"),
+      folderTrigger: document.getElementById("folderTrigger"),
+      fileMeta: document.getElementById("fileMeta"),
+      loadStatus: document.getElementById("loadStatus"),
+      datasetValue: document.getElementById("datasetValue"),
+      datasetMeta: document.getElementById("datasetMeta"),
+      datasetSignals: document.getElementById("datasetSignals"),
+      leaderValue: document.getElementById("leaderValue"),
+      leaderMeta: document.getElementById("leaderMeta"),
+      leaderSignals: document.getElementById("leaderSignals"),
+      challengerValue: document.getElementById("challengerValue"),
+      challengerMeta: document.getElementById("challengerMeta"),
+      challengerSignals: document.getElementById("challengerSignals"),
+      validationValue: document.getElementById("validationValue"),
+      validationMeta: document.getElementById("validationMeta"),
+      validationSignals: document.getElementById("validationSignals"),
+      datasetWrap: document.getElementById("datasetWrap"),
+      strategyWrap: document.getElementById("strategyWrap"),
+      rankingWrap: document.getElementById("rankingWrap"),
+      detailWrap: document.getElementById("detailWrap"),
+      exhaustionWrap: document.getElementById("exhaustionWrap"),
+      validationWrap: document.getElementById("validationWrap"),
+      selectedDatasetMeta: document.getElementById("selectedDatasetMeta"),
+      preset1mBtn: document.getElementById("preset1mBtn"),
+      preset2mBtn: document.getElementById("preset2mBtn"),
+      preset3mBtn: document.getElementById("preset3mBtn"),
+      preset6mBtn: document.getElementById("preset6mBtn"),
+      presetAllBtn: document.getElementById("presetAllBtn"),
+      screenerStartDate: document.getElementById("screenerStartDate"),
+      screenerEndDate: document.getElementById("screenerEndDate"),
+      screenerStartTime: document.getElementById("screenerStartTime"),
+      screenerEndTime: document.getElementById("screenerEndTime"),
+      metricProfitability: document.getElementById("metricProfitability"),
+      metricWinRate: document.getElementById("metricWinRate"),
+      metricLowDrawdown: document.getElementById("metricLowDrawdown"),
+      calculateTopStrategiesBtn: document.getElementById("calculateTopStrategiesBtn"),
+      topStrategiesWrap: document.getElementById("topStrategiesWrap"),
+      downloadDatasetsBtn: document.getElementById("downloadDatasetsBtn"),
+      downloadRankingBtn: document.getElementById("downloadRankingBtn"),
+      downloadExhaustionBtn: document.getElementById("downloadExhaustionBtn")
+    };
+
+    const WINDOW_SET = [10, 21, 63, 126, 252];
+    const FORECAST_MIN_COUNT = 10;
+    const VALIDATION_MIN_DATES = 63;
+    const SCREENER_MIN_SAMPLES = 3;
+    const RISK_ORDER = {
+      conservador: 1,
+      intermedio: 2,
+      agresivo: 3,
+      ultra_agresivo: 4
+    };
+
+    function clamp(value, min = 0, max = 1) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function round(value, digits = 2) {
+      const factor = 10 ** digits;
+      return Math.round((value + Number.EPSILON) * factor) / factor;
+    }
+
+    function mean(values) {
+      if (!values.length) return 0;
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    }
+
+    function sum(values) {
+      return values.reduce((acc, value) => acc + value, 0);
+    }
+
+    function stdDev(values) {
+      if (values.length < 2) return 0;
+      const avg = mean(values);
+      const variance = values.reduce((acc, value) => acc + ((value - avg) ** 2), 0) / values.length;
+      return Math.sqrt(variance);
+    }
+
+    function winRate(values) {
+      if (!values.length) return 0;
+      return values.filter((value) => value > 0).length / values.length;
+    }
+
+    function profitFactor(values) {
+      const wins = sum(values.filter((value) => value > 0));
+      const losses = -sum(values.filter((value) => value < 0));
+      if (losses === 0) return wins > 0 ? wins : 0;
+      return wins / losses;
+    }
+
+    function maxDrawdown(values) {
+      let equity = 0;
+      let peak = 0;
+      let maxDd = 0;
+      values.forEach((value) => {
+        equity += value;
+        peak = Math.max(peak, equity);
+        maxDd = Math.max(maxDd, peak - equity);
+      });
+      return maxDd;
+    }
+
+    function normalizeDate(raw) {
+      const value = String(raw || "").trim();
+      if (!value) return null;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+      const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (match) {
+        const month = match[1].padStart(2, "0");
+        const day = match[2].padStart(2, "0");
+        return match[3] + "-" + month + "-" + day;
+      }
+      return null;
+    }
+
+    function normalizeSlot(raw) {
+      const value = String(raw || "").trim();
+      if (!value) return null;
+      const match = value.match(/^(\d{1,2}):(\d{2})/);
+      if (!match) return null;
+      return match[1].padStart(2, "0") + ":" + match[2];
+    }
+
+    function parseNumber(raw) {
+      const sanitized = String(raw || "")
+        .replace(/\s+/g, "")
+        .replace(/[^0-9,.\-]/g, "")
+        .replace(/,(?=\d{3}\b)/g, "");
+      if (!sanitized) return NaN;
+      const normalized = sanitized.includes(".") ? sanitized : sanitized.replace(",", ".");
+      return Number.parseFloat(normalized);
+    }
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i += 1) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (inQuotes) {
+          if (char === "\"" && next === "\"") {
+            cell += "\"";
+            i += 1;
+          } else if (char === "\"") {
+            inQuotes = false;
+          } else {
+            cell += char;
+          }
+          continue;
+        }
+
+        if (char === "\"") {
+          inQuotes = true;
+        } else if (char === ",") {
+          row.push(cell);
+          cell = "";
+        } else if (char === "\n") {
+          row.push(cell);
+          rows.push(row);
+          row = [];
+          cell = "";
+        } else if (char !== "\r") {
+          cell += char;
+        }
+      }
+
+      if (cell.length || row.length) {
+        row.push(cell);
+        rows.push(row);
+      }
+
+      if (!rows.length) return [];
+      const header = rows[0].map((item) => item.replace(/^\ufeff/, "").trim());
+
+      return rows
+        .slice(1)
+        .filter((items) => items.some((item) => String(item || "").trim() !== ""))
+        .map((items) => {
+          const out = {};
+          header.forEach((column, index) => {
+            out[column] = items[index] ?? "";
+          });
+          return out;
+        });
+    }
+
+    function bucketQuarter(dateStr) {
+      const month = Number.parseInt(dateStr.slice(5, 7), 10);
+      const quarter = Math.floor((month - 1) / 3) + 1;
+      return dateStr.slice(0, 4) + "-Q" + quarter;
+    }
+
+    function upperBoundByDate(series, cutoffDate) {
+      let low = 0;
+      let high = series.length;
+      while (low < high) {
+        const mid = (low + high) >> 1;
+        if (series[mid].date <= cutoffDate) {
+          low = mid + 1;
+        } else {
+          high = mid;
+        }
+      }
+      return low;
+    }
+
+    function buildWindowMetrics(series) {
+      const values = series.map((item) => item.pl);
+      const windows = {};
+
+      WINDOW_SET.forEach((windowSize) => {
+        const slice = values.slice(-windowSize);
+        windows[windowSize] = {
+          sample: slice.length,
+          avg: mean(slice),
+          winRate: winRate(slice),
+          stdDev: stdDev(slice),
+          profitFactor: profitFactor(slice),
+          maxDrawdown: maxDrawdown(slice)
+        };
+      });
+
+      const previousBlock = values.slice(-20, -10);
+      const byQuarter = new Map();
+      series.forEach((item) => {
+        const key = bucketQuarter(item.date);
+        if (!byQuarter.has(key)) byQuarter.set(key, []);
+        byQuarter.get(key).push(item.pl);
+      });
+      const quarterKeys = Array.from(byQuarter.keys()).sort();
+      const recentQuarterKeys = quarterKeys.slice(-4);
+      const quarterAverages = recentQuarterKeys.map((key) => mean(byQuarter.get(key)));
+      const quarterlyConsistency = quarterAverages.length
+        ? quarterAverages.filter((value) => value > 0).length / quarterAverages.length
+        : 0;
+
+      return {
+        count: values.length,
+        latestDate: series.length ? series[series.length - 1].date : null,
+        recentSeries: series.slice(-24),
+        windows,
+        avg252: windows[252].avg,
+        avg126: windows[126].avg,
+        avg63: windows[63].avg,
+        avg21: windows[21].avg,
+        avg10: windows[10].avg,
+        avgPrev10: mean(previousBlock),
+        win63: windows[63].winRate,
+        win21: windows[21].winRate,
+        win10: windows[10].winRate,
+        pf126: windows[126].profitFactor,
+        pf63: windows[63].profitFactor,
+        pf21: windows[21].profitFactor,
+        dd126: windows[126].maxDrawdown,
+        dd63: windows[63].maxDrawdown,
+        qc: quarterlyConsistency
+      };
+    }
+
+    function percentileForEntries(entries, accessor, inverse = false) {
+      const ordered = entries
+        .map((entry) => ({ slot: entry.slot, value: accessor(entry) }))
+        .sort((a, b) => {
+          if (a.value === b.value) return a.slot.localeCompare(b.slot);
+          return inverse ? a.value - b.value : b.value - a.value;
+        });
+
+      const total = ordered.length;
+      const map = new Map();
+      ordered.forEach((item, index) => {
+        const percentile = total <= 1 ? 1 : (total - index - 1) / (total - 1);
+        map.set(item.slot, percentile);
+      });
+      return map;
+    }
+
+    function rankPositions(entries, accessor, inverse = false) {
+      const ordered = entries
+        .map((entry) => ({ slot: entry.slot, value: accessor(entry) }))
+        .sort((a, b) => {
+          if (a.value === b.value) return a.slot.localeCompare(b.slot);
+          return inverse ? a.value - b.value : b.value - a.value;
+        });
+      const map = new Map();
+      ordered.forEach((item, index) => map.set(item.slot, index + 1));
+      return map;
+    }
+
+    function percentileMap(items, accessor, inverse = false, idAccessor = (item) => item.id ?? item.slot) {
+      const ordered = items
+        .map((item) => ({ id: idAccessor(item), value: accessor(item) }))
+        .sort((a, b) => {
+          if (a.value === b.value) return String(a.id).localeCompare(String(b.id));
+          return inverse ? a.value - b.value : b.value - a.value;
+        });
+
+      const total = ordered.length;
+      const map = new Map();
+      ordered.forEach((item, index) => {
+        const percentile = total <= 1 ? 1 : (total - index - 1) / (total - 1);
+        map.set(item.id, percentile);
+      });
+      return map;
+    }
+
+    function describeSignals(entry) {
+      const notes = [];
+      const ratio = entry.metrics.avg63 !== 0 ? entry.metrics.avg10 / entry.metrics.avg63 : 0;
+      const rankDiff = entry.rank21 - entry.rank63;
+
+      if (entry.forecastScore >= 80) notes.push({ text: "forecast alto", tone: "good" });
+      else if (entry.forecastScore >= 60) notes.push({ text: "forecast solido", tone: "neutral" });
+
+      if (entry.exhaustionScore >= 60) notes.push({ text: "agotamiento alto", tone: "bad" });
+      else if (entry.exhaustionScore >= 35) notes.push({ text: "agotamiento medio", tone: "warn" });
+
+      if (ratio >= 1.2) notes.push({ text: "momento corto fuerte", tone: "good" });
+      else if (ratio > 0 && ratio < 0.7) notes.push({ text: "10d por debajo de 63d", tone: "bad" });
+
+      if (rankDiff <= -5) notes.push({ text: "gana rango corto", tone: "good" });
+      else if (rankDiff >= 5) notes.push({ text: "pierde rango corto", tone: "warn" });
+
+      if (entry.metrics.avgPrev10 && entry.metrics.avg10 < entry.metrics.avgPrev10) {
+        notes.push({ text: "ultimo bloque cae", tone: "warn" });
+      }
+
+      if (entry.metrics.qc >= 0.75) notes.push({ text: "consistencia trimestral", tone: "neutral" });
+      return notes.slice(0, 4);
+    }
+
+    function classifyLabel(entry, forecastPercentile) {
+      if (forecastPercentile >= 0.75 && entry.exhaustionScore < 45) return "KEEP";
+      if (forecastPercentile >= 0.4 && entry.exhaustionScore < 70) return "WATCH";
+      return "ROTATE";
+    }
+
+    function buildSnapshot(bySlot, options = {}) {
+      const { cutoffDate = null } = options;
+      const rawEntries = [];
+
+      bySlot.forEach((series, slot) => {
+        const subset = cutoffDate ? series.slice(0, upperBoundByDate(series, cutoffDate)) : series.slice();
+        if (subset.length >= FORECAST_MIN_COUNT) {
+          rawEntries.push({
+            slot,
+            series: subset,
+            metrics: buildWindowMetrics(subset)
+          });
+        }
+      });
+
+      if (!rawEntries.length) {
+        return {
+          ranking: [],
+          leader: null,
+          challenger: null
+        };
+      }
+
+      const percentiles = {
+        avg252: percentileForEntries(rawEntries, (entry) => entry.metrics.avg252),
+        avg126: percentileForEntries(rawEntries, (entry) => entry.metrics.avg126),
+        avg63: percentileForEntries(rawEntries, (entry) => entry.metrics.avg63),
+        avg21: percentileForEntries(rawEntries, (entry) => entry.metrics.avg21),
+        avg10: percentileForEntries(rawEntries, (entry) => entry.metrics.avg10),
+        win63: percentileForEntries(rawEntries, (entry) => entry.metrics.win63),
+        win21: percentileForEntries(rawEntries, (entry) => entry.metrics.win21),
+        win10: percentileForEntries(rawEntries, (entry) => entry.metrics.win10),
+        pf126: percentileForEntries(rawEntries, (entry) => entry.metrics.pf126),
+        pf63: percentileForEntries(rawEntries, (entry) => entry.metrics.pf63),
+        pf21: percentileForEntries(rawEntries, (entry) => entry.metrics.pf21),
+        dd126: percentileForEntries(rawEntries, (entry) => entry.metrics.dd126, true),
+        dd63: percentileForEntries(rawEntries, (entry) => entry.metrics.dd63, true),
+        qc: percentileForEntries(rawEntries, (entry) => entry.metrics.qc)
+      };
+
+      const rank21Map = rankPositions(rawEntries, (entry) => entry.metrics.avg21);
+      const rank63Map = rankPositions(rawEntries, (entry) => entry.metrics.avg63);
+
+      const enriched = rawEntries.map((entry) => {
+        const coverageLong = Math.sqrt(clamp(entry.metrics.count / 252));
+        const coverageMedium = Math.sqrt(clamp(entry.metrics.count / 63));
+        const coverageShort = Math.sqrt(clamp(entry.metrics.count / 21));
+
+        const longScore =
+          (0.30 * percentiles.avg252.get(entry.slot)) +
+          (0.20 * percentiles.avg126.get(entry.slot)) +
+          (0.15 * percentiles.win63.get(entry.slot)) +
+          (0.10 * percentiles.pf126.get(entry.slot)) +
+          (0.15 * percentiles.qc.get(entry.slot)) +
+          (0.10 * percentiles.dd126.get(entry.slot));
+
+        const mediumScore =
+          (0.35 * percentiles.avg63.get(entry.slot)) +
+          (0.25 * percentiles.avg21.get(entry.slot)) +
+          (0.15 * percentiles.win63.get(entry.slot)) +
+          (0.10 * percentiles.win21.get(entry.slot)) +
+          (0.10 * percentiles.pf63.get(entry.slot)) +
+          (0.05 * percentiles.dd63.get(entry.slot));
+
+        const shortScore =
+          (0.50 * percentiles.avg10.get(entry.slot)) +
+          (0.20 * percentiles.win10.get(entry.slot)) +
+          (0.20 * percentiles.avg21.get(entry.slot)) +
+          (0.10 * percentiles.pf21.get(entry.slot));
+
+        const forecastScore = 100 * (
+          (0.55 * longScore * coverageLong) +
+          (0.30 * mediumScore * coverageMedium) +
+          (0.15 * shortScore * coverageShort)
+        );
+
+        const rank21 = rank21Map.get(entry.slot);
+        const rank63 = rank63Map.get(entry.slot);
+        const rankDrop = clamp((rank21 - rank63) / Math.max(1, rawEntries.length - 1));
+        const ratio10to63 = entry.metrics.avg63 !== 0 ? entry.metrics.avg10 / entry.metrics.avg63 : 1;
+        const ratioSignal = clamp((0.70 - ratio10to63) / 0.70);
+
+        let blockSignal = 0;
+        if (entry.metrics.avgPrev10 > 0 && entry.metrics.avg10 < entry.metrics.avgPrev10) {
+          blockSignal = clamp((entry.metrics.avgPrev10 - entry.metrics.avg10) / Math.max(Math.abs(entry.metrics.avgPrev10), 1));
+        }
+
+        const winRateSlip = clamp((entry.metrics.win21 - entry.metrics.win10) / 0.50);
+        const profitFactorSlip = clamp((entry.metrics.pf63 - entry.metrics.pf21) / Math.max(entry.metrics.pf63, 1));
+
+        const exhaustionScore = 100 * (
+          (0.35 * rankDrop) +
+          (0.30 * ratioSignal) +
+          (0.20 * blockSignal) +
+          (0.10 * winRateSlip) +
+          (0.05 * profitFactorSlip)
+        );
+
+        return {
+          ...entry,
+          rank21,
+          rank63,
+          rankShift: rank63 - rank21,
+          longScore: round(longScore * 100, 1),
+          mediumScore: round(mediumScore * 100, 1),
+          shortScore: round(shortScore * 100, 1),
+          forecastScore: round(forecastScore, 1),
+          exhaustionScore: round(exhaustionScore, 1),
+          ratio10to63: round(ratio10to63, 2)
+        };
+      });
+
+      const forecastPercentiles = percentileForEntries(enriched, (entry) => entry.forecastScore);
+      const ranking = enriched
+        .map((entry) => ({
+          ...entry,
+          label: classifyLabel(entry, forecastPercentiles.get(entry.slot)),
+          signals: describeSignals(entry)
+        }))
+        .sort((a, b) => {
+          if (b.forecastScore === a.forecastScore) return a.exhaustionScore - b.exhaustionScore;
+          return b.forecastScore - a.forecastScore;
+        });
+
+      return {
+        ranking,
+        leader: ranking[0] || null,
+        challenger: ranking[1] || null
+      };
+    }
+
+    function buildWalkForward(dataset) {
+      if (dataset.dates.length <= VALIDATION_MIN_DATES) {
+        return {
+          summary: null,
+          recent: []
+        };
+      }
+
+      const results = [];
+
+      for (let index = VALIDATION_MIN_DATES; index < dataset.dates.length; index += 1) {
+        const targetDate = dataset.dates[index];
+        const cutoffDate = dataset.dates[index - 1];
+        const snapshot = buildSnapshot(dataset.bySlot, { cutoffDate });
+        if (!snapshot.ranking.length) continue;
+
+        const availability = dataset.byDate.get(targetDate);
+        if (!availability || !availability.size) continue;
+
+        const availableRanking = snapshot.ranking.filter((entry) => availability.has(entry.slot));
+        if (!availableRanking.length) continue;
+
+        const chosen = availableRanking[0];
+        const top3 = availableRanking.slice(0, 3).map((entry) => entry.slot);
+        const dailyEntries = Array.from(availability.entries())
+          .map(([slot, pl]) => ({ slot, pl }))
+          .sort((a, b) => b.pl - a.pl);
+        const bestSlot = dailyEntries[0]?.slot ?? null;
+        const dailyAvg = mean(dailyEntries.map((item) => item.pl));
+        const realized = availability.get(chosen.slot);
+        const realizedRank = dailyEntries.findIndex((item) => item.slot === chosen.slot) + 1;
+
+        results.push({
+          date: targetDate,
+          chosenSlot: chosen.slot,
+          forecastScore: chosen.forecastScore,
+          realizedPl: realized,
+          positive: realized > 0,
+          beatAverage: realized > dailyAvg,
+          actualBestSlot: bestSlot,
+          bestInTop3: top3.includes(bestSlot),
+          realizedRank,
+          slotsAvailable: dailyEntries.length
+        });
+      }
+
+      if (!results.length) {
+        return {
+          summary: null,
+          recent: []
+        };
+      }
+
+      const avgRealized = mean(results.map((item) => item.realizedPl));
+      const beatAverageRate = mean(results.map((item) => (item.beatAverage ? 1 : 0)));
+      const positiveRate = mean(results.map((item) => (item.positive ? 1 : 0)));
+      const top3Coverage = mean(results.map((item) => (item.bestInTop3 ? 1 : 0)));
+      const avgRank = mean(results.map((item) => item.realizedRank));
+
+      return {
+        summary: {
+          tests: results.length,
+          avgRealizedPl: round(avgRealized, 1),
+          beatAverageRate: round(beatAverageRate * 100, 1),
+          positiveRate: round(positiveRate * 100, 1),
+          top3Coverage: round(top3Coverage * 100, 1),
+          avgRank: round(avgRank, 1)
+        },
+        recent: results.slice(-12).reverse()
+      };
+    }
+
+    function analyze(records) {
+      const bySlot = new Map();
+      const byDate = new Map();
+      const datesSet = new Set();
+
+      records.forEach((record) => {
+        if (!bySlot.has(record.slot)) bySlot.set(record.slot, []);
+        bySlot.get(record.slot).push({ date: record.date, pl: record.pl });
+        if (!byDate.has(record.date)) byDate.set(record.date, new Map());
+        byDate.get(record.date).set(record.slot, record.pl);
+        datesSet.add(record.date);
+      });
+
+      bySlot.forEach((series) => series.sort((a, b) => a.date.localeCompare(b.date)));
+      const dates = Array.from(datesSet).sort();
+      const slots = Array.from(bySlot.keys()).sort();
+
+      const snapshot = buildSnapshot(bySlot);
+      const validation = buildWalkForward({ bySlot, byDate, dates, slots });
+
+      return {
+        bySlot,
+        byDate,
+        dates,
+        slots,
+        ranking: snapshot.ranking,
+        leader: snapshot.leader,
+        challenger: snapshot.challenger,
+        validation,
+        stats: {
+          rows: records.length,
+          dates: dates.length,
+          slots: slots.length,
+          startDate: dates[0] || null,
+          endDate: dates[dates.length - 1] || null
+        }
+      };
+    }
+
+    function normalizeRows(rows) {
+      const grouped = new Map();
+      let skipped = 0;
+      let duplicates = 0;
+
+      rows.forEach((row) => {
+        const date = normalizeDate(row.Date);
+        const slot = normalizeSlot(row.Hora);
+        const pl = parseNumber(row["P/L"]);
+
+        if (!date || !slot || Number.isNaN(pl)) {
+          skipped += 1;
+          return;
+        }
+
+        const key = date + "__" + slot;
+        if (!grouped.has(key)) {
+          grouped.set(key, { date, slot, values: [pl] });
+        } else {
+          grouped.get(key).values.push(pl);
+          duplicates += 1;
+        }
+      });
+
+      const records = Array.from(grouped.values())
+        .map((item) => ({
+          date: item.date,
+          slot: item.slot,
+          pl: mean(item.values)
+        }))
+        .sort((a, b) => {
+          if (a.date === b.date) return a.slot.localeCompare(b.slot);
+          return a.date.localeCompare(b.date);
+        });
+
+      return { records, skipped, duplicates };
+    }
+
+    function humanizeKey(raw) {
+      return String(raw || "")
+        .split("_")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+    }
+
+    function parseDatasetMeta(fileReference, rows = []) {
+      const fileName = String(fileReference || "dataset.csv").split("/").pop();
+      const strategyName = fileName.replace(/\.csv$/i, "");
+      const strategyBase = strategyName.replace(/_data$/i, "");
+      const stem = strategyBase;
+      const parts = stem.split("_");
+      const sample = rows[0] || {};
+
+      let symbol = String(sample.Simbolo || parts[parts.length - 1] || "").toUpperCase();
+      let structureKey = "unknown";
+      let riskParts = parts.slice(0, -1);
+
+      if (riskParts.slice(-2).join("_") === "iron_condor") {
+        structureKey = "iron_condor";
+        riskParts = riskParts.slice(0, -2);
+      } else if (riskParts.length) {
+        structureKey = riskParts.pop();
+      }
+
+      const strategyValue = String(sample.Estrategia || "").trim().toUpperCase();
+      if (strategyValue === "IRON CONDOR") structureKey = "iron_condor";
+      if (strategyValue === "VERTICAL") structureKey = "vertical";
+
+      const riskKey = riskParts.join("_") || "sin_clase";
+      const riskLabel = humanizeKey(riskKey);
+      const structureLabel = structureKey === "iron_condor" ? "Iron Condor" : humanizeKey(structureKey);
+
+      if (!symbol) symbol = "N/A";
+
+      return {
+        fileName,
+        strategyName,
+        strategyBase,
+        riskKey,
+        riskLabel,
+        riskRank: RISK_ORDER[riskKey] || 99,
+        structureKey,
+        structureLabel,
+        symbol,
+        label: riskLabel + " · " + structureLabel + " · " + symbol,
+        shortLabel: riskLabel + " " + (structureKey === "iron_condor" ? "IC" : structureLabel) + " " + symbol
+      };
+    }
+
+    function buildFocusWindow(ranking) {
+      const slots = ranking.slice(0, 3).map((entry) => entry.slot).sort();
+      if (!slots.length) return "-";
+      return slots[0] === slots[slots.length - 1]
+        ? slots[0]
+        : slots[0] + " -> " + slots[slots.length - 1];
+    }
+
+    function describeDatasetLevelSignals(dataset) {
+      const notes = [];
+
+      if (dataset.datasetScore >= 85) notes.push({ text: "dataset fuerte", tone: "good" });
+      else if (dataset.datasetScore >= 75) notes.push({ text: "dataset util", tone: "neutral" });
+
+      if (dataset.leader.exhaustionScore <= 15) notes.push({ text: "lider sano", tone: "good" });
+      else if (dataset.leader.exhaustionScore >= 45) notes.push({ text: "lider cansado", tone: "warn" });
+
+      if (dataset.validationHealth >= 0.72) notes.push({ text: "validacion solida", tone: "good" });
+      else if (dataset.validationHealth >= 0.6) notes.push({ text: "validacion razonable", tone: "neutral" });
+      else notes.push({ text: "validacion floja", tone: "warn" });
+
+      if (dataset.focusWindow !== "-") notes.push({ text: "ventana " + dataset.focusWindow, tone: "neutral" });
+      return notes.slice(0, 4);
+    }
+
+    function enrichDataset(dataset) {
+      const leader = dataset.analysis.leader;
+      const challenger = dataset.analysis.challenger;
+      const top3 = dataset.analysis.ranking.slice(0, 3);
+      const validationSummary = dataset.analysis.validation.summary;
+      const validationHealth = validationSummary
+        ? (
+          (0.4 * (validationSummary.positiveRate / 100)) +
+          (0.4 * (validationSummary.beatAverageRate / 100)) +
+          (0.2 * (validationSummary.top3Coverage / 100))
+        )
+        : 0.5;
+      const depth = top3.length ? top3.filter((entry) => entry.label === "KEEP").length / top3.length : 0;
+      const breadth = top3.length ? mean(top3.map((entry) => entry.forecastScore / 100)) : 0;
+      const consistency = top3.length ? mean(top3.map((entry) => entry.metrics.qc)) : 0;
+      const exhaustionShield = 1 - clamp((leader?.exhaustionScore || 100) / 100);
+      const datasetScore = 100 * (
+        (0.32 * ((leader?.forecastScore || 0) / 100)) +
+        (0.18 * exhaustionShield) +
+        (0.16 * breadth) +
+        (0.18 * validationHealth) +
+        (0.10 * consistency) +
+        (0.06 * depth)
+      );
+
+      const enriched = {
+        ...dataset,
+        leader,
+        challenger,
+        validationHealth,
+        datasetScore: round(datasetScore, 1),
+        top3Forecast: round(breadth * 100, 1),
+        consistency: round(consistency * 100, 1),
+        depth: round(depth * 100, 1),
+        focusWindow: buildFocusWindow(dataset.analysis.ranking)
+      };
+
+      enriched.signals = describeDatasetLevelSignals(enriched);
+      return enriched;
+    }
+
+    function pickDatasetByRules(ranking, usedKeys, rules) {
+      for (let index = 0; index < rules.length; index += 1) {
+        const candidate = ranking.find((dataset) => !usedKeys.has(dataset.key) && rules[index](dataset));
+        if (candidate) return candidate;
+      }
+      return null;
+    }
+
+    function buildCombinedStrategy(datasetRanking) {
+      if (!datasetRanking.length) return null;
+
+      const core = datasetRanking[0];
+      const usedKeys = new Set([core.key]);
+
+      const satellite = pickDatasetByRules(datasetRanking, usedKeys, [
+        (dataset) =>
+          dataset.datasetScore >= core.datasetScore - 12 &&
+          dataset.leader.exhaustionScore <= 35 &&
+          dataset.meta.symbol !== core.meta.symbol,
+        (dataset) =>
+          dataset.datasetScore >= core.datasetScore - 10 &&
+          dataset.meta.structureKey !== core.meta.structureKey,
+        (dataset) =>
+          dataset.datasetScore >= core.datasetScore - 12 &&
+          dataset.leader.exhaustionScore <= 45
+      ]) || datasetRanking.find((dataset) => !usedKeys.has(dataset.key)) || null;
+
+      if (satellite) usedKeys.add(satellite.key);
+
+      const diversifier = pickDatasetByRules(datasetRanking, usedKeys, [
+        (dataset) =>
+          dataset.meta.structureKey !== core.meta.structureKey &&
+          (!satellite || dataset.meta.symbol !== satellite.meta.symbol) &&
+          dataset.leader.exhaustionScore <= 60,
+        (dataset) =>
+          dataset.meta.symbol !== core.meta.symbol ||
+          dataset.meta.structureKey !== core.meta.structureKey,
+        (dataset) => dataset.meta.riskRank < core.meta.riskRank
+      ]);
+
+      if (diversifier) usedKeys.add(diversifier.key);
+
+      const picks = [core, satellite, diversifier].filter(Boolean);
+      let weights = [100];
+      if (picks.length === 2) {
+        weights = core.datasetScore - picks[1].datasetScore > 7 ? [65, 35] : [55, 45];
+      } else if (picks.length >= 3) {
+        weights = core.leader.exhaustionScore <= 25 ? [50, 30, 20] : [45, 35, 20];
+      }
+
+      const roles = ["Core", "Satellite", "Diversifier"];
+      const legs = picks.map((dataset, index) => ({
+        ...dataset,
+        role: roles[index],
+        weight: weights[index] || 0,
+        executionSlot: dataset.leader.slot
+      }));
+
+      const uniqueSymbols = new Set(picks.map((dataset) => dataset.meta.symbol)).size;
+      const uniqueStructures = new Set(picks.map((dataset) => dataset.meta.structureKey)).size;
+      const uniqueRisks = new Set(picks.map((dataset) => dataset.meta.riskKey)).size;
+      const diversification = picks.length
+        ? (
+          (0.55 * (uniqueStructures / picks.length)) +
+          (0.45 * (uniqueSymbols / picks.length))
+        )
+        : 0;
+      const confidence = 100 * (
+        (0.45 * mean(picks.map((dataset) => dataset.datasetScore / 100))) +
+        (0.25 * mean(picks.map((dataset) => 1 - clamp(dataset.leader.exhaustionScore / 100)))) +
+        (0.15 * mean(picks.map((dataset) => dataset.validationHealth))) +
+        (0.15 * diversification)
+      );
+
+      const slots = picks.map((dataset) => dataset.leader.slot).sort();
+      const executionWindow = slots.length
+        ? (slots[0] === slots[slots.length - 1] ? slots[0] : slots[0] + " -> " + slots[slots.length - 1])
+        : "-";
+
+      const concentrationFlags = [];
+      if (picks.length > 1 && uniqueSymbols === 1) concentrationFlags.push("misma familia de subyacente");
+      if (picks.length > 1 && uniqueStructures === 1) concentrationFlags.push("misma estructura");
+      if (picks.length > 1 && uniqueRisks === 1) concentrationFlags.push("mismo nivel de riesgo");
+
+      const summaryText = legs.length
+        ? legs
+          .map((leg) => leg.role.toLowerCase() + " " + leg.weight + "% en " + leg.meta.strategyName + " a las " + leg.executionSlot)
+          .join(" · ") +
+          (concentrationFlags.length ? ". Vigila " + concentrationFlags.join(" y ") + "." : ". Mezcla con buena dispersion relativa.")
+        : "Sin combinacion disponible.";
+
+      return {
+        legs,
+        confidence: round(confidence, 1),
+        diversificationScore: round(diversification * 100, 1),
+        executionWindow,
+        concentrationFlags,
+        weightText: weights.slice(0, legs.length).join("/"),
+        summaryText
+      };
+    }
+
+    function buildAggregate(rawDatasets) {
+      const ranking = rawDatasets
+        .map((dataset) => enrichDataset(dataset))
+        .sort((a, b) => {
+          if (b.datasetScore === a.datasetScore) {
+            return a.leader.exhaustionScore - b.leader.exhaustionScore;
+          }
+          return b.datasetScore - a.datasetScore;
+        });
+
+      const dateBounds = ranking
+        .reduce((acc, dataset) => acc.concat([dataset.analysis.stats.startDate, dataset.analysis.stats.endDate]), [])
+        .filter(Boolean)
+        .sort();
+
+      const validationSummaries = ranking
+        .map((dataset) => dataset.analysis.validation.summary)
+        .filter(Boolean);
+      const totalTests = sum(validationSummaries.map((summary) => summary.tests));
+      const weightedMetric = (key) => {
+        if (!totalTests) return 0;
+        return sum(validationSummaries.map((summary) => summary[key] * summary.tests)) / totalTests;
+      };
+
+      return {
+        ranking,
+        best: ranking[0] || null,
+        strategy: buildCombinedStrategy(ranking),
+        globalValidation: totalTests
+          ? {
+            tests: totalTests,
+            positiveRate: round(weightedMetric("positiveRate"), 1),
+            beatAverageRate: round(weightedMetric("beatAverageRate"), 1),
+            top3Coverage: round(weightedMetric("top3Coverage"), 1)
+          }
+          : null,
+        stats: {
+          datasets: ranking.length,
+          records: sum(ranking.map((dataset) => dataset.analysis.stats.rows)),
+          startDate: dateBounds[0] || null,
+          endDate: dateBounds[dateBounds.length - 1] || null,
+          symbols: Array.from(new Set(ranking.map((dataset) => dataset.meta.symbol))),
+          structures: Array.from(new Set(ranking.map((dataset) => dataset.meta.structureLabel))),
+          risks: Array.from(new Set(ranking.map((dataset) => dataset.meta.riskLabel)))
+        }
+      };
+    }
+
+    function selectedDataset() {
+      return state.datasets.find((dataset) => dataset.key === state.selectedDatasetKey) || state.datasets[0] || null;
+    }
+
+    function fmtNumber(value, digits = 1) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "-";
+      return new Intl.NumberFormat("es-ES", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      }).format(value);
+    }
+
+    function fmtInt(value) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "-";
+      return new Intl.NumberFormat("es-ES", { maximumFractionDigits: 0 }).format(value);
+    }
+
+    function fmtPercent(value, digits = 1) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "-";
+      return fmtNumber(value * 100, digits) + "%";
+    }
+
+    function fmtCurrency(value, digits = 2) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "-";
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      }).format(value);
+    }
+
+    function scoreTone(score) {
+      if (score >= 70) return "good";
+      if (score >= 40) return "warn";
+      return "bad";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function renderSignals(container, signals) {
+      if (!signals?.length) {
+        container.innerHTML = '<span class="signal-chip neutral">sin senales</span>';
+        return;
+      }
+      container.innerHTML = signals
+        .map((signal) => '<span class="signal-chip ' + signal.tone + '">' + escapeHtml(signal.text) + "</span>")
+        .join("");
+    }
+
+    function sparklineSvg(series) {
+      if (!series.length) return "";
+      const width = 520;
+      const height = 140;
+      const padding = 10;
+      const values = series.map((item) => item.pl);
+      const min = Math.min(...values, 0);
+      const max = Math.max(...values, 0);
+      const span = Math.max(max - min, 1);
+      const step = (width - (padding * 2)) / Math.max(series.length - 1, 1);
+      const yFor = (value) => height - padding - (((value - min) / span) * (height - padding * 2));
+      const points = series.map((item, index) => {
+        const x = padding + (index * step);
+        const y = yFor(item.pl);
+        return { x, y, pl: item.pl, date: item.date };
+      });
+      const line = points.map((point) => point.x + "," + point.y).join(" ");
+      const avg = mean(values);
+      const zeroY = yFor(0);
+      const avgY = yFor(avg);
+      const bars = points.map((point) => {
+        const color = point.pl >= 0 ? "#7aa43a" : "#b84f40";
+        const y = Math.min(point.y, zeroY);
+        const barHeight = Math.max(Math.abs(point.y - zeroY), 2);
+        return '<rect x="' + (point.x - 3) + '" y="' + y + '" width="6" height="' + barHeight + '" rx="3" fill="' + color + '" opacity="0.24"></rect>';
+      }).join("");
+
+      return [
+        '<svg class="sparkline" viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="Serie reciente del slot">',
+        '<rect x="0" y="0" width="' + width + '" height="' + height + '" fill="rgba(255,255,255,0.85)"></rect>',
+        '<line x1="0" y1="' + zeroY + '" x2="' + width + '" y2="' + zeroY + '" stroke="rgba(17,33,48,0.15)" stroke-dasharray="5 5"></line>',
+        '<line x1="0" y1="' + avgY + '" x2="' + width + '" y2="' + avgY + '" stroke="#0f766e" stroke-dasharray="6 4" opacity="0.75"></line>',
+        bars,
+        '<polyline fill="none" stroke="#173142" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="' + line + '"></polyline>',
+        '</svg>'
+      ].join("");
+    }
+
+    function uniqueSortedSlots() {
+      return Array.from(new Set(
+        state.datasets.flatMap((dataset) => dataset.analysis?.slots || [])
+      )).sort();
+    }
+
+    function parseIsoDateUtc(value) {
+      const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!match) return null;
+      return new Date(Date.UTC(
+        Number.parseInt(match[1], 10),
+        Number.parseInt(match[2], 10) - 1,
+        Number.parseInt(match[3], 10)
+      ));
+    }
+
+    function formatIsoDateUtc(date) {
+      if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+      return [
+        date.getUTCFullYear(),
+        String(date.getUTCMonth() + 1).padStart(2, "0"),
+        String(date.getUTCDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    function monthsBackDate(endDate, months) {
+      const source = parseIsoDateUtc(endDate);
+      if (!source) return "";
+      const year = source.getUTCFullYear();
+      const month = source.getUTCMonth();
+      const day = source.getUTCDate();
+      const target = new Date(Date.UTC(year, month - months, 1));
+      const maxDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+      target.setUTCDate(Math.min(day, maxDay));
+      return formatIsoDateUtc(target);
+    }
+
+    function presetDefinitions() {
+      return [
+        { key: "1m", months: 1, button: els.preset1mBtn },
+        { key: "2m", months: 2, button: els.preset2mBtn },
+        { key: "3m", months: 3, button: els.preset3mBtn },
+        { key: "6m", months: 6, button: els.preset6mBtn },
+        { key: "all", months: null, button: els.presetAllBtn }
+      ];
+    }
+
+    function inferRangePreset(startDate, endDate) {
+      const lowerBound = state.aggregate?.stats?.startDate || "";
+      const upperBound = state.aggregate?.stats?.endDate || "";
+      if (!startDate || !endDate || !lowerBound) return "all";
+      if (startDate === lowerBound && endDate === upperBound) return "all";
+
+      const match = presetDefinitions().find((preset) => {
+        if (!preset.months) return false;
+        const expectedStart = monthsBackDate(endDate, preset.months);
+        return (expectedStart && (expectedStart < lowerBound ? lowerBound : expectedStart) === startDate);
+      });
+
+      return match?.key || "custom";
+    }
+
+    function updatePresetButtons() {
+      const activeKey = state.screener.rangePreset || "all";
+      presetDefinitions().forEach((preset) => {
+        if (!preset.button) return;
+        const active = preset.key === activeKey;
+        preset.button.className = "preset-btn" + (active ? " is-active" : "");
+        if (typeof preset.button.setAttribute === "function") {
+          preset.button.setAttribute("aria-pressed", active ? "true" : "false");
+        }
+      });
+    }
+
+    function applyRangePreset(presetKey) {
+      const earliest = state.aggregate?.stats?.startDate || "";
+      const latest = state.aggregate?.stats?.endDate || "";
+      if (!earliest || !latest) return;
+
+      let targetEnd = state.screener.endDate || latest;
+      if (!targetEnd || targetEnd < earliest || targetEnd > latest) {
+        targetEnd = latest;
+      }
+
+      let startDate = earliest;
+      if (presetKey !== "all") {
+        const definition = presetDefinitions().find((preset) => preset.key === presetKey);
+        const shifted = definition?.months ? monthsBackDate(targetEnd, definition.months) : earliest;
+        startDate = shifted && shifted < earliest ? earliest : shifted || earliest;
+      }
+
+      state.screener.startDate = startDate;
+      state.screener.endDate = targetEnd;
+      state.screener.rangePreset = presetKey;
+      syncScreenerControls();
+      computeScreenerResults();
+      renderScreener();
+    }
+
+    function syncScreenerControls() {
+      const slots = uniqueSortedSlots();
+      const startDate = state.aggregate?.stats?.startDate || "";
+      const endDate = state.aggregate?.stats?.endDate || "";
+      const startTime = slots[0] || "";
+      const endTime = slots[slots.length - 1] || "";
+
+      if (!state.screener.startDate || state.screener.startDate < startDate || state.screener.startDate > endDate) {
+        state.screener.startDate = startDate;
+      }
+      if (!state.screener.endDate || state.screener.endDate < startDate || state.screener.endDate > endDate) {
+        state.screener.endDate = endDate;
+      }
+      if (state.screener.startDate && state.screener.endDate && state.screener.startDate > state.screener.endDate) {
+        state.screener.startDate = startDate;
+        state.screener.endDate = endDate;
+      }
+
+      if (!slots.includes(state.screener.startTime)) state.screener.startTime = startTime;
+      if (!slots.includes(state.screener.endTime)) state.screener.endTime = endTime;
+      if (state.screener.startTime && state.screener.endTime && state.screener.startTime > state.screener.endTime) {
+        state.screener.startTime = startTime;
+        state.screener.endTime = endTime;
+      }
+
+      els.screenerStartDate.min = startDate;
+      els.screenerStartDate.max = endDate;
+      els.screenerEndDate.min = startDate;
+      els.screenerEndDate.max = endDate;
+      els.screenerStartDate.value = state.screener.startDate || "";
+      els.screenerEndDate.value = state.screener.endDate || "";
+
+      const buildOptions = (selectedValue) => slots.map((slot) => (
+        '<option value="' + escapeHtml(slot) + '"' + (slot === selectedValue ? " selected" : "") + ">" + escapeHtml(slot) + "</option>"
+      )).join("");
+
+      els.screenerStartTime.innerHTML = slots.length ? buildOptions(state.screener.startTime) : '<option value="">-</option>';
+      els.screenerEndTime.innerHTML = slots.length ? buildOptions(state.screener.endTime) : '<option value="">-</option>';
+      els.screenerStartTime.value = state.screener.startTime || "";
+      els.screenerEndTime.value = state.screener.endTime || "";
+
+      els.metricProfitability.checked = !!state.screener.profitability;
+      els.metricWinRate.checked = !!state.screener.winRate;
+      els.metricLowDrawdown.checked = !!state.screener.lowDrawdown;
+      state.screener.rangePreset = inferRangePreset(state.screener.startDate, state.screener.endDate);
+      updatePresetButtons();
+    }
+
+    function initializeScreenerDefaults() {
+      if (!state.aggregate || !state.datasets.length) {
+        state.screener = {
+          startDate: "",
+          endDate: "",
+          startTime: "",
+          endTime: "",
+          rangePreset: "all",
+          profitability: true,
+          winRate: false,
+          lowDrawdown: false,
+          results: [],
+          totalCandidates: 0,
+          criteriaLabels: []
+        };
+        syncScreenerControls();
+        return;
+      }
+
+      const slots = uniqueSortedSlots();
+      state.screener = {
+        startDate: state.aggregate.stats.startDate || "",
+        endDate: state.aggregate.stats.endDate || "",
+        startTime: slots[0] || "",
+        endTime: slots[slots.length - 1] || "",
+        rangePreset: "all",
+        profitability: true,
+        winRate: false,
+        lowDrawdown: false,
+        results: [],
+        totalCandidates: 0,
+        criteriaLabels: []
+      };
+      syncScreenerControls();
+    }
+
+    function activeScreenerCriteria() {
+      const flags = {
+        profitability: !!els.metricProfitability.checked,
+        winRate: !!els.metricWinRate.checked,
+        lowDrawdown: !!els.metricLowDrawdown.checked
+      };
+
+      if (!flags.profitability && !flags.winRate && !flags.lowDrawdown) {
+        flags.profitability = true;
+        els.metricProfitability.checked = true;
+      }
+
+      state.screener.profitability = flags.profitability;
+      state.screener.winRate = flags.winRate;
+      state.screener.lowDrawdown = flags.lowDrawdown;
+
+      const criteria = [];
+      if (flags.profitability) {
+        criteria.push({
+          key: "profitability",
+          label: "Rentabilidad",
+          accessor: (item) => item.metrics.totalPnL
+        });
+      }
+      if (flags.winRate) {
+        criteria.push({
+          key: "winRate",
+          label: "Win rate",
+          accessor: (item) => item.metrics.winRate
+        });
+      }
+      if (flags.lowDrawdown) {
+        criteria.push({
+          key: "lowDrawdown",
+          label: "Menor drawdown",
+          accessor: (item) => item.metrics.maxDrawdown,
+          inverse: true
+        });
+      }
+      state.screener.criteriaLabels = criteria.map((criterion) => criterion.label);
+      return criteria;
+    }
+
+    function readScreenerFilters() {
+      let startDate = els.screenerStartDate.value || state.screener.startDate || "";
+      let endDate = els.screenerEndDate.value || state.screener.endDate || "";
+      let startTime = els.screenerStartTime.value || state.screener.startTime || "";
+      let endTime = els.screenerEndTime.value || state.screener.endTime || "";
+
+      if (startDate && endDate && startDate > endDate) {
+        [startDate, endDate] = [endDate, startDate];
+      }
+      if (startTime && endTime && startTime > endTime) {
+        [startTime, endTime] = [endTime, startTime];
+      }
+
+      state.screener.startDate = startDate;
+      state.screener.endDate = endDate;
+      state.screener.startTime = startTime;
+      state.screener.endTime = endTime;
+      syncScreenerControls();
+
+      return {
+        startDate,
+        endDate,
+        startTime,
+        endTime
+      };
+    }
+
+    function filterRecordsForScreener(records, filters) {
+      return records.filter((record) => {
+        if (filters.startDate && record.date < filters.startDate) return false;
+        if (filters.endDate && record.date > filters.endDate) return false;
+        if (filters.startTime && record.slot < filters.startTime) return false;
+        if (filters.endTime && record.slot > filters.endTime) return false;
+        return true;
+      });
+    }
+
+    function buildSimpleMetrics(records) {
+      const values = records.map((record) => record.pl);
+      return {
+        samples: values.length,
+        totalPnL: round(sum(values), 2),
+        avgPnL: round(mean(values), 2),
+        winRate: winRate(values),
+        stdDev: round(stdDev(values), 2),
+        profitFactor: round(profitFactor(values), 2),
+        maxDrawdown: round(maxDrawdown(values), 2),
+        startDate: records[0]?.date || null,
+        endDate: records[records.length - 1]?.date || null
+      };
+    }
+
+    function screenerTieBreak(a, b) {
+      if (b.metrics.totalPnL !== a.metrics.totalPnL) return b.metrics.totalPnL - a.metrics.totalPnL;
+      if (b.metrics.winRate !== a.metrics.winRate) return b.metrics.winRate - a.metrics.winRate;
+      if (a.metrics.maxDrawdown !== b.metrics.maxDrawdown) return a.metrics.maxDrawdown - b.metrics.maxDrawdown;
+      return a.strategyName.localeCompare(b.strategyName);
+    }
+
+    function computeScreenerResults() {
+      const criteria = activeScreenerCriteria();
+      const filters = readScreenerFilters();
+
+      if (!state.datasets.length) {
+        state.screener.results = [];
+        state.screener.totalCandidates = 0;
+        return [];
+      }
+
+      const datasetCandidates = [];
+
+      state.datasets.forEach((dataset) => {
+        const filteredRecords = filterRecordsForScreener(dataset.records, filters);
+        if (!filteredRecords.length) return;
+
+        const filteredDates = Array.from(new Set(filteredRecords.map((record) => record.date))).sort();
+        const minSamples = Math.min(SCREENER_MIN_SAMPLES, Math.max(filteredDates.length, 1));
+        const bySlot = new Map();
+
+        filteredRecords.forEach((record) => {
+          if (!bySlot.has(record.slot)) bySlot.set(record.slot, []);
+          bySlot.get(record.slot).push(record);
+        });
+
+        const slotSummaries = Array.from(bySlot.entries())
+          .map(([slot, slotRecords]) => ({
+            slot,
+            metrics: buildSimpleMetrics(slotRecords)
+          }))
+          .filter((entry) => entry.metrics.samples >= minSamples);
+
+        if (!slotSummaries.length) return;
+
+        const criterionMaps = criteria.map((criterion) => ({
+          key: criterion.key,
+          map: percentileMap(slotSummaries, criterion.accessor, criterion.inverse, (item) => item.slot)
+        }));
+
+        const scoredSlots = slotSummaries
+          .map((entry) => {
+            const criteriaScore = mean(criterionMaps.map((criterion) => criterion.map.get(entry.slot) ?? 0));
+            const coverage = filteredDates.length
+              ? Math.sqrt(clamp(entry.metrics.samples / filteredDates.length))
+              : 0;
+
+            return {
+              ...entry,
+              criteriaScore: round(criteriaScore * 100, 1),
+              coverage: round(coverage * 100, 1),
+              screenerSlotScore: round(criteriaScore * coverage * 100, 1)
+            };
+          })
+          .sort((a, b) => {
+            if (b.screenerSlotScore !== a.screenerSlotScore) return b.screenerSlotScore - a.screenerSlotScore;
+            return screenerTieBreak(
+              { ...a, strategyName: dataset.meta.strategyName },
+              { ...b, strategyName: dataset.meta.strategyName }
+            );
+          });
+
+        const bestSlot = scoredSlots[0];
+        datasetCandidates.push({
+          id: dataset.key,
+          datasetKey: dataset.key,
+          fileName: dataset.fileName,
+          strategyName: dataset.meta.strategyName,
+          friendlyLabel: dataset.meta.label,
+          meta: dataset.meta,
+          slot: bestSlot.slot,
+          metrics: bestSlot.metrics,
+          slotCriteriaScore: bestSlot.criteriaScore,
+          slotCoverage: bestSlot.coverage,
+          slotScore: bestSlot.screenerSlotScore,
+          filteredDates: filteredDates.length,
+          datasetScore: dataset.datasetScore,
+          validationHealth: round(dataset.validationHealth * 100, 1),
+          focusWindow: dataset.focusWindow
+        });
+      });
+
+      if (!datasetCandidates.length) {
+        state.screener.results = [];
+        state.screener.totalCandidates = 0;
+        return [];
+      }
+
+      const maxSamples = Math.max(...datasetCandidates.map((candidate) => candidate.metrics.samples), 1);
+      const criterionMaps = criteria.map((criterion) => ({
+        key: criterion.key,
+        map: percentileMap(datasetCandidates, criterion.accessor, criterion.inverse, (item) => item.id)
+      }));
+
+      const ranked = datasetCandidates
+        .map((candidate) => {
+          const criteriaScore = mean(criterionMaps.map((criterion) => criterion.map.get(candidate.id) ?? 0));
+          const sampleStrength = Math.sqrt(clamp(candidate.metrics.samples / maxSamples));
+          const coverageStrength = clamp(candidate.slotCoverage / 100);
+          const reliability = Math.sqrt(sampleStrength * coverageStrength);
+
+          return {
+            ...candidate,
+            screenerScore: round(criteriaScore * reliability * 100, 1),
+            candidateCriteriaScore: round(criteriaScore * 100, 1),
+            sampleStrength: round(sampleStrength * 100, 1),
+            reliability: round(reliability * 100, 1)
+          };
+        })
+        .sort((a, b) => {
+          if (b.screenerScore !== a.screenerScore) return b.screenerScore - a.screenerScore;
+          return screenerTieBreak(a, b);
+        });
+
+      state.screener.results = ranked.slice(0, 5);
+      state.screener.totalCandidates = ranked.length;
+      return state.screener.results;
+    }
+
+    function screenerBadge(index) {
+      if (index === 0) return { label: "Ganador", tone: "gold" };
+      if (index === 1) return { label: "Plata", tone: "silver" };
+      if (index === 2) return { label: "Bronce", tone: "bronze" };
+      return { label: "#" + (index + 1) + " Top", tone: "default" };
+    }
+
+    function renderScreener() {
+      syncScreenerControls();
+
+      if (!state.datasets.length) {
+        els.topStrategiesWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>El screener aparecera aqui.</strong>",
+          "Carga varios CSV para comparar estrategias y encontrar rapidamente los cinco mejores setups bajo el filtro elegido.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      if (!state.screener.results.length) {
+        els.topStrategiesWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>No hay resultados con ese filtro todavia.</strong>",
+          "Pulsa <span class=\"mono\">Calcular Top 5 estrategias</span> o amplia fechas y horas si el filtro quedo demasiado estrecho.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const filters = [
+        state.screener.startDate + " -> " + state.screener.endDate,
+        state.screener.startTime + " -> " + state.screener.endTime
+      ].join(" · ");
+      const criteriaText = state.screener.criteriaLabels.join(" + ");
+      const cards = state.screener.results.map((entry, index) => {
+        const badge = screenerBadge(index);
+        return [
+          '<article class="rank-card">',
+          '<div class="rank-card-top">',
+          '<span class="rank-badge ' + badge.tone + '">' + escapeHtml(badge.label) + "</span>",
+          '<div class="rank-score"><span>Score</span><strong>' + fmtNumber(entry.screenerScore, 1) + "</strong></div>",
+          "</div>",
+          '<div class="rank-title-block">',
+          "<h3>" + escapeHtml(entry.strategyName) + "</h3>",
+          "<p>" + escapeHtml(entry.friendlyLabel) + "</p>",
+          "</div>",
+          '<div class="rank-slot">Slot sugerido <strong>' + escapeHtml(entry.slot) + "</strong></div>",
+          '<div class="rank-amount' + (entry.metrics.totalPnL < 0 ? " negative" : "") + '">' + fmtCurrency(entry.metrics.totalPnL, 2) + "</div>",
+          "<hr>",
+          '<div class="rank-metrics">',
+          '<div class="mini-metric"><span>Win rate</span><strong>' + fmtPercent(entry.metrics.winRate, 1) + "</strong></div>",
+          '<div class="mini-metric"><span>Max drawdown</span><strong class="' + (entry.metrics.maxDrawdown > 0 ? "negative" : "") + '">' + fmtCurrency(-entry.metrics.maxDrawdown, 2) + "</strong></div>",
+          '<div class="mini-metric"><span>Profit factor</span><strong>' + fmtNumber(entry.metrics.profitFactor, 2) + "x</strong></div>",
+          '<div class="mini-metric"><span>Desv. est.</span><strong>' + fmtCurrency(entry.metrics.stdDev, 2) + "</strong></div>",
+          '<div class="mini-metric"><span>Muestras</span><strong>' + fmtInt(entry.metrics.samples) + "</strong></div>",
+          '<div class="mini-metric"><span>Cobertura</span><strong>' + fmtNumber(entry.slotCoverage, 1) + "%</strong></div>",
+          "</div>",
+          '<button class="btn ghost" type="button" data-screener-target="' + escapeHtml(entry.datasetKey + "__" + entry.slot) + '">Ver analisis detallado</button>',
+          "</article>"
+        ].join("");
+      }).join("");
+
+      els.topStrategiesWrap.innerHTML = [
+        '<div class="screener-results-head">',
+        '<div class="screener-summary">',
+        '<h3 class="panel-title" style="margin-bottom: 6px;">Resultados del ranking</h3>',
+        '<p class="subtle">' + escapeHtml(state.screener.totalCandidates + " estrategias con datos en el filtro · " + filters + " · criterio " + criteriaText) + "</p>",
+        "</div>",
+        '<div class="signal-row">',
+        '<span class="signal-chip good">score mixto interpretable</span>',
+        '<span class="signal-chip neutral">P/L bruto visible</span>',
+        '<span class="signal-chip warn">cobertura penalizada si es baja</span>',
+        "</div>",
+        "</div>",
+        '<div class="rank-cards">' + cards + "</div>",
+        '<p class="footnote">El screener no reemplaza el ranking profundo: usa percentiles del filtro activo para comparar estrategias y luego te manda al detalle del dataset y slot elegidos.</p>'
+      ].join("");
+
+      els.topStrategiesWrap.querySelectorAll("[data-screener-target]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [datasetKey, slot] = button.getAttribute("data-screener-target").split("__");
+          state.selectedDatasetKey = datasetKey;
+          state.selectedSlot = slot;
+          renderAll();
+          document.getElementById("analysisSection")?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+        });
+      });
+    }
+
+    function renderSummary() {
+      const aggregate = state.aggregate;
+      if (!aggregate) {
+        els.datasetValue.textContent = "-";
+        els.datasetMeta.textContent = "Carga archivos CSV";
+        renderSignals(els.datasetSignals, [{ text: "sin datos", tone: "neutral" }]);
+
+        els.leaderValue.textContent = "-";
+        els.leaderMeta.textContent = "forecast pendiente";
+        renderSignals(els.leaderSignals, [{ text: "sin datos", tone: "neutral" }]);
+
+        els.challengerValue.textContent = "-";
+        els.challengerMeta.textContent = "sin propuesta";
+        renderSignals(els.challengerSignals, [{ text: "sin datos", tone: "neutral" }]);
+
+        els.validationValue.textContent = "-";
+        els.validationMeta.textContent = "sin prueba";
+        renderSignals(els.validationSignals, [{ text: "sin datos", tone: "neutral" }]);
+        return;
+      }
+
+      els.datasetValue.textContent = fmtInt(aggregate.stats.datasets);
+      els.datasetMeta.textContent = [
+        fmtInt(aggregate.stats.records) + " filas utiles",
+        aggregate.stats.startDate + " -> " + aggregate.stats.endDate
+      ].join(" · ");
+      renderSignals(els.datasetSignals, [
+        { text: aggregate.stats.symbols.join(" / "), tone: "neutral" },
+        { text: aggregate.stats.structures.join(" + "), tone: "neutral" },
+        { text: aggregate.stats.risks.join(" · "), tone: "neutral" }
+      ]);
+
+      if (aggregate.best) {
+        els.leaderValue.textContent = aggregate.best.leader.slot;
+        els.leaderMeta.textContent =
+          aggregate.best.meta.strategyName + " · ds " + fmtNumber(aggregate.best.datasetScore, 1);
+        renderSignals(els.leaderSignals, [
+          {
+            text: aggregate.best.leader.label,
+            tone: aggregate.best.leader.label === "KEEP"
+              ? "good"
+              : aggregate.best.leader.label === "WATCH"
+                ? "warn"
+                : "bad"
+          },
+          { text: "forecast " + fmtNumber(aggregate.best.leader.forecastScore, 1), tone: "good" },
+          {
+            text: "agot " + fmtNumber(aggregate.best.leader.exhaustionScore, 1),
+            tone: aggregate.best.leader.exhaustionScore >= 45 ? "warn" : "neutral"
+          }
+        ]);
+      }
+
+      if (aggregate.strategy) {
+        els.challengerValue.textContent = aggregate.strategy.weightText || "-";
+        els.challengerMeta.textContent =
+          aggregate.strategy.executionWindow + " · " + aggregate.strategy.legs.length + " legs";
+        renderSignals(els.challengerSignals, aggregate.strategy.legs.slice(0, 3).map((leg, index) => ({
+          text: leg.role.toLowerCase() + ": " + leg.meta.symbol + " " + leg.executionSlot,
+          tone: index === 0 ? "good" : "neutral"
+        })));
+      } else {
+        els.challengerValue.textContent = "-";
+        els.challengerMeta.textContent = "sin propuesta";
+        renderSignals(els.challengerSignals, [{ text: "sin datos", tone: "neutral" }]);
+      }
+
+      if (aggregate.globalValidation) {
+        els.validationValue.textContent = fmtNumber(aggregate.globalValidation.beatAverageRate, 1) + "%";
+        els.validationMeta.textContent =
+          "beat average ponderado · " + fmtInt(aggregate.globalValidation.tests) + " tests";
+        renderSignals(els.validationSignals, [
+          {
+            text: "hit " + fmtNumber(aggregate.globalValidation.positiveRate, 1) + "%",
+            tone: scoreTone(aggregate.globalValidation.positiveRate)
+          },
+          {
+            text: "beat avg " + fmtNumber(aggregate.globalValidation.beatAverageRate, 1) + "%",
+            tone: scoreTone(aggregate.globalValidation.beatAverageRate)
+          },
+          {
+            text: "top3 " + fmtNumber(aggregate.globalValidation.top3Coverage, 1) + "%",
+            tone: scoreTone(aggregate.globalValidation.top3Coverage)
+          }
+        ]);
+      } else {
+        els.validationValue.textContent = "-";
+        els.validationMeta.textContent = "sin prueba";
+        renderSignals(els.validationSignals, [{ text: "sin datos", tone: "neutral" }]);
+      }
+    }
+
+    function renderDatasetMap() {
+      if (!state.datasets.length) {
+        els.datasetWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Esperando archivos para comparar datasets.</strong>",
+          "Al cargar varios CSV se construira un ranking global entre estrategias, perfiles y subyacentes.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const rows = state.datasets.map((dataset) => {
+        const selectedClass = dataset.key === state.selectedDatasetKey ? "is-selected" : "";
+        const notes = dataset.signals.map((signal) => signal.text).join(" · ");
+        const validationSummary = dataset.analysis.validation.summary;
+
+        return [
+          '<tr class="' + selectedClass + '">',
+          '<td><button class="slot-button" type="button" data-dataset-key="' + escapeHtml(dataset.key) + '"><span class="slot-dot"></span>' + escapeHtml(dataset.meta.strategyName) + '</button><div class="subtle">' + escapeHtml(dataset.meta.label) + '</div></td>',
+          '<td class="mono">' + escapeHtml(dataset.leader.slot) + "</td>",
+          '<td class="mono">' + fmtNumber(dataset.datasetScore, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(dataset.leader.forecastScore, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(dataset.leader.exhaustionScore, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(dataset.validationHealth * 100, 1) + "%</td>",
+          '<td class="mono">' + (validationSummary ? fmtNumber(validationSummary.positiveRate, 1) + "%" : "-") + "</td>",
+          '<td class="mono">' + escapeHtml(dataset.focusWindow) + "</td>",
+          "<td>" + escapeHtml(notes || "-") + "</td>",
+          "</tr>"
+        ].join("");
+      }).join("");
+
+      els.datasetWrap.innerHTML = [
+        "<table>",
+        "<thead><tr>",
+        "<th>Dataset</th>",
+        "<th>Lider</th>",
+        "<th>Dataset score</th>",
+        "<th>Leader forecast</th>",
+        "<th>Leader agot.</th>",
+        "<th>Validation health</th>",
+        "<th>Hit rate</th>",
+        "<th>Ventana top</th>",
+        "<th>Notas</th>",
+        "</tr></thead>",
+        "<tbody>",
+        rows,
+        "</tbody>",
+        "</table>"
+      ].join("");
+
+      els.datasetWrap.querySelectorAll("[data-dataset-key]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const dataset = state.datasets.find((entry) => entry.key === button.getAttribute("data-dataset-key"));
+          state.selectedDatasetKey = button.getAttribute("data-dataset-key");
+          state.selectedSlot = dataset?.leader?.slot || null;
+          renderAll();
+        });
+      });
+    }
+
+    function renderStrategy() {
+      const strategy = state.aggregate?.strategy;
+      if (!strategy) {
+        els.strategyWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Sin estrategia combinada todavia.</strong>",
+          "Cuando se carguen varios datasets, el dashboard sugerira una mezcla operativa con pesos y ventana horaria.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const legCards = strategy.legs.map((leg) => [
+        '<article class="mix-card">',
+        '<div class="mix-card-head">',
+        "<div>",
+        '<span class="mix-role">' + escapeHtml(leg.role) + "</span>",
+        '<div class="mix-weight">' + leg.weight + "%</div>",
+        "</div>",
+        '<span class="mix-slot-pill">' + escapeHtml(leg.executionSlot) + "</span>",
+        "</div>",
+        '<div class="mix-identity">',
+        "<strong>" + escapeHtml(leg.meta.strategyName) + "</strong>",
+        "<span>" + escapeHtml(leg.meta.label) + "</span>",
+        "</div>",
+        '<div class="mix-metrics">',
+        '<div class="mix-metric"><span>Dataset score</span><strong>' + fmtNumber(leg.datasetScore, 1) + "</strong></div>",
+        '<div class="mix-metric"><span>Leader forecast</span><strong>' + fmtNumber(leg.leader.forecastScore, 1) + "</strong></div>",
+        '<div class="mix-metric"><span>Agotamiento</span><strong>' + fmtNumber(leg.leader.exhaustionScore, 1) + "</strong></div>",
+        '<div class="mix-metric"><span>Ventana top</span><strong>' + escapeHtml(leg.focusWindow) + "</strong></div>",
+        "</div>",
+        "</article>"
+      ].join("")).join("");
+
+      const flagSignals = strategy.concentrationFlags.length
+        ? strategy.concentrationFlags.map((flag) => '<span class="signal-chip warn">' + escapeHtml(flag) + "</span>").join("")
+        : '<span class="signal-chip good">mix diversificado</span>';
+
+      els.strategyWrap.innerHTML = [
+        '<div class="detail-banner">',
+        '<div class="detail-banner-top">',
+        "<div>",
+        '<div class="eyebrow">Mix sugerido</div>',
+        "<h3>" + escapeHtml(strategy.weightText) + "</h3>",
+        "<p>Ventana operativa " + escapeHtml(strategy.executionWindow) + " · confianza " + fmtNumber(strategy.confidence, 1) + " · diversificacion " + fmtNumber(strategy.diversificationScore, 1) + ".</p>",
+        "</div>",
+        '<div class="signal-row">' + flagSignals + "</div>",
+        "</div>",
+        "</div>",
+        '<div class="mix-grid">' + legCards + "</div>",
+        '<div class="spark-shell">',
+        '<div class="spark-head"><strong>Lectura operativa</strong><span class="mono">core / satellite / diversifier</span></div>',
+        '<p class="subtle">' + escapeHtml(strategy.summaryText) + "</p>",
+        "</div>"
+      ].join("");
+    }
+
+    function renderRanking() {
+      const dataset = selectedDataset();
+      if (!dataset) {
+        els.selectedDatasetMeta.textContent = "Selecciona un dataset para abrir su ranking intradia.";
+        els.rankingWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Esperando un dataset para calcular el ranking.</strong>",
+          "Selecciona un dataset del mapa superior o carga uno o varios CSV para empezar el analisis intradia.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      els.selectedDatasetMeta.textContent =
+        dataset.meta.strategyName + " · " + dataset.meta.label + " · leader " + dataset.leader.slot + " · ds " + fmtNumber(dataset.datasetScore, 1);
+
+      const rows = dataset.analysis.ranking.map((entry) => {
+        const selectedClass = state.selectedSlot === entry.slot ? "is-selected" : "";
+        const notes = entry.signals.map((signal) => signal.text).join(" · ");
+        return [
+          '<tr class="' + selectedClass + '">',
+          '<td><button class="slot-button" type="button" data-slot="' + escapeHtml(entry.slot) + '"><span class="slot-dot"></span>' + escapeHtml(entry.slot) + '</button></td>',
+          '<td class="mono">' + fmtNumber(entry.forecastScore, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(entry.longScore, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(entry.mediumScore, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(entry.shortScore, 1) + "</td>",
+          '<td><span class="badge ' + entry.label + '">' + entry.label + "</span></td>",
+          '<td class="mono">' + fmtNumber(entry.exhaustionScore, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(entry.metrics.avg10, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(entry.metrics.avg21, 1) + "</td>",
+          '<td class="mono">' + fmtNumber(entry.metrics.avg63, 1) + "</td>",
+          '<td class="mono">' + entry.rankShift + "</td>",
+          "<td>" + escapeHtml(notes || "-") + "</td>",
+          "</tr>"
+        ].join("");
+      }).join("");
+
+      els.rankingWrap.innerHTML = [
+        "<table>",
+        "<thead><tr>",
+        "<th>Slot</th>",
+        "<th>Forecast</th>",
+        "<th>Largo</th>",
+        "<th>Medio</th>",
+        "<th>Corto</th>",
+        "<th>Etiqueta</th>",
+        "<th>Agot.</th>",
+        "<th>Avg 10d</th>",
+        "<th>Avg 21d</th>",
+        "<th>Avg 63d</th>",
+        "<th>Shift</th>",
+        "<th>Notas</th>",
+        "</tr></thead>",
+        "<tbody>",
+        rows,
+        "</tbody>",
+        "</table>"
+      ].join("");
+
+      els.rankingWrap.querySelectorAll("[data-slot]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedSlot = button.getAttribute("data-slot");
+          renderRanking();
+          renderDetail();
+        });
+      });
+    }
+
+    function renderDetail() {
+      const dataset = selectedDataset();
+      if (!dataset) {
+        els.detailWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>No hay horario seleccionado.</strong>",
+          "Selecciona un dataset y luego un horario para abrir su detalle estructural y reciente.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const selected = dataset.analysis.ranking.find((entry) => entry.slot === state.selectedSlot) || dataset.analysis.ranking[0];
+      if (!selected) return;
+      state.selectedSlot = selected.slot;
+
+      const windowCards = WINDOW_SET.map((windowSize) => {
+        const windowMetrics = selected.metrics.windows[windowSize];
+        return [
+          '<div class="window-card">',
+          "<strong>" + windowSize + "d</strong>",
+          '<span class="number mono">' + fmtNumber(windowMetrics.avg, 1) + "</span>",
+          '<small>win rate: ' + fmtPercent(windowMetrics.winRate, 1) + "</small>",
+          '<small>std dev: ' + fmtNumber(windowMetrics.stdDev, 1) + "</small>",
+          '<small>profit factor: ' + fmtNumber(windowMetrics.profitFactor, 2) + "</small>",
+          '<small>max drawdown: ' + fmtNumber(windowMetrics.maxDrawdown, 1) + "</small>",
+          "</div>"
+        ].join("");
+      }).join("");
+
+      const explanation = [
+        "Dataset " + dataset.meta.strategyName,
+        "forecast " + fmtNumber(selected.forecastScore, 1),
+        "agotamiento " + fmtNumber(selected.exhaustionScore, 1),
+        "ratio 10d/63d " + fmtNumber(selected.ratio10to63, 2),
+        "rank 63d #" + selected.rank63 + " -> rank 21d #" + selected.rank21
+      ].join(" · ");
+
+      els.detailWrap.innerHTML = [
+        '<div class="detail-banner">',
+        '<div class="detail-banner-top">',
+        "<div>",
+        '<div class="eyebrow">Slot seleccionado</div>',
+        "<h3>" + selected.slot + "</h3>",
+        "<p>" + explanation + ".</p>",
+        "</div>",
+        '<div class="signal-row">',
+        '<span class="badge ' + selected.label + '">' + selected.label + "</span>",
+        ...selected.signals.map((signal) => '<span class="signal-chip ' + signal.tone + '">' + escapeHtml(signal.text) + "</span>"),
+        "</div>",
+        "</div>",
+        "</div>",
+        '<div class="window-grid">',
+        windowCards,
+        "</div>",
+        '<div class="spark-shell">',
+        '<div class="spark-head"><strong>Ultimas 24 observaciones</strong><span class="mono">ultimo dato: ' + escapeHtml(selected.metrics.latestDate || "-") + "</span></div>",
+        sparklineSvg(selected.metrics.recentSeries),
+        '<div class="legend-row">',
+        '<span class="positive">P/L positivo</span>',
+        '<span class="negative">P/L negativo</span>',
+        '<span class="mean">media reciente</span>',
+        "</div>",
+        "</div>"
+      ].join("");
+    }
+
+    function renderExhaustion() {
+      const dataset = selectedDataset();
+      if (!dataset) {
+        els.exhaustionWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Sin tabla de agotamiento todavia.</strong>",
+          "Selecciona un dataset para abrir el ranking de deterioro entre sus horarios.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const rows = dataset.analysis.ranking
+        .slice()
+        .sort((a, b) => b.exhaustionScore - a.exhaustionScore)
+        .map((entry) => {
+          const notes = entry.signals.map((signal) => signal.text).join(" · ");
+          return [
+            "<tr>",
+            '<td class="mono">' + escapeHtml(entry.slot) + "</td>",
+            '<td class="mono">' + fmtNumber(entry.exhaustionScore, 1) + "</td>",
+            '<td class="mono">' + entry.rank63 + " -> " + entry.rank21 + "</td>",
+            '<td class="mono">' + fmtNumber(entry.ratio10to63, 2) + "</td>",
+            '<td class="mono">' + fmtNumber(selectedDelta(entry.metrics.avg10, entry.metrics.avgPrev10), 1) + "</td>",
+            '<td class="mono">' + fmtPercent(entry.metrics.win21, 1) + " -> " + fmtPercent(entry.metrics.win10, 1) + "</td>",
+            "<td>" + escapeHtml(notes || "-") + "</td>",
+            "</tr>"
+          ].join("");
+        }).join("");
+
+      els.exhaustionWrap.innerHTML = [
+        "<table>",
+        "<thead><tr>",
+        "<th>Slot</th>",
+        "<th>Agotamiento</th>",
+        "<th>Rango 63d -> 21d</th>",
+        "<th>Ratio 10d/63d</th>",
+        "<th>Delta bloque 10d</th>",
+        "<th>Win 21d -> 10d</th>",
+        "<th>Notas</th>",
+        "</tr></thead>",
+        "<tbody>",
+        rows,
+        "</tbody>",
+        "</table>"
+      ].join("");
+    }
+
+    function selectedDelta(current, previous) {
+      if (!previous && previous !== 0) return 0;
+      return current - previous;
+    }
+
+    function renderValidation() {
+      const dataset = selectedDataset();
+      const summary = dataset?.analysis?.validation?.summary;
+      const recent = dataset?.analysis?.validation?.recent || [];
+
+      if (!summary) {
+        els.validationWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Historia insuficiente para validar.</strong>",
+          "Hace falta mas historial en el dataset seleccionado para ejecutar el walk-forward con una ventana minima razonable.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const summaryCards = [
+        metricCard("Tests", fmtInt(summary.tests), "predicciones evaluadas"),
+        metricCard("P/L medio", fmtNumber(summary.avgRealizedPl, 1), "slot top pronosticado"),
+        metricCard("Hit rate", fmtNumber(summary.positiveRate, 1) + "%", "P/L > 0"),
+        metricCard("Beat average", fmtNumber(summary.beatAverageRate, 1) + "%", "mejor que la media diaria"),
+        metricCard("Top 3 coverage", fmtNumber(summary.top3Coverage, 1) + "%", "mejor slot dentro del top 3"),
+        metricCard("Rank medio", fmtNumber(summary.avgRank, 1), "posicion real del slot pronosticado")
+      ].join("");
+
+      const rows = recent.map((item) => [
+        "<tr>",
+        '<td class="mono">' + item.date + "</td>",
+        '<td class="mono">' + item.chosenSlot + "</td>",
+        '<td class="mono">' + fmtNumber(item.forecastScore, 1) + "</td>",
+        '<td class="mono">' + fmtNumber(item.realizedPl, 1) + "</td>",
+        '<td class="mono">' + item.realizedRank + "/" + item.slotsAvailable + "</td>",
+        "<td>" + (item.positive ? '<span class="signal-chip good">positivo</span>' : '<span class="signal-chip bad">negativo</span>') + "</td>",
+        "<td>" + (item.beatAverage ? '<span class="signal-chip good">beat avg</span>' : '<span class="signal-chip warn">under avg</span>') + "</td>",
+        "<td>" + (item.bestInTop3 ? '<span class="signal-chip good">si</span>' : '<span class="signal-chip warn">no</span>') + "</td>",
+        "</tr>"
+      ].join("")).join("");
+
+      els.validationWrap.innerHTML = [
+        '<div class="window-grid" style="padding: 18px 24px 0;">',
+        summaryCards,
+        "</div>",
+        "<table style=\"margin-top: 18px;\">",
+        "<thead><tr>",
+        "<th>Fecha</th>",
+        "<th>Slot elegido</th>",
+        "<th>Forecast</th>",
+        "<th>P/L real</th>",
+        "<th>Rank real</th>",
+        "<th>Positivo</th>",
+        "<th>Beat avg</th>",
+        "<th>Best in top3</th>",
+        "</tr></thead>",
+        "<tbody>",
+        rows,
+        "</tbody>",
+        "</table>"
+      ].join("");
+    }
+
+    function metricCard(title, value, subtitle) {
+      return [
+        '<div class="window-card">',
+        "<strong>" + escapeHtml(title) + "</strong>",
+        '<span class="number">' + escapeHtml(value) + "</span>",
+        "<small>" + escapeHtml(subtitle) + "</small>",
+        "</div>"
+      ].join("");
+    }
+
+    function renderAll() {
+      renderSummary();
+      renderScreener();
+      renderDatasetMap();
+      renderStrategy();
+      renderRanking();
+      renderDetail();
+      renderExhaustion();
+      renderValidation();
+    }
+
+    function exportCsv(filename, rows) {
+      const header = Object.keys(rows[0] || {});
+      const csv = [
+        header.join(","),
+        ...rows.map((row) => header.map((key) => {
+          const value = row[key] ?? "";
+          const text = String(value);
+          if (/[",\n]/.test(text)) return '"' + text.replace(/"/g, '""') + '"';
+          return text;
+        }).join(","))
+      ].join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function datasetExportRows() {
+      return state.datasets.map((dataset) => {
+        const validationSummary = dataset.analysis.validation.summary;
+        return {
+          dataset: dataset.fileName,
+          strategy_name: dataset.meta.strategyName,
+          risk: dataset.meta.riskLabel,
+          structure: dataset.meta.structureLabel,
+          symbol: dataset.meta.symbol,
+          dataset_score: dataset.datasetScore,
+          leader_slot: dataset.leader.slot,
+          leader_label: dataset.leader.label,
+          leader_forecast: dataset.leader.forecastScore,
+          leader_exhaustion: dataset.leader.exhaustionScore,
+          top3_window: dataset.focusWindow,
+          validation_health: round(dataset.validationHealth, 4),
+          hit_rate: validationSummary ? round(validationSummary.positiveRate / 100, 4) : "",
+          beat_average_rate: validationSummary ? round(validationSummary.beatAverageRate / 100, 4) : "",
+          top3_coverage: validationSummary ? round(validationSummary.top3Coverage / 100, 4) : "",
+          notes: dataset.signals.map((signal) => signal.text).join(" | ")
+        };
+      });
+    }
+
+    function rankingExportRows() {
+      const dataset = selectedDataset();
+      return (dataset?.analysis?.ranking || []).map((entry) => ({
+        dataset: dataset.fileName,
+        strategy_name: dataset.meta.strategyName,
+        risk: dataset.meta.riskLabel,
+        structure: dataset.meta.structureLabel,
+        symbol: dataset.meta.symbol,
+        slot: entry.slot,
+        forecast_score: entry.forecastScore,
+        label: entry.label,
+        exhaustion_score: entry.exhaustionScore,
+        avg_10d: round(entry.metrics.avg10, 2),
+        avg_21d: round(entry.metrics.avg21, 2),
+        avg_63d: round(entry.metrics.avg63, 2),
+        avg_126d: round(entry.metrics.avg126, 2),
+        avg_252d: round(entry.metrics.avg252, 2),
+        win_10d: round(entry.metrics.win10, 4),
+        win_21d: round(entry.metrics.win21, 4),
+        win_63d: round(entry.metrics.win63, 4),
+        quarterly_consistency: round(entry.metrics.qc, 4),
+        rank_63d: entry.rank63,
+        rank_21d: entry.rank21,
+        rank_shift: entry.rankShift,
+        notes: entry.signals.map((signal) => signal.text).join(" | ")
+      }));
+    }
+
+    function exhaustionExportRows() {
+      const dataset = selectedDataset();
+      return (dataset?.analysis?.ranking || [])
+        .slice()
+        .sort((a, b) => b.exhaustionScore - a.exhaustionScore)
+        .map((entry) => ({
+          dataset: dataset.fileName,
+          strategy_name: dataset.meta.strategyName,
+          risk: dataset.meta.riskLabel,
+          structure: dataset.meta.structureLabel,
+          symbol: dataset.meta.symbol,
+          slot: entry.slot,
+          exhaustion_score: entry.exhaustionScore,
+          rank_63d: entry.rank63,
+          rank_21d: entry.rank21,
+          ratio_10d_63d: entry.ratio10to63,
+          block_delta_10d: round(selectedDelta(entry.metrics.avg10, entry.metrics.avgPrev10), 2),
+          win_21d: round(entry.metrics.win21, 4),
+          win_10d: round(entry.metrics.win10, 4),
+          notes: entry.signals.map((signal) => signal.text).join(" | ")
+        }));
+    }
+
+    async function loadFiles(fileList) {
+      try {
+        const files = Array.from(fileList || [])
+          .filter((file) => /\.csv$/i.test(file.name))
+          .sort((a, b) => (a.webkitRelativePath || a.name).localeCompare(b.webkitRelativePath || b.name));
+
+        if (!files.length) {
+          throw new Error("Selecciona al menos un archivo CSV valido.");
+        }
+
+        els.fileMeta.textContent = files.length + " archivos en cola · iniciando lectura";
+        updateStatus("Leyendo archivos", "warn");
+
+        const datasets = [];
+        let totalRows = 0;
+        let totalDuplicates = 0;
+        let totalSkipped = 0;
+        let discardedFiles = 0;
+
+        for (let index = 0; index < files.length; index += 1) {
+          const file = files[index];
+          const step = index + 1;
+          els.fileMeta.textContent =
+            "Analizando " + step + "/" + files.length + " · " + file.name;
+          updateStatus("Procesando archivo " + step + " de " + files.length, "warn");
+          await new Promise((resolve) => setTimeout(resolve, 0));
+
+          try {
+            const text = await file.text();
+            const rows = parseCsv(text);
+            const normalized = normalizeRows(rows);
+            if (!normalized.records.length) {
+              discardedFiles += 1;
+              els.fileMeta.textContent =
+                "Procesados " + step + "/" + files.length + " · " +
+                datasets.length + " validos · " + discardedFiles + " descartados";
+              continue;
+            }
+
+            const meta = parseDatasetMeta(file.webkitRelativePath || file.name, rows);
+            datasets.push({
+              key: (file.webkitRelativePath || file.name).toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+              fileName: file.name,
+              relativePath: file.webkitRelativePath || file.name,
+              meta,
+              records: normalized.records,
+              normalization: normalized,
+              analysis: analyze(normalized.records)
+            });
+
+            totalRows += normalized.records.length;
+            totalDuplicates += normalized.duplicates;
+            totalSkipped += normalized.skipped;
+            els.fileMeta.textContent =
+              "Procesados " + step + "/" + files.length + " · " +
+              datasets.length + " validos · " + fmtInt(totalRows) + " filas utiles";
+          } catch (error) {
+            console.error("Error processing file", file.name, error);
+            discardedFiles += 1;
+            els.fileMeta.textContent =
+              "Procesados " + step + "/" + files.length + " · " +
+              datasets.length + " validos · " + discardedFiles + " descartados";
+          }
+        }
+
+        if (!datasets.length) {
+          throw new Error("No se pudo procesar ningun CSV valido con Date, Hora y P/L.");
+        }
+
+        state.aggregate = buildAggregate(datasets);
+        state.datasets = state.aggregate.ranking;
+        state.selectedDatasetKey = state.aggregate.best?.key || state.datasets[0]?.key || null;
+        state.selectedSlot = selectedDataset()?.leader?.slot || selectedDataset()?.analysis?.ranking?.[0]?.slot || null;
+        initializeScreenerDefaults();
+        computeScreenerResults();
+
+        els.fileMeta.textContent =
+          files.length + " archivos seleccionados · " +
+          state.datasets.length + " validos · " +
+          fmtInt(totalRows) + " filas utiles · " +
+          fmtInt(totalDuplicates) + " duplicados normalizados · " +
+          fmtInt(totalSkipped) + " filas omitidas" +
+          (discardedFiles ? " · " + discardedFiles + " archivos descartados" : "");
+
+        updateStatus("Analisis completado de " + state.datasets.length + " datasets", "ok");
+        renderAll();
+      } catch (error) {
+        console.error(error);
+        state.datasets = [];
+        state.aggregate = null;
+        state.selectedDatasetKey = null;
+        state.selectedSlot = null;
+        initializeScreenerDefaults();
+        els.fileMeta.textContent = "Sin archivos cargados";
+        renderAll();
+        updateStatus(error.message || "No se pudieron procesar los archivos.", "err");
+      }
+    }
+
+    function updateStatus(text, tone) {
+      els.loadStatus.textContent = text;
+      els.loadStatus.className = "status-pill " + tone;
+    }
+
+    function handleFiles(fileList) {
+      if (!fileList || !fileList.length) return;
+      const csvFiles = Array.from(fileList).filter((file) => /\.csv$/i.test(file.name));
+      if (!csvFiles.length) {
+        els.fileMeta.textContent = "No se detectaron CSV validos en la seleccion actual";
+        updateStatus("Seleccion no valida", "err");
+        return;
+      }
+      els.fileMeta.textContent = csvFiles.length + " archivos detectados · preparando lectura";
+      updateStatus("Archivos detectados", "neutral");
+      loadFiles(fileList);
+    }
+
+    els.dropzone.addEventListener("click", () => {
+      els.csvInput.click();
+    });
+
+    els.dropzone.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        els.csvInput.click();
+      }
+    });
+
+    els.folderTrigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      els.folderInput.click();
+    });
+
+    [
+      ["1m", els.preset1mBtn],
+      ["2m", els.preset2mBtn],
+      ["3m", els.preset3mBtn],
+      ["6m", els.preset6mBtn],
+      ["all", els.presetAllBtn]
+    ].forEach(([presetKey, button]) => {
+      button.addEventListener("click", () => {
+        applyRangePreset(presetKey);
+      });
+    });
+
+    els.csvInput.addEventListener("change", (event) => {
+      handleFiles(event.target.files);
+      event.target.value = "";
+    });
+
+    els.folderInput.addEventListener("change", (event) => {
+      handleFiles(event.target.files);
+      event.target.value = "";
+    });
+
+    ["dragenter", "dragover"].forEach((eventName) => {
+      els.dropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        els.dropzone.classList.add("is-dragging");
+      });
+    });
+
+    ["dragleave", "drop"].forEach((eventName) => {
+      els.dropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        if (eventName === "drop") {
+          handleFiles(event.dataTransfer.files);
+        }
+        els.dropzone.classList.remove("is-dragging");
+      });
+    });
+
+    els.downloadDatasetsBtn.addEventListener("click", () => {
+      const rows = datasetExportRows();
+      if (!rows.length) return;
+      exportCsv("dataset_universe_ranking.csv", rows);
+    });
+
+    els.downloadRankingBtn.addEventListener("click", () => {
+      const rows = rankingExportRows();
+      if (!rows.length) return;
+      exportCsv("ranking_dataset_seleccionado.csv", rows);
+    });
+
+    els.downloadExhaustionBtn.addEventListener("click", () => {
+      const rows = exhaustionExportRows();
+      if (!rows.length) return;
+      exportCsv("agotamiento_dataset_seleccionado.csv", rows);
+    });
+
+    els.calculateTopStrategiesBtn.addEventListener("click", () => {
+      computeScreenerResults();
+      renderScreener();
+    });
+
+    [
+      els.screenerStartDate,
+      els.screenerEndDate,
+      els.screenerStartTime,
+      els.screenerEndTime,
+      els.metricProfitability,
+      els.metricWinRate,
+      els.metricLowDrawdown
+    ].forEach((control) => {
+      control.addEventListener("change", () => {
+        computeScreenerResults();
+        renderScreener();
+      });
+    });
+
+    initializeScreenerDefaults();
+    renderAll();
+  </script>
+</body>
+</html>
