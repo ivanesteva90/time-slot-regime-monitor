@@ -27,6 +27,10 @@ Abre el archivo en el navegador y sube uno o varios CSV, o la carpeta `data` com
 * estrategia combinada sugerida
 * validacion walk-forward
 
+## Nueva guia para Codex
+
+Consulta `AGENTS.md` para instrucciones del motor de investigacion de SPX IC y reglas de sizing/regimen. Los CSV pueden venir de `data/` o de subcarpetas como `BTM/rut`, `BTM/spx`, `BTM/xsp`; el pipeline debe ingerir lo que el usuario suba.
+
 ## Referencia inicial
 
 En el dataset original `agresivo_iron_condor_spx`, la primera lectura apuntaba a:

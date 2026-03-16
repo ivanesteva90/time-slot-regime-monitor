@@ -6,23 +6,26 @@
   <title>Dashboard SPX Iron Condor</title>
   <style>
     :root {
-      --bg: #f3ede2;
-      --bg-deep: #14202b;
-      --panel: rgba(255, 250, 242, 0.88);
-      --panel-strong: rgba(255, 255, 255, 0.96);
+      --bg: #eef2f3;
+      --bg-deep: #0f172a;
+      --panel: rgba(255, 255, 255, 0.9);
+      --panel-strong: rgba(255, 255, 255, 0.98);
       --line: rgba(20, 32, 43, 0.12);
-      --ink: #112130;
-      --muted: #51606f;
+      --ink: #0e1a2b;
+      --muted: #556578;
       --teal: #0f766e;
-      --lime: #7aa43a;
-      --amber: #c7772d;
-      --coral: #b84f40;
-      --navy: #1f3242;
-      --shadow: 0 28px 60px rgba(20, 32, 43, 0.12);
+      --lime: #8bb452;
+      --amber: #d28a3e;
+      --coral: #c9574b;
+      --navy: #162437;
+      --shadow: 0 26px 52px rgba(17, 33, 48, 0.12);
+      --amber-strong: #f6b17a;
+      --amber-ink: #8a5a28;
+      --card-shadow: 0 14px 30px rgba(17, 33, 48, 0.12), 0 3px 10px rgba(17, 33, 48, 0.06);
       --radius: 24px;
       --mono: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
-      --sans: "Avenir Next", "Helvetica Neue", "Segoe UI", sans-serif;
-      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --sans: "Inter", "Manrope", "Avenir Next", "Helvetica Neue", sans-serif;
+      --serif: "Source Serif Pro", "Iowan Old Style", Georgia, serif;
     }
 
     * {
@@ -39,9 +42,10 @@
       font-family: var(--sans);
       color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(122, 164, 58, 0.18), transparent 34%),
-        radial-gradient(circle at top right, rgba(15, 118, 110, 0.16), transparent 30%),
-        linear-gradient(180deg, #f5efe5 0%, #efe7d8 52%, #eadfce 100%);
+        radial-gradient(circle at 20% 20%, rgba(124, 167, 82, 0.16), transparent 36%),
+        radial-gradient(circle at 78% 10%, rgba(15, 118, 110, 0.14), transparent 28%),
+        radial-gradient(circle at 40% 80%, rgba(64, 99, 168, 0.12), transparent 38%),
+        linear-gradient(180deg, #f7f8f9 0%, #eef1f3 50%, #e8ebef 100%);
       position: relative;
       overflow-x: hidden;
     }
@@ -59,9 +63,9 @@
     }
 
     main {
-      width: min(1380px, calc(100% - 32px));
+      width: min(1900px, calc(100% - 16px));
       margin: 0 auto;
-      padding: 28px 0 48px;
+      padding: 24px 0 44px;
     }
 
     .panel {
@@ -83,18 +87,60 @@
       pointer-events: none;
     }
 
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
-      gap: 18px;
-      align-items: stretch;
+    #detail {
+      margin-top: 22px;
+      margin-bottom: 18px;
     }
 
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .nav-pills {
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      display: inline-flex;
+      gap: 10px;
+      padding: 12px 14px;
+      margin: 0 0 14px;
+      background: rgba(255, 255, 255, 0.82);
+      border-radius: 18px;
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      box-shadow: 0 10px 24px rgba(17, 33, 48, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(17, 33, 48, 0.1);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--navy);
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(17, 33, 48, 0.12);
+      color: var(--teal);
+    }
+
+
     .hero-copy {
-      padding: 28px 30px 30px;
+      padding: 20px 22px 22px;
       background:
-        linear-gradient(135deg, rgba(20, 32, 43, 0.96), rgba(17, 33, 48, 0.86)),
-        linear-gradient(135deg, rgba(122, 164, 58, 0.18), transparent);
+        linear-gradient(135deg, rgba(20, 32, 43, 0.9), rgba(17, 33, 48, 0.82)),
+        radial-gradient(circle at 20% 20%, rgba(122, 164, 58, 0.14), transparent 46%);
       color: #f9f5ee;
     }
 
@@ -112,11 +158,11 @@
     }
 
     .hero-copy h1 {
-      margin: 18px 0 14px;
+      margin: 10px 0 10px;
       font-family: var(--serif);
       font-weight: 700;
-      font-size: clamp(2.4rem, 5vw, 4.8rem);
-      line-height: 0.94;
+      font-size: clamp(2.2rem, 4vw, 3.6rem);
+      line-height: 1;
       letter-spacing: -0.04em;
     }
 
@@ -124,8 +170,8 @@
       max-width: 720px;
       margin: 0;
       color: rgba(249, 245, 238, 0.84);
-      font-size: 1rem;
-      line-height: 1.65;
+      font-size: 0.98rem;
+      line-height: 1.55;
     }
 
     .hero-tags {
@@ -144,7 +190,7 @@
     }
 
     .uploader {
-      padding: 24px;
+      padding: 14px;
       background: var(--panel-strong);
       display: flex;
       align-items: center;
@@ -172,13 +218,15 @@
     .dropzone {
       display: grid;
       place-items: center;
-      min-height: 310px;
-      padding: 34px 28px;
-      border-radius: 34px;
-      border: 2px dashed rgba(31, 50, 66, 0.18);
+      min-height: 160px;
+      padding: 18px 16px;
+      max-width: 480px;
+      margin: 0 auto;
+      border-radius: 24px;
+      border: 1px dashed rgba(31, 50, 66, 0.18);
       background:
-        radial-gradient(circle at top, rgba(207, 218, 221, 0.42), transparent 45%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(244, 238, 229, 0.92));
+        radial-gradient(circle at top, rgba(207, 218, 221, 0.28), transparent 45%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 238, 229, 0.94));
       text-align: center;
       cursor: pointer;
       transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
@@ -195,9 +243,9 @@
     }
 
     .dropzone-copy {
-      max-width: 660px;
+      max-width: 520px;
       display: grid;
-      gap: 12px;
+      gap: 8px;
     }
 
     .dropzone-copy p {
@@ -211,15 +259,15 @@
       display: block;
       margin: 0;
       color: var(--navy);
-      font-size: clamp(1.8rem, 2.7vw, 2.45rem);
-      line-height: 1.08;
-      letter-spacing: -0.04em;
+      font-size: clamp(1.4rem, 2.1vw, 1.85rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
     }
 
     .dropzone small {
       color: var(--muted);
-      line-height: 1.55;
-      font-size: 1rem;
+      line-height: 1.4;
+      font-size: 0.92rem;
     }
 
     .dropzone-folder-link {
@@ -325,6 +373,52 @@
       border-color: rgba(184, 79, 64, 0.24);
     }
 
+    .uploader-actions .btn {
+      min-width: 180px;
+    }
+
+    .status-steps {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .status-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(17, 33, 48, 0.04);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .status-step .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(17, 33, 48, 0.25);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      flex: 0 0 auto;
+    }
+
+    .status-step.active {
+      border-color: rgba(15, 118, 110, 0.35);
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(17, 33, 48, 0.04));
+    }
+
+    .status-step.active .dot {
+      background: linear-gradient(135deg, #173142, #0f766e);
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.18);
+    }
+
+    .status-step.done .dot {
+      background: linear-gradient(135deg, #7aa43a, #4b6c1b);
+      box-shadow: 0 0 0 3px rgba(122, 164, 58, 0.2);
+    }
+
     .info-strip {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -401,45 +495,49 @@
       margin-top: 14px;
     }
 
-    .signal-chip,
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      border: 1px solid transparent;
-      white-space: nowrap;
-    }
+  .signal-chip,
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.18);
+    color: #0e1a2b;
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  }
 
-    .signal-chip.neutral {
-      background: rgba(31, 50, 66, 0.07);
-      color: var(--navy);
-      border-color: rgba(31, 50, 66, 0.12);
-    }
+  .signal-chip.neutral {
+    background: rgba(255, 255, 255, 0.88);
+    color: var(--navy);
+    border-color: rgba(17, 33, 48, 0.18);
+  }
 
-    .signal-chip.good,
-    .badge.KEEP {
-      background: rgba(122, 164, 58, 0.14);
-      color: #4b6c1b;
-      border-color: rgba(122, 164, 58, 0.24);
-    }
+  .signal-chip.good,
+  .badge.KEEP {
+    background: rgba(255, 255, 255, 0.92);
+    color: #2f6b2b;
+    border-color: rgba(122, 164, 58, 0.42);
+  }
 
-    .signal-chip.warn,
-    .badge.WATCH {
-      background: rgba(199, 119, 45, 0.15);
-      color: #8c551a;
-      border-color: rgba(199, 119, 45, 0.25);
-    }
+  .signal-chip.warn,
+  .badge.WATCH {
+    background: rgba(246, 177, 122, 0.38);
+    color: var(--amber-ink);
+    border-color: rgba(246, 177, 122, 0.62);
+  }
 
-    .signal-chip.bad,
-    .badge.ROTATE {
-      background: rgba(184, 79, 64, 0.15);
-      color: #943c30;
-      border-color: rgba(184, 79, 64, 0.24);
-    }
+  .signal-chip.bad,
+  .badge.ROTATE {
+    background: rgba(255, 255, 255, 0.92);
+    color: #943c30;
+    border-color: rgba(184, 79, 64, 0.52);
+  }
 
     .content-grid,
     .lower-grid {
@@ -449,7 +547,7 @@
     }
 
     .content-grid {
-      grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.95fr);
+      grid-template-columns: minmax(0, 1.2fr) minmax(420px, 1.1fr);
     }
 
     .lower-grid {
@@ -516,10 +614,258 @@
       overflow: auto;
     }
 
+    .table-filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      padding: 8px 24px 6px;
+    }
+
+    .table-filter {
+      display: grid;
+      gap: 6px;
+    }
+
+    .table-filter span {
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .table-filter input,
+    .table-filter select {
+      width: 100%;
+      min-height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(17, 33, 48, 0.12);
+      padding: 0 10px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      font: inherit;
+    }
+
+    .filter-meta {
+      padding: 0 24px 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .research-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .research-summary-shell {
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .research-summary-shell::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, rgba(15, 118, 110, 0.95), rgba(122, 164, 58, 0.9));
+      border-radius: 3px;
+    }
+
+    .research-overview {
+      display: grid;
+      gap: 12px;
+    }
+
+    .research-filter-line {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      background: rgba(255, 255, 255, 0.76);
+    }
+
+    .research-filter-line strong {
+      color: var(--ink);
+    }
+
+    .research-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      padding: 0;
+    }
+
+    .research-card {
+      padding: 16px 16px 14px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 250, 252, 0.86));
+      border: 1px solid rgba(17, 33, 48, 0.09);
+      box-shadow: 0 6px 16px rgba(17, 33, 48, 0.08);
+    }
+
+    .research-card strong {
+      display: block;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .research-card .value {
+      font-family: var(--serif);
+      font-size: clamp(1.65rem, 2vw, 2.2rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      overflow-wrap: anywhere;
+    }
+
+    .research-card .value.is-dataset {
+      font-size: clamp(1.2rem, 1.4vw, 1.5rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      font-family: var(--sans);
+      font-weight: 800;
+    }
+
+    .research-card .note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .research-insights {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+
+    .research-insight {
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      border-radius: 14px;
+      padding: 12px 13px;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .research-insight strong {
+      display: block;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .research-insight span {
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .weekday-money-chart {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .weekday-money-row {
+      display: grid;
+      grid-template-columns: 105px minmax(0, 1fr) 120px;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.86rem;
+    }
+
+    .weekday-money-row .day {
+      color: #33475d;
+      font-weight: 700;
+    }
+
+    .weekday-money-row .amount {
+      text-align: right;
+      font-family: var(--mono);
+      color: #2a3d52;
+    }
+
+    .weekday-money-row .track {
+      height: 11px;
+      border-radius: 999px;
+      background: rgba(17, 33, 48, 0.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .weekday-money-row .bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      border-radius: 999px;
+    }
+
+    .weekday-money-row .bar.positive {
+      background: linear-gradient(90deg, #6a9e3a, #4c7726);
+    }
+
+    .weekday-money-row .bar.negative {
+      background: linear-gradient(90deg, #c16850, #9e4735);
+    }
+
+    .pill-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: rgba(17, 33, 48, 0.06);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .research-table {
+      width: 100%;
+      min-width: 1080px;
+      border-collapse: collapse;
+    }
+
+    .research-table tbody tr:nth-child(2n) {
+      background: rgba(15, 118, 110, 0.035);
+    }
+
+    .research-table td:nth-child(1),
+    .research-table td:nth-child(2),
+    .research-table td:nth-child(3),
+    .research-table td:nth-child(4),
+    .research-table td:nth-child(12),
+    .research-table td:nth-child(13) {
+      max-width: 220px;
+      overflow-wrap: anywhere;
+      line-height: 1.35;
+    }
+
+    .research-table td:nth-child(4),
+    .research-table td:nth-child(13) {
+      font-size: 0.9rem;
+      color: #33475d;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 880px;
+      min-width: 780px;
       font-size: 0.94rem;
     }
 
@@ -586,11 +932,11 @@
     }
 
     .detail-banner {
-      padding: 18px;
-      border-radius: 20px;
+      padding: 14px 16px;
+      border-radius: 16px;
       background:
-        linear-gradient(135deg, rgba(20, 32, 43, 0.95), rgba(15, 118, 110, 0.82)),
-        radial-gradient(circle at top left, rgba(122, 164, 58, 0.26), transparent 46%);
+        linear-gradient(135deg, rgba(14, 38, 54, 0.9), rgba(6, 110, 100, 0.82)),
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), transparent 45%);
       color: #f8f5ef;
     }
 
@@ -603,11 +949,11 @@
     }
 
     .detail-banner h3 {
-      margin: 8px 0 0;
+      margin: 6px 0 0;
       font-family: var(--serif);
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      line-height: 0.92;
-      letter-spacing: -0.04em;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
     }
 
     .detail-banner p {
@@ -618,6 +964,29 @@
       overflow-wrap: anywhere;
     }
 
+    .slot-title {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .slot-title h3 {
+      margin: 6px 0 0;
+    }
+
+    .slot-dataset-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
     .window-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -626,27 +995,31 @@
 
     .mix-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      align-items: stretch;
+      grid-auto-rows: 1fr;
+      margin-top: 10px;
     }
 
     .mix-card {
       display: grid;
-      gap: 14px;
+      gap: 12px;
       min-width: 0;
       min-height: 100%;
-      padding: 18px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.78);
-      border: 1px solid rgba(17, 33, 48, 0.08);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(17, 33, 48, 0.06);
+      box-shadow: var(--card-shadow);
+      min-height: 100%;
     }
 
     .mix-card-head {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       min-width: 0;
     }
 
@@ -667,9 +1040,9 @@
 
     .mix-weight {
       font-family: var(--serif);
-      font-size: 1.95rem;
-      line-height: 0.95;
-      letter-spacing: -0.04em;
+      font-size: 1.5rem;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
       color: var(--navy);
     }
 
@@ -677,15 +1050,15 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 40px;
+      min-height: 32px;
       padding: 0 12px;
       border-radius: 999px;
-      background: rgba(15, 118, 110, 0.10);
-      color: var(--teal);
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.14), rgba(56, 189, 148, 0.14));
+      color: #0f766e;
       font-weight: 800;
-      font-size: 0.98rem;
+      font-size: 0.9rem;
       white-space: nowrap;
-      border: 1px solid rgba(15, 118, 110, 0.16);
+      border: 1px solid rgba(15, 118, 110, 0.24);
     }
 
     .mix-identity {
@@ -699,6 +1072,8 @@
       color: var(--ink);
       font-size: 1.06rem;
       line-height: 1.35;
+      word-break: break-word;
+      hyphens: auto;
       overflow-wrap: anywhere;
       word-break: break-word;
     }
@@ -707,6 +1082,8 @@
       display: block;
       color: var(--muted);
       line-height: 1.55;
+      word-break: break-word;
+      hyphens: auto;
       overflow-wrap: anywhere;
     }
 
@@ -789,7 +1166,7 @@
 
     .sparkline {
       width: 100%;
-      height: 140px;
+      height: 160px;
       display: block;
     }
 
@@ -989,16 +1366,28 @@
       gap: 12px;
       margin-top: 18px;
       flex-wrap: wrap;
+      align-items: flex-end;
     }
 
     .screener-actions .btn {
       min-width: min(100%, 320px);
     }
 
+    .filter-inline {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .screener-select {
+      min-width: 220px;
+    }
+
     .screener-results {
       padding: 0 24px;
       overflow: hidden;
     }
+
 
     .screener-results-head {
       display: flex;
@@ -1022,7 +1411,7 @@
 
     .rank-cards {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 18px;
       align-items: stretch;
     }
@@ -1258,7 +1647,8 @@
 
       .content-grid,
       .lower-grid,
-      .hero {
+      .hero,
+      .research-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1287,7 +1677,8 @@
       .stats-grid,
       .window-grid,
       .filter-grid,
-      .rank-cards {
+      .rank-cards,
+      .research-summary {
         grid-template-columns: 1fr;
       }
 
@@ -1313,6 +1704,10 @@
       .mix-grid {
         grid-template-columns: 1fr;
       }
+
+      .research-summary-shell {
+        padding: 12px 12px;
+      }
     }
 
     @media (max-width: 1180px) {
@@ -1330,7 +1725,7 @@
 </head>
 <body>
   <main>
-    <section class="hero">
+    <section class="hero" id="upload">
       <article class="panel hero-copy">
         <div class="eyebrow">Dashboard local · un solo HTML</div>
         <h1>Time-Slot Regime Monitor</h1>
@@ -1349,12 +1744,15 @@
 
       <aside class="panel uploader">
         <div class="uploader-minimal">
-          <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Subir uno o varios CSV">
+          <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-label="Subir archivos CSV">
             <div class="dropzone-copy">
-              <strong>Sube uno o varios CSV</strong>
-              <p>Esperado: columnas <span class="mono">Date</span>, <span class="mono">Hora</span> y <span class="mono">P/L</span>.</p>
-              <p>Para analizar todo el universo, selecciona directamente la <button id="folderTrigger" class="dropzone-folder-link" type="button">carpeta data</button>.</p>
+              <strong>Sube tus CSV</strong>
+              <p style="margin:0;">Click o arrastra archivos, o elige la <button id="folderTrigger" class="dropzone-folder-link" type="button">carpeta data</button>.</p>
             </div>
+          </div>
+          <div class="uploader-actions" style="justify-content:center; gap:12px; margin-top:10px;">
+            <button id="uploadCsvBtn" class="btn primary" type="button">Cargar CSVs</button>
+            <button id="uploadFolderBtn" class="btn ghost" type="button">Cargar carpeta data</button>
           </div>
         </div>
         <input id="csvInput" type="file" accept=".csv,text/csv" multiple>
@@ -1362,14 +1760,27 @@
         <div class="uploader-status-shell">
           <div class="uploader-status-top">
             <div id="fileMeta" class="uploader-status-meta mono">Sin archivos cargados</div>
-            <div id="loadStatus" class="status-pill neutral">Esperando archivos</div>
+            <div id="loadStatus" class="status-pill neutral" role="status" aria-live="polite">Esperando archivos</div>
           </div>
           <div class="uploader-status-note">El panel te ira mostrando seleccion, lectura, analisis y resumen final para que siempre sepas que esta pasando.</div>
+          <div id="processSteps" class="status-steps" aria-live="polite"></div>
         </div>
       </aside>
     </section>
 
-    <section class="panel info-strip">
+    <nav class="nav-pills" aria-label="Navegacion principal">
+      <a class="nav-pill" href="#upload">Carga</a>
+      <a class="nav-pill" href="#screener">Screener</a>
+      <a class="nav-pill" href="#datasets">Datasets</a>
+      <a class="nav-pill" href="#combo">Estrategia</a>
+      <a class="nav-pill" href="#ranking">Ranking</a>
+      <a class="nav-pill" href="#health">Agotamiento</a>
+      <a class="nav-pill" href="#validation">Validacion</a>
+      <a class="nav-pill" href="#metodologia">Metodologia</a>
+      <a class="nav-pill" href="#research">Research Lab</a>
+    </nav>
+
+    <section class="panel info-strip" id="resumen">
       <div class="info-chip">
         <strong>Normalizacion</strong>
         <span>Promedia duplicados del mismo dia-horario y usa el ultimo historial disponible por slot.</span>
@@ -1434,7 +1845,7 @@
       </article>
     </section>
 
-    <section class="panel screener-panel">
+    <section class="panel screener-panel" id="screener">
       <div class="panel-head">
         <div>
           <h2 class="panel-title">Top 5 estrategias</h2>
@@ -1483,6 +1894,10 @@
           <span class="choice-meta">Si marcas varios criterios, el score se mezcla por percentiles y se penaliza si la cobertura del slot es pobre.</span>
         </div>
         <div class="screener-actions">
+          <label class="filter-inline" for="screenerLabelFilter">
+            <span>Etiqueta (opc.)</span>
+            <select id="screenerLabelFilter" class="filter-control screener-select"></select>
+          </label>
           <button id="calculateTopStrategiesBtn" class="btn primary" type="button">Calcular Top 5 estrategias</button>
         </div>
       </div>
@@ -1494,8 +1909,23 @@
       </div>
     </section>
 
-    <section class="content-grid">
-      <article class="panel">
+    <section class="panel" id="detail">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Detalle del horario</h2>
+          <p class="subtle">Vista de metricas rolling, estado actual y sparkline del horario dentro del dataset seleccionado.</p>
+        </div>
+      </div>
+      <div id="detailWrap" class="metric-stack">
+        <div class="empty-state">
+          <strong>No hay horario seleccionado.</strong>
+          Selecciona una fila del ranking para abrir su estado estructural, momentum reciente y senales de agotamiento.
+        </div>
+      </div>
+    </section>
+
+    <section class="content-grid" id="datasets">
+      <article class="panel" id="strategy">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Mapa de datasets</h2>
@@ -1505,6 +1935,41 @@
             <button id="downloadDatasetsBtn" class="btn ghost" type="button">Exportar datasets</button>
           </div>
         </div>
+        <div class="table-filters">
+          <label class="table-filter" for="datasetMapLabelFilter">
+            <span>Etiqueta</span>
+            <select id="datasetMapLabelFilter">
+              <option value="">Todas</option>
+            </select>
+          </label>
+          <label class="table-filter" for="datasetMapMinForecast">
+            <span>Leader forecast min</span>
+            <input id="datasetMapMinForecast" type="number" step="0.1" min="0" max="100" placeholder="ej: 70">
+          </label>
+          <label class="table-filter" for="datasetMapMinDatasetScore">
+            <span>Dataset score min</span>
+            <input id="datasetMapMinDatasetScore" type="number" step="0.1" min="0" max="100" placeholder="ej: 60">
+          </label>
+          <label class="table-filter" for="datasetMapMaxExhaustion">
+            <span>Agotamiento max</span>
+            <input id="datasetMapMaxExhaustion" type="number" step="0.1" min="0" max="100" placeholder="ej: 35">
+          </label>
+          <label class="table-filter" for="datasetMapMinHealth">
+            <span>Validation health min %</span>
+            <input id="datasetMapMinHealth" type="number" step="0.1" min="0" max="100" placeholder="ej: 45">
+          </label>
+          <label class="table-filter" for="datasetMapSort">
+            <span>Orden</span>
+            <select id="datasetMapSort">
+              <option value="dataset_desc">Dataset score (alto)</option>
+              <option value="forecast_desc">Leader forecast (alto)</option>
+              <option value="health_desc">Validation health (alto)</option>
+              <option value="exhaustion_asc">Agotamiento (bajo)</option>
+              <option value="hit_desc">Hit rate (alto)</option>
+            </select>
+          </label>
+        </div>
+        <p id="datasetMapFilterMeta" class="filter-meta"></p>
         <div id="datasetWrap" class="table-wrap">
           <div class="empty-state">
             <strong>Esperando archivos para comparar datasets.</strong>
@@ -1513,24 +1978,7 @@
         </div>
       </article>
 
-      <article class="panel">
-        <div class="panel-head">
-          <div>
-            <h2 class="panel-title">Estrategia combinada sugerida</h2>
-            <p class="subtle">Propuesta tipo core / satellite / diversifier basada en la fuerza relativa de cada dataset.</p>
-          </div>
-        </div>
-        <div id="strategyWrap" class="metric-stack">
-          <div class="empty-state">
-            <strong>Sin estrategia combinada todavia.</strong>
-            Cuando se carguen varios datasets, el dashboard sugerira una mezcla operativa con pesos y ventana horaria.
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <section id="analysisSection" class="content-grid">
-      <article class="panel">
+      <article class="panel" id="ranking">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Ranking del dataset seleccionado</h2>
@@ -1540,6 +1988,40 @@
             <button id="downloadRankingBtn" class="btn ghost" type="button">Exportar ranking</button>
           </div>
         </div>
+        <div class="table-filters">
+          <label class="table-filter" for="rankingLabelStateFilter">
+            <span>Etiqueta slot</span>
+            <select id="rankingLabelStateFilter">
+              <option value="">Todas</option>
+              <option value="KEEP">KEEP</option>
+              <option value="WATCH">WATCH</option>
+              <option value="ROTATE">ROTATE</option>
+            </select>
+          </label>
+          <label class="table-filter" for="rankingMinForecast">
+            <span>Forecast min</span>
+            <input id="rankingMinForecast" type="number" step="0.1" min="0" max="100" placeholder="ej: 70">
+          </label>
+          <label class="table-filter" for="rankingMaxExhaustion">
+            <span>Agotamiento max</span>
+            <input id="rankingMaxExhaustion" type="number" step="0.1" min="0" max="100" placeholder="ej: 40">
+          </label>
+          <label class="table-filter" for="rankingMinRatio1063">
+            <span>Ratio 10d/63d min</span>
+            <input id="rankingMinRatio1063" type="number" step="0.01" min="0" placeholder="ej: 0.90">
+          </label>
+          <label class="table-filter" for="rankingSort">
+            <span>Orden</span>
+            <select id="rankingSort">
+              <option value="forecast_desc">Forecast (alto)</option>
+              <option value="exhaustion_asc">Agotamiento (bajo)</option>
+              <option value="ratio_desc">Ratio 10d/63d (alto)</option>
+              <option value="avg21_desc">Avg 21d (alto)</option>
+              <option value="shift_asc">Shift (mas estable)</option>
+            </select>
+          </label>
+        </div>
+        <p id="rankingFilterMeta" class="filter-meta"></p>
         <div id="rankingWrap" class="table-wrap">
           <div class="empty-state">
             <strong>Esperando archivos para calcular el ranking.</strong>
@@ -1547,24 +2029,24 @@
           </div>
         </div>
       </article>
-
-      <article class="panel">
-        <div class="panel-head">
-          <div>
-            <h2 class="panel-title">Detalle del horario</h2>
-            <p class="subtle">Vista de metricas rolling, estado actual y sparkline del horario dentro del dataset seleccionado.</p>
-          </div>
-        </div>
-        <div id="detailWrap" class="metric-stack">
-          <div class="empty-state">
-            <strong>No hay horario seleccionado.</strong>
-            Selecciona una fila del ranking para abrir su estado estructural, momentum reciente y senales de agotamiento.
-          </div>
-        </div>
-      </article>
     </section>
 
-    <section class="lower-grid">
+    <section class="panel" id="combo">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Estrategia combinada sugerida</h2>
+          <p class="subtle">Propuesta core / satellite / diversifier basada en la fuerza relativa de cada dataset cargado.</p>
+        </div>
+      </div>
+      <div id="strategyWrap" class="metric-stack">
+        <div class="empty-state">
+          <strong>Sin estrategia combinada todavia.</strong>
+          Cuando se carguen varios datasets, el dashboard sugerira una mezcla operativa con pesos y ventana horaria.
+        </div>
+      </div>
+    </section>
+
+    <section class="lower-grid" id="health">
       <article class="panel">
         <div class="panel-head">
           <div>
@@ -1583,7 +2065,7 @@
         </div>
       </article>
 
-      <article class="panel">
+      <article class="panel" id="validation">
         <div class="panel-head">
           <div>
             <h2 class="panel-title">Walk-forward del dataset</h2>
@@ -1599,7 +2081,7 @@
       </article>
     </section>
 
-    <section class="panel methodology">
+    <section class="panel methodology" id="metodologia">
       <h2 class="panel-title">Metodologia embebida</h2>
       <details open>
         <summary>1. Como se calcula el forecast score</summary>
@@ -1652,6 +2134,32 @@
         </p>
       </details>
     </section>
+
+    <section class="panel" id="research">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Research Lab (Sizing & Weekday)</h2>
+          <p class="subtle">Vista separada para probar variantes de tamano fijo, mix por weekday y escalera de equity sin mezclar con el dashboard principal.</p>
+        </div>
+        <div class="panel-actions">
+          <span class="pill-note">Se alimenta de los CSV ya cargados</span>
+        </div>
+      </div>
+      <div class="research-grid">
+        <div id="researchSummary" class="research-summary-shell">
+          <div class="empty-state">
+            <strong>Sin datos del lab.</strong>
+            Carga CSV para ver el analisis independiente de sizing y weekdays.
+          </div>
+        </div>
+        <div id="researchWrap" class="table-wrap">
+          <div class="empty-state">
+            <strong>Sube archivos para correr el lab.</strong>
+            Cuando cargues CSV en el dashboard, aqui veras las variantes de sizing: Size 1 (1 contrato), Size 2 (2 contratos), Weekday mix (Lunes/Jueves/Viernes 2c y Martes/Miercoles 1c) y Equity ladder (2c sobre 4000, 1c bajo 3300).
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -1660,6 +2168,23 @@
       aggregate: null,
       selectedDatasetKey: null,
       selectedSlot: null,
+      viewFilters: {
+        datasetMap: {
+          label: "",
+          minForecast: "",
+          minDatasetScore: "",
+          maxExhaustion: "",
+          minHealth: "",
+          sortBy: "dataset_desc"
+        },
+        ranking: {
+          label: "",
+          minForecast: "",
+          maxExhaustion: "",
+          minRatio1063: "",
+          sortBy: "forecast_desc"
+        }
+      },
       screener: {
         startDate: "",
         endDate: "",
@@ -1669,6 +2194,7 @@
         profitability: true,
         winRate: false,
         lowDrawdown: false,
+        labelFilter: "",
         results: [],
         totalCandidates: 0,
         criteriaLabels: []
@@ -1680,8 +2206,11 @@
       folderInput: document.getElementById("folderInput"),
       dropzone: document.getElementById("dropzone"),
       folderTrigger: document.getElementById("folderTrigger"),
+      uploadCsvBtn: document.getElementById("uploadCsvBtn"),
+      uploadFolderBtn: document.getElementById("uploadFolderBtn"),
       fileMeta: document.getElementById("fileMeta"),
       loadStatus: document.getElementById("loadStatus"),
+      processSteps: document.getElementById("processSteps"),
       datasetValue: document.getElementById("datasetValue"),
       datasetMeta: document.getElementById("datasetMeta"),
       datasetSignals: document.getElementById("datasetSignals"),
@@ -1695,8 +2224,21 @@
       validationMeta: document.getElementById("validationMeta"),
       validationSignals: document.getElementById("validationSignals"),
       datasetWrap: document.getElementById("datasetWrap"),
+      datasetMapLabelFilter: document.getElementById("datasetMapLabelFilter"),
+      datasetMapMinForecast: document.getElementById("datasetMapMinForecast"),
+      datasetMapMinDatasetScore: document.getElementById("datasetMapMinDatasetScore"),
+      datasetMapMaxExhaustion: document.getElementById("datasetMapMaxExhaustion"),
+      datasetMapMinHealth: document.getElementById("datasetMapMinHealth"),
+      datasetMapSort: document.getElementById("datasetMapSort"),
+      datasetMapFilterMeta: document.getElementById("datasetMapFilterMeta"),
       strategyWrap: document.getElementById("strategyWrap"),
       rankingWrap: document.getElementById("rankingWrap"),
+      rankingLabelStateFilter: document.getElementById("rankingLabelStateFilter"),
+      rankingMinForecast: document.getElementById("rankingMinForecast"),
+      rankingMaxExhaustion: document.getElementById("rankingMaxExhaustion"),
+      rankingMinRatio1063: document.getElementById("rankingMinRatio1063"),
+      rankingSort: document.getElementById("rankingSort"),
+      rankingFilterMeta: document.getElementById("rankingFilterMeta"),
       detailWrap: document.getElementById("detailWrap"),
       exhaustionWrap: document.getElementById("exhaustionWrap"),
       validationWrap: document.getElementById("validationWrap"),
@@ -1713,11 +2255,14 @@
       metricProfitability: document.getElementById("metricProfitability"),
       metricWinRate: document.getElementById("metricWinRate"),
       metricLowDrawdown: document.getElementById("metricLowDrawdown"),
+      screenerLabelFilter: document.getElementById("screenerLabelFilter"),
       calculateTopStrategiesBtn: document.getElementById("calculateTopStrategiesBtn"),
       topStrategiesWrap: document.getElementById("topStrategiesWrap"),
       downloadDatasetsBtn: document.getElementById("downloadDatasetsBtn"),
       downloadRankingBtn: document.getElementById("downloadRankingBtn"),
-      downloadExhaustionBtn: document.getElementById("downloadExhaustionBtn")
+      downloadExhaustionBtn: document.getElementById("downloadExhaustionBtn"),
+      researchWrap: document.getElementById("researchWrap"),
+      researchSummary: document.getElementById("researchSummary")
     };
 
     const WINDOW_SET = [10, 21, 63, 126, 252];
@@ -1730,6 +2275,17 @@
       agresivo: 3,
       ultra_agresivo: 4
     };
+    const WEEKDAY_FULL_ES = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
+    const EQUITY_UP = 4000;
+    const EQUITY_DOWN = 3300;
+    const PROCESS_STAGES = [
+      { key: "idle", label: "Esperando archivos" },
+      { key: "detecting", label: "Archivos detectados" },
+      { key: "reading", label: "Leyendo CSV" },
+      { key: "normalizing", label: "Normalizando y limpiando" },
+      { key: "analyzing", label: "Calculando rankings" },
+      { key: "ready", label: "Listo" }
+    ];
 
     function clamp(value, min = 0, max = 1) {
       return Math.min(max, Math.max(min, value));
@@ -1759,6 +2315,20 @@
     function winRate(values) {
       if (!values.length) return 0;
       return values.filter((value) => value > 0).length / values.length;
+    }
+
+    function longestLosingStreak(values) {
+      let streak = 0;
+      let best = 0;
+      values.forEach((value) => {
+        if (value < 0) {
+          streak += 1;
+          if (streak > best) best = streak;
+        } else {
+          streak = 0;
+        }
+      });
+      return best;
     }
 
     function profitFactor(values) {
@@ -2566,8 +3136,163 @@
       };
     }
 
+    function normalizeLabelText(value) {
+      return String(value || "")
+        .replace(/[_]+/g, " ")
+        .replace(/\s*·\s*/g, " · ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function normalizeLabelKey(value) {
+      const cleaned = normalizeLabelText(value);
+      if (!cleaned) return "";
+      return cleaned
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+    }
+
+    function uniqueLabels(values) {
+      const labelByKey = new Map();
+      values.forEach((value) => {
+        const label = normalizeLabelText(value);
+        if (!label) return;
+        const key = normalizeLabelKey(label);
+        if (!key) return;
+        if (!labelByKey.has(key)) labelByKey.set(key, label);
+      });
+      return Array.from(labelByKey.values())
+        .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+    }
+
+    function labelMatches(dataset, filterValue) {
+      if (!filterValue) return true;
+      const needleKey = normalizeLabelKey(filterValue);
+      const datasetLabelKey = normalizeLabelKey(dataset.meta.label);
+      if (datasetLabelKey && datasetLabelKey === needleKey) return true;
+
+      const fields = [
+        dataset.meta.riskLabel,
+        dataset.meta.structureLabel,
+        dataset.meta.symbol,
+        dataset.meta.strategyName,
+        dataset.fileName
+      ].map(normalizeLabelKey).filter(Boolean);
+      return fields.some((field) => field.includes(needleKey));
+    }
+
     function selectedDataset() {
       return state.datasets.find((dataset) => dataset.key === state.selectedDatasetKey) || state.datasets[0] || null;
+    }
+
+    function parseFilterNumber(value) {
+      if (value === "" || value === null || value === undefined) return null;
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function datasetReadableLabels() {
+      return uniqueLabels(state.datasets.map((dataset) => dataset.meta.label));
+    }
+
+    function syncDatasetMapFilterOptions() {
+      if (!els.datasetMapLabelFilter) return;
+      const labels = datasetReadableLabels();
+      const currentKey = normalizeLabelKey(state.viewFilters.datasetMap.label);
+      if (currentKey && !labels.some((label) => normalizeLabelKey(label) === currentKey)) {
+        state.viewFilters.datasetMap.label = "";
+      }
+      const options = ['<option value="">Todas</option>'].concat(
+        labels.map((label) => (
+          '<option value="' + escapeHtml(label) + '"' +
+          (normalizeLabelKey(label) === normalizeLabelKey(state.viewFilters.datasetMap.label) ? " selected" : "") +
+          ">" + escapeHtml(label) + "</option>"
+        ))
+      ).join("");
+      els.datasetMapLabelFilter.innerHTML = options;
+      els.datasetMapLabelFilter.value = state.viewFilters.datasetMap.label || "";
+    }
+
+    function readDatasetMapFilters() {
+      syncDatasetMapFilterOptions();
+      const mapFilters = state.viewFilters.datasetMap;
+      mapFilters.label = els.datasetMapLabelFilter?.value || "";
+      mapFilters.minForecast = els.datasetMapMinForecast?.value || "";
+      mapFilters.minDatasetScore = els.datasetMapMinDatasetScore?.value || "";
+      mapFilters.maxExhaustion = els.datasetMapMaxExhaustion?.value || "";
+      mapFilters.minHealth = els.datasetMapMinHealth?.value || "";
+      mapFilters.sortBy = els.datasetMapSort?.value || "dataset_desc";
+
+      if (els.datasetMapMinForecast) els.datasetMapMinForecast.value = mapFilters.minForecast;
+      if (els.datasetMapMinDatasetScore) els.datasetMapMinDatasetScore.value = mapFilters.minDatasetScore;
+      if (els.datasetMapMaxExhaustion) els.datasetMapMaxExhaustion.value = mapFilters.maxExhaustion;
+      if (els.datasetMapMinHealth) els.datasetMapMinHealth.value = mapFilters.minHealth;
+      if (els.datasetMapSort) els.datasetMapSort.value = mapFilters.sortBy;
+
+      return {
+        label: mapFilters.label,
+        minForecast: parseFilterNumber(mapFilters.minForecast),
+        minDatasetScore: parseFilterNumber(mapFilters.minDatasetScore),
+        maxExhaustion: parseFilterNumber(mapFilters.maxExhaustion),
+        minHealth: parseFilterNumber(mapFilters.minHealth),
+        sortBy: mapFilters.sortBy || "dataset_desc"
+      };
+    }
+
+    function sortDatasetRows(rows, sortBy) {
+      const sorters = {
+        dataset_desc: (a, b) => b.dataset.datasetScore - a.dataset.datasetScore,
+        forecast_desc: (a, b) => b.dataset.leader.forecastScore - a.dataset.leader.forecastScore,
+        health_desc: (a, b) => b.dataset.validationHealth - a.dataset.validationHealth,
+        exhaustion_asc: (a, b) => a.dataset.leader.exhaustionScore - b.dataset.leader.exhaustionScore,
+        hit_desc: (a, b) => (b.hitRate - a.hitRate)
+      };
+      const sorter = sorters[sortBy] || sorters.dataset_desc;
+      return rows.sort((a, b) => {
+        const first = sorter(a, b);
+        if (first !== 0) return first;
+        return a.dataset.meta.strategyName.localeCompare(b.dataset.meta.strategyName, "es", { sensitivity: "base" });
+      });
+    }
+
+    function readRankingFilters() {
+      const rankingFilters = state.viewFilters.ranking;
+      rankingFilters.label = els.rankingLabelStateFilter?.value || "";
+      rankingFilters.minForecast = els.rankingMinForecast?.value || "";
+      rankingFilters.maxExhaustion = els.rankingMaxExhaustion?.value || "";
+      rankingFilters.minRatio1063 = els.rankingMinRatio1063?.value || "";
+      rankingFilters.sortBy = els.rankingSort?.value || "forecast_desc";
+
+      if (els.rankingLabelStateFilter) els.rankingLabelStateFilter.value = rankingFilters.label;
+      if (els.rankingMinForecast) els.rankingMinForecast.value = rankingFilters.minForecast;
+      if (els.rankingMaxExhaustion) els.rankingMaxExhaustion.value = rankingFilters.maxExhaustion;
+      if (els.rankingMinRatio1063) els.rankingMinRatio1063.value = rankingFilters.minRatio1063;
+      if (els.rankingSort) els.rankingSort.value = rankingFilters.sortBy;
+
+      return {
+        label: rankingFilters.label,
+        minForecast: parseFilterNumber(rankingFilters.minForecast),
+        maxExhaustion: parseFilterNumber(rankingFilters.maxExhaustion),
+        minRatio1063: parseFilterNumber(rankingFilters.minRatio1063),
+        sortBy: rankingFilters.sortBy || "forecast_desc"
+      };
+    }
+
+    function sortRankingRows(rows, sortBy) {
+      const sorters = {
+        forecast_desc: (a, b) => b.forecastScore - a.forecastScore,
+        exhaustion_asc: (a, b) => a.exhaustionScore - b.exhaustionScore,
+        ratio_desc: (a, b) => b.ratio1063 - a.ratio1063,
+        avg21_desc: (a, b) => b.metrics.avg21 - a.metrics.avg21,
+        shift_asc: (a, b) => a.rankShift - b.rankShift
+      };
+      const sorter = sorters[sortBy] || sorters.forecast_desc;
+      return rows.sort((a, b) => {
+        const first = sorter(a, b);
+        if (first !== 0) return first;
+        return b.forecastScore - a.forecastScore;
+      });
     }
 
     function fmtNumber(value, digits = 1) {
@@ -2626,7 +3351,7 @@
     function sparklineSvg(series) {
       if (!series.length) return "";
       const width = 520;
-      const height = 140;
+      const height = 150;
       const padding = 10;
       const values = series.map((item) => item.pl);
       const min = Math.min(...values, 0);
@@ -2649,6 +3374,12 @@
         const barHeight = Math.max(Math.abs(point.y - zeroY), 2);
         return '<rect x="' + (point.x - 3) + '" y="' + y + '" width="6" height="' + barHeight + '" rx="3" fill="' + color + '" opacity="0.24"></rect>';
       }).join("");
+      const labels = points.map((point) => {
+        const labelAbove = point.pl >= 0;
+        const yLabel = labelAbove ? Math.max(point.y - 8, 12) : Math.min(point.y + 14, height - 6);
+        const labelColor = point.pl >= 0 ? "#1f4a32" : "#8a3227";
+        return '<text x="' + point.x + '" y="' + yLabel + '" text-anchor="middle" font-size="10" fill="' + labelColor + '" opacity="0.9" style="paint-order: stroke; stroke: rgba(255,255,255,0.9); stroke-width: 3px; stroke-linejoin: round;">' + fmtNumber(point.pl, 0) + "</text>";
+      }).join("");
 
       return [
         '<svg class="sparkline" viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="Serie reciente del slot">',
@@ -2656,6 +3387,7 @@
         '<line x1="0" y1="' + zeroY + '" x2="' + width + '" y2="' + zeroY + '" stroke="rgba(17,33,48,0.15)" stroke-dasharray="5 5"></line>',
         '<line x1="0" y1="' + avgY + '" x2="' + width + '" y2="' + avgY + '" stroke="#0f766e" stroke-dasharray="6 4" opacity="0.75"></line>',
         bars,
+        labels,
         '<polyline fill="none" stroke="#173142" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="' + line + '"></polyline>',
         '</svg>'
       ].join("");
@@ -2766,6 +3498,7 @@
       const endDate = state.aggregate?.stats?.endDate || "";
       const startTime = slots[0] || "";
       const endTime = slots[slots.length - 1] || "";
+      const labels = datasetReadableLabels();
 
       if (!state.screener.startDate || state.screener.startDate < startDate || state.screener.startDate > endDate) {
         state.screener.startDate = startDate;
@@ -2804,6 +3537,21 @@
       els.metricProfitability.checked = !!state.screener.profitability;
       els.metricWinRate.checked = !!state.screener.winRate;
       els.metricLowDrawdown.checked = !!state.screener.lowDrawdown;
+      if (els.screenerLabelFilter) {
+        const currentKey = normalizeLabelKey(state.screener.labelFilter);
+        if (currentKey && !labels.some((label) => normalizeLabelKey(label) === currentKey)) {
+          state.screener.labelFilter = "";
+        }
+        const labelOptions = ['<option value="">Todas las etiquetas</option>'].concat(
+          labels.map((label) => (
+            '<option value="' + escapeHtml(label) + '"' +
+            (normalizeLabelKey(label) === normalizeLabelKey(state.screener.labelFilter) ? " selected" : "") +
+            ">" + escapeHtml(label) + "</option>"
+          ))
+        ).join("");
+        els.screenerLabelFilter.innerHTML = labelOptions;
+        els.screenerLabelFilter.value = state.screener.labelFilter || "";
+      }
       state.screener.rangePreset = inferRangePreset(state.screener.startDate, state.screener.endDate);
       updatePresetButtons();
     }
@@ -2819,6 +3567,7 @@
           profitability: true,
           winRate: false,
           lowDrawdown: false,
+          labelFilter: "",
           results: [],
           totalCandidates: 0,
           criteriaLabels: []
@@ -2837,6 +3586,7 @@
         profitability: true,
         winRate: false,
         lowDrawdown: false,
+        labelFilter: "",
         results: [],
         totalCandidates: 0,
         criteriaLabels: []
@@ -2892,6 +3642,7 @@
       let endDate = els.screenerEndDate.value || state.screener.endDate || "";
       let startTime = els.screenerStartTime.value || state.screener.startTime || "";
       let endTime = els.screenerEndTime.value || state.screener.endTime || "";
+      const labelFilter = els.screenerLabelFilter ? els.screenerLabelFilter.value : (state.screener.labelFilter || "");
 
       if (startDate && endDate && startDate > endDate) {
         [startDate, endDate] = [endDate, startDate];
@@ -2904,13 +3655,15 @@
       state.screener.endDate = endDate;
       state.screener.startTime = startTime;
       state.screener.endTime = endTime;
+      state.screener.labelFilter = labelFilter;
       syncScreenerControls();
 
       return {
         startDate,
         endDate,
         startTime,
-        endTime
+        endTime,
+        labelFilter
       };
     }
 
@@ -2949,6 +3702,7 @@
     function computeScreenerResults() {
       const criteria = activeScreenerCriteria();
       const filters = readScreenerFilters();
+      const labelFilter = filters.labelFilter || "";
 
       if (!state.datasets.length) {
         state.screener.results = [];
@@ -2959,6 +3713,7 @@
       const datasetCandidates = [];
 
       state.datasets.forEach((dataset) => {
+        if (!labelMatches(dataset, labelFilter)) return;
         const filteredRecords = filterRecordsForScreener(dataset.records, filters);
         if (!filteredRecords.length) return;
 
@@ -3098,6 +3853,7 @@
         state.screener.startDate + " -> " + state.screener.endDate,
         state.screener.startTime + " -> " + state.screener.endTime
       ].join(" · ");
+      const labelText = state.screener.labelFilter ? " · etiqueta " + state.screener.labelFilter : "";
       const criteriaText = state.screener.criteriaLabels.join(" + ");
       const cards = state.screener.results.map((entry, index) => {
         const badge = screenerBadge(index);
@@ -3131,7 +3887,7 @@
         '<div class="screener-results-head">',
         '<div class="screener-summary">',
         '<h3 class="panel-title" style="margin-bottom: 6px;">Resultados del ranking</h3>',
-        '<p class="subtle">' + escapeHtml(state.screener.totalCandidates + " estrategias con datos en el filtro · " + filters + " · criterio " + criteriaText) + "</p>",
+        '<p class="subtle">' + escapeHtml(state.screener.totalCandidates + " estrategias con datos en el filtro · " + filters + labelText + " · criterio " + criteriaText) + "</p>",
         "</div>",
         '<div class="signal-row">',
         '<span class="signal-chip good">score mixto interpretable</span>',
@@ -3153,6 +3909,7 @@
         });
       });
     }
+
 
     function renderSummary() {
       const aggregate = state.aggregate;
@@ -3244,10 +4001,14 @@
         els.validationMeta.textContent = "sin prueba";
         renderSignals(els.validationSignals, [{ text: "sin datos", tone: "neutral" }]);
       }
+
     }
 
     function renderDatasetMap() {
       if (!state.datasets.length) {
+        if (els.datasetMapFilterMeta) {
+          els.datasetMapFilterMeta.textContent = "Sin datasets cargados.";
+        }
         els.datasetWrap.innerHTML = [
           '<div class="empty-state">',
           "<strong>Esperando archivos para comparar datasets.</strong>",
@@ -3257,13 +4018,57 @@
         return;
       }
 
-      const rows = state.datasets.map((dataset) => {
+      const filters = readDatasetMapFilters();
+      const filtered = sortDatasetRows(
+        state.datasets
+          .map((dataset) => ({
+            dataset,
+            hitRate: dataset.analysis.validation.summary?.positiveRate ?? -Infinity
+          }))
+          .filter((entry) => {
+            const dataset = entry.dataset;
+            if (filters.label && normalizeLabelKey(dataset.meta.label) !== normalizeLabelKey(filters.label)) return false;
+            if (filters.minForecast !== null && dataset.leader.forecastScore < filters.minForecast) return false;
+            if (filters.minDatasetScore !== null && dataset.datasetScore < filters.minDatasetScore) return false;
+            if (filters.maxExhaustion !== null && dataset.leader.exhaustionScore > filters.maxExhaustion) return false;
+            if (filters.minHealth !== null && (dataset.validationHealth * 100) < filters.minHealth) return false;
+            return true;
+          }),
+        filters.sortBy
+      );
+
+      if (!filtered.length) {
+        if (els.datasetMapFilterMeta) {
+          els.datasetMapFilterMeta.textContent = "Mostrando 0 de " + state.datasets.length + " datasets con los filtros actuales.";
+        }
+        els.datasetWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>No hay datasets con los filtros actuales.</strong>",
+          "Ajusta etiqueta, forecast, agotamiento o validation health para ampliar el universo.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      if (!filtered.some((entry) => entry.dataset.key === state.selectedDatasetKey)) {
+        state.selectedDatasetKey = filtered[0].dataset.key;
+        state.selectedSlot = filtered[0].dataset.leader?.slot || null;
+      }
+
+      if (els.datasetMapFilterMeta) {
+        const tagText = filters.label ? " · etiqueta " + filters.label : "";
+        els.datasetMapFilterMeta.textContent =
+          "Mostrando " + filtered.length + " de " + state.datasets.length + " datasets" + tagText + ".";
+      }
+
+      const rows = filtered.map((entry) => {
+        const dataset = entry.dataset;
         const selectedClass = dataset.key === state.selectedDatasetKey ? "is-selected" : "";
         const notes = dataset.signals.map((signal) => signal.text).join(" · ");
         const validationSummary = dataset.analysis.validation.summary;
 
         return [
-          '<tr class="' + selectedClass + '">',
+          '<tr class="' + selectedClass + '" data-dataset-key="' + escapeHtml(dataset.key) + '">',
           '<td><button class="slot-button" type="button" data-dataset-key="' + escapeHtml(dataset.key) + '"><span class="slot-dot"></span>' + escapeHtml(dataset.meta.strategyName) + '</button><div class="subtle">' + escapeHtml(dataset.meta.label) + '</div></td>',
           '<td class="mono">' + escapeHtml(dataset.leader.slot) + "</td>",
           '<td class="mono">' + fmtNumber(dataset.datasetScore, 1) + "</td>",
@@ -3296,14 +4101,16 @@
         "</table>"
       ].join("");
 
-      els.datasetWrap.querySelectorAll("[data-dataset-key]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const dataset = state.datasets.find((entry) => entry.key === button.getAttribute("data-dataset-key"));
-          state.selectedDatasetKey = button.getAttribute("data-dataset-key");
-          state.selectedSlot = dataset?.leader?.slot || null;
-          renderAll();
-        });
-      });
+      const tbody = els.datasetWrap.querySelector("tbody");
+      tbody.onclick = (event) => {
+        const target = event.target.closest("[data-dataset-key]");
+        if (!target) return;
+        const key = target.getAttribute("data-dataset-key");
+        const dataset = state.datasets.find((entry) => entry.key === key);
+        state.selectedDatasetKey = key;
+        state.selectedSlot = dataset?.leader?.slot || null;
+        renderAll();
+      };
     }
 
     function renderStrategy() {
@@ -3367,6 +4174,9 @@
       const dataset = selectedDataset();
       if (!dataset) {
         els.selectedDatasetMeta.textContent = "Selecciona un dataset para abrir su ranking intradia.";
+        if (els.rankingFilterMeta) {
+          els.rankingFilterMeta.textContent = "Sin dataset seleccionado.";
+        }
         els.rankingWrap.innerHTML = [
           '<div class="empty-state">',
           "<strong>Esperando un dataset para calcular el ranking.</strong>",
@@ -3376,10 +4186,50 @@
         return;
       }
 
-      els.selectedDatasetMeta.textContent =
-        dataset.meta.strategyName + " · " + dataset.meta.label + " · leader " + dataset.leader.slot + " · ds " + fmtNumber(dataset.datasetScore, 1);
+      const filters = readRankingFilters();
+      const rankedRows = sortRankingRows(
+        dataset.analysis.ranking
+          .map((entry) => ({
+            ...entry,
+            ratio1063: entry.metrics.avg63 ? entry.metrics.avg10 / entry.metrics.avg63 : -Infinity
+          }))
+          .filter((entry) => {
+            if (filters.label && entry.label !== filters.label) return false;
+            if (filters.minForecast !== null && entry.forecastScore < filters.minForecast) return false;
+            if (filters.maxExhaustion !== null && entry.exhaustionScore > filters.maxExhaustion) return false;
+            if (filters.minRatio1063 !== null && entry.ratio1063 < filters.minRatio1063) return false;
+            return true;
+          }),
+        filters.sortBy
+      );
 
-      const rows = dataset.analysis.ranking.map((entry) => {
+      if (!rankedRows.length) {
+        if (els.rankingFilterMeta) {
+          els.rankingFilterMeta.textContent =
+            "Mostrando 0 de " + dataset.analysis.ranking.length + " slots en " + dataset.meta.strategyName + ".";
+        }
+        els.rankingWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>No hay horarios con los filtros actuales.</strong>",
+          "Ajusta etiqueta, forecast, agotamiento o ratio 10d/63d para ver mas slots.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      if (!rankedRows.some((entry) => entry.slot === state.selectedSlot)) {
+        state.selectedSlot = rankedRows[0].slot;
+      }
+
+      const labelText = filters.label ? " · etiqueta " + filters.label : "";
+      els.selectedDatasetMeta.textContent =
+        dataset.meta.strategyName + " · " + dataset.meta.label + " · leader " + dataset.leader.slot + " · ds " + fmtNumber(dataset.datasetScore, 1) + labelText;
+      if (els.rankingFilterMeta) {
+        els.rankingFilterMeta.textContent =
+          "Mostrando " + rankedRows.length + " de " + dataset.analysis.ranking.length + " slots del dataset seleccionado.";
+      }
+
+      const rows = rankedRows.map((entry) => {
         const selectedClass = state.selectedSlot === entry.slot ? "is-selected" : "";
         const notes = entry.signals.map((signal) => signal.text).join(" · ");
         return [
@@ -3474,7 +4324,11 @@
         '<div class="detail-banner-top">',
         "<div>",
         '<div class="eyebrow">Slot seleccionado</div>',
+        '<div class="slot-title">',
         "<h3>" + selected.slot + "</h3>",
+        '<span class="slot-dataset-pill mono">' + escapeHtml(dataset.meta.strategyName) + "</span>",
+        '<span class="slot-dataset-pill">' + escapeHtml(dataset.meta.label) + "</span>",
+        "</div>",
         "<p>" + explanation + ".</p>",
         "</div>",
         '<div class="signal-row">',
@@ -3610,6 +4464,374 @@
       ].join("");
     }
 
+    function variantRuleText(variantName) {
+      const map = {
+        size_1: "1 contrato fijo",
+        size_2: "2 contratos fijos",
+        weekday_mix: "Lunes/Jueves/Viernes 2 contratos · Martes/Miercoles 1 contrato",
+        equity_ladder: "2c si equity >= 4000, 1c si equity < 3300"
+      };
+      return map[variantName] || variantName;
+    }
+
+    function researchDiagnosis(row) {
+      const ddRatio = row.dd_to_profit;
+      if (row.expectancy <= 0 || row.profit_factor < 1) return "Fragil: expectativa <= 0";
+      if (ddRatio >= 0.9) return "Rentable, pero drawdown muy alto";
+      if (ddRatio >= 0.6) return "Balanceado con riesgo medio";
+      if (row.win_rate >= 0.7 && row.profit_factor >= 1.35) return "Solido y consistente";
+      return "Aceptable con seguimiento";
+    }
+
+    function computeWeekdayMoney() {
+      const bucket = WEEKDAY_FULL_ES.map((day, idx) => ({
+        dayIndex: idx,
+        day,
+        total: 0,
+        count: 0,
+        avg: 0
+      }));
+
+      state.datasets.forEach((dataset) => {
+        const records = dataset.records || [];
+        records.forEach((record) => {
+          const dayIndex = new Date(record.date + "T00:00:00Z").getUTCDay();
+          const slot = bucket[dayIndex];
+          slot.total += record.pl;
+          slot.count += 1;
+        });
+      });
+
+      const withData = bucket
+        .filter((item) => item.count > 0)
+        .map((item) => ({
+          ...item,
+          avg: item.count ? item.total / item.count : 0
+        }));
+
+      const byTotal = withData.slice().sort((a, b) => b.total - a.total);
+
+      return {
+        all: withData,
+        byTotal,
+        best: byTotal[0] || null,
+        worst: byTotal[byTotal.length - 1] || null
+      };
+    }
+
+    function weekdayMoneyChart(weekdayMoney) {
+      if (!weekdayMoney.byTotal.length) {
+        return '<div class="weekday-money-chart"><div class="subtle">Sin datos suficientes para el chart semanal en este filtro.</div></div>';
+      }
+
+      const maxAbs = Math.max(...weekdayMoney.byTotal.map((row) => Math.abs(row.total)), 1);
+      const rows = weekdayMoney.byTotal.map((row) => {
+        const width = Math.max((Math.abs(row.total) / maxAbs) * 100, 6);
+        const tone = row.total >= 0 ? "positive" : "negative";
+        return [
+          '<div class="weekday-money-row">',
+          '<span class="day">' + escapeHtml(row.day) + "</span>",
+          '<div class="track"><span class="bar ' + tone + '" style="width:' + width + '%"></span></div>',
+          '<span class="amount">' + fmtCurrency(row.total, 0) + "</span>",
+          "</div>"
+        ].join("");
+      }).join("");
+
+      return [
+        '<div class="weekday-money-chart">',
+        rows,
+        "</div>"
+      ].join("");
+    }
+
+    function computeResearchRows() {
+      if (!state.datasets.length) return [];
+
+      const weekdaySize = (dateStr) => {
+        const dayIndex = new Date(dateStr + "T00:00:00Z").getUTCDay();
+        return (dayIndex === 1 || dayIndex === 4 || dayIndex === 5) ? 2 : 1;
+      };
+
+      const rows = [];
+
+      state.datasets.forEach((dataset) => {
+        const records = dataset.records || [];
+        const values = records.map((r) => r.pl);
+        if (!values.length) return;
+
+        const weekdayGroups = {};
+        records.forEach((r) => {
+          const day = new Date(r.date + "T00:00:00Z").getUTCDay();
+          if (!weekdayGroups[day]) weekdayGroups[day] = [];
+          weekdayGroups[day].push(r.pl);
+        });
+        const weekdayStats = Object.entries(weekdayGroups).map(([day, vals]) => ({
+          day: WEEKDAY_FULL_ES[Number(day)] || "-",
+          win_rate: winRate(vals),
+          expectancy: vals.length ? sum(vals) / vals.length : 0
+        }));
+        const bestWeekday = weekdayStats.sort((a, b) => b.expectancy - a.expectancy)[0];
+
+        const series1 = values.map((v) => v * 1);
+        const series2 = values.map((v) => v * 2);
+        const seriesMix = records.map((r) => r.pl * weekdaySize(r.date));
+
+        let eq = 0;
+        const seriesEquity = records.map((r) => {
+          const add = r.pl * (eq >= EQUITY_UP ? 2 : 1);
+          eq += add;
+          return add;
+        });
+
+        const variants = [
+          { name: "size_1", label: "Size 1", series: series1 },
+          { name: "size_2", label: "Size 2", series: series2 },
+          { name: "weekday_mix", label: "Weekday mix", series: seriesMix },
+          { name: "equity_ladder", label: "Equity ladder", series: seriesEquity }
+        ];
+
+        variants.forEach((variant) => {
+          const m = coreMetrics(variant.series);
+          const ddToProfit = m.total > 0 ? (m.max_dd / m.total) : Infinity;
+          const row = {
+            datasetKey: dataset.key,
+            dataset: dataset.meta.strategyName,
+            label: dataset.meta.label,
+            variant: variant.name,
+            variantLabel: variant.label,
+            variantRule: variantRuleText(variant.name),
+            total: m.total,
+            trades: m.count,
+            win_rate: m.win_rate,
+            avg_win: m.avg_win,
+            avg_loss: m.avg_loss,
+            expectancy: m.expectancy,
+            profit_factor: m.profit_factor,
+            max_dd: m.max_dd,
+            dd_to_profit: ddToProfit,
+            longest_losing_streak: m.longest_losing_streak,
+            best_weekday: bestWeekday ? bestWeekday.day : "-",
+            best_weekday_exp: bestWeekday ? bestWeekday.expectancy : 0
+          };
+          row.reading = researchDiagnosis(row);
+          rows.push(row);
+        });
+      });
+
+      return rows;
+    }
+
+    function coreMetrics(values) {
+      if (!values.length) {
+        return {
+          total: 0,
+          count: 0,
+          win_rate: 0,
+          avg_win: 0,
+          avg_loss: 0,
+          expectancy: 0,
+          profit_factor: 0,
+          max_dd: 0,
+          longest_losing_streak: 0
+        };
+      }
+      const wins = values.filter((v) => v > 0);
+      const losses = values.filter((v) => v < 0);
+      const total = sum(values);
+      const count = values.length;
+      const win_rate = winRate(values);
+      const avg_win = wins.length ? sum(wins) / wins.length : 0;
+      const avg_loss = losses.length ? sum(losses) / losses.length : 0;
+      const expectancy = total / count;
+      const profit_factor = losses.length ? (sum(wins) / -sum(losses)) : Infinity;
+      const max_dd = maxDrawdown(values);
+      const streak = longestLosingStreak(values);
+      return {
+        total,
+        count,
+        win_rate,
+        avg_win,
+        avg_loss,
+        expectancy,
+        profit_factor,
+        max_dd,
+        longest_losing_streak: streak
+      };
+    }
+
+    function renderResearch() {
+      if (!els.researchWrap) {
+        els.researchWrap = document.getElementById("researchWrap");
+        if (!els.researchWrap) return;
+      }
+      if (!els.researchSummary) {
+        els.researchSummary = document.getElementById("researchSummary");
+      }
+      const rows = computeResearchRows();
+      if (!rows.length) {
+        els.researchSummary.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Sin datos del lab.</strong>",
+          "Carga uno o varios CSV para ver el analisis independiente de sizing y weekdays.",
+          "</div>"
+        ].join("");
+        els.researchWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Sube archivos para correr el lab.</strong>",
+          "Cuando cargues CSV en el dashboard, aqui veras las variantes de sizing: Size 1 (1 contrato), Size 2 (2 contratos), Weekday mix (Lunes/Jueves/Viernes 2c y Martes/Miercoles 1c) y Equity ladder (2c sobre 4000, 1c bajo 3300).",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const rowsSorted = rows.slice().sort((a, b) => b.expectancy - a.expectancy);
+      const bestRow = rowsSorted[0];
+
+      const variantAgg = new Map();
+      rows.forEach((row) => {
+        if (!variantAgg.has(row.variant)) {
+          variantAgg.set(row.variant, {
+            key: row.variant,
+            label: row.variantLabel,
+            rule: row.variantRule,
+            rows: 0,
+            expectancy: 0,
+            win_rate: 0,
+            profit_factor: 0,
+            max_dd: 0
+          });
+        }
+        const agg = variantAgg.get(row.variant);
+        agg.rows += 1;
+        agg.expectancy += row.expectancy;
+        agg.win_rate += row.win_rate;
+        agg.profit_factor += row.profit_factor;
+        agg.max_dd += row.max_dd;
+      });
+      const variantStats = Array.from(variantAgg.values()).map((agg) => {
+        const n = Math.max(agg.rows, 1);
+        const avgExpectancy = agg.expectancy / n;
+        const avgWinRate = agg.win_rate / n;
+        const avgPf = agg.profit_factor / n;
+        const avgDd = agg.max_dd / n;
+        return {
+          ...agg,
+          avgExpectancy,
+          avgWinRate,
+          avgPf,
+          avgDd,
+          score: avgExpectancy + ((avgPf - 1) * 25) + (avgWinRate * 35) - (avgDd * 0.035)
+        };
+      }).sort((a, b) => b.score - a.score);
+      const recommendedVariant = variantStats[0];
+      const bestVariantRow = rows
+        .filter((row) => row.variant === recommendedVariant.key)
+        .sort((a, b) => b.expectancy - a.expectancy)[0];
+      const weekdayMoney = computeWeekdayMoney();
+
+      const datasetWeekdayMap = new Map();
+      rows.forEach((row) => {
+        if (row.variant !== "size_1") return;
+        datasetWeekdayMap.set(row.datasetKey, { day: row.best_weekday, exp: row.best_weekday_exp });
+      });
+      const weekdayAgg = new Map();
+      Array.from(datasetWeekdayMap.values()).forEach((entry) => {
+        if (!weekdayAgg.has(entry.day)) weekdayAgg.set(entry.day, { day: entry.day, count: 0, exp: 0 });
+        const agg = weekdayAgg.get(entry.day);
+        agg.count += 1;
+        agg.exp += entry.exp;
+      });
+      const weekdayTop = Array.from(weekdayAgg.values())
+        .map((entry) => ({ ...entry, avgExp: entry.count ? entry.exp / entry.count : 0 }))
+        .sort((a, b) => (b.count - a.count) || (b.avgExp - a.avgExp));
+      const weekdayText = weekdayTop.slice(0, 3).map((w) => w.day + " (exp " + fmtNumber(w.avgExp, 1) + ")").join(" · ") || "-";
+      const weekdayBestText = weekdayMoney.best ? weekdayMoney.best.day + " " + fmtCurrency(weekdayMoney.best.total, 0) : "-";
+      const weekdayWorstText = weekdayMoney.worst ? weekdayMoney.worst.day + " " + fmtCurrency(weekdayMoney.worst.total, 0) : "-";
+
+      const allRecords = state.datasets.flatMap((dataset) => dataset.records || []);
+      const dates = Array.from(new Set(allRecords.map((record) => record.date))).sort();
+      const scopeLine = [
+        '<div class="research-filter-line">',
+        "<strong>Scope independiente:</strong>",
+        fmtInt(state.datasets.length) + " datasets",
+        "·",
+        fmtInt(allRecords.length) + " registros",
+        "·",
+        escapeHtml(dates[0] || "-") + " -> " + escapeHtml(dates[dates.length - 1] || "-"),
+        "</div>"
+      ].join(" ");
+
+      const summary = [
+        '<div class="research-overview">',
+        scopeLine,
+        '<div class="research-summary">',
+        '<div class="research-card">',
+        "<strong>Variante recomendada</strong>",
+        '<div class="value">' + escapeHtml(recommendedVariant.label) + "</div>",
+        '<div class="note">' + escapeHtml(recommendedVariant.rule) + " · score " + fmtNumber(recommendedVariant.score, 1) + "</div>",
+        "</div>",
+        '<div class="research-card">',
+        "<strong>Mejor setup del filtro</strong>",
+        '<div class="value is-dataset">' + escapeHtml(bestVariantRow.dataset) + "</div>",
+        '<div class="note">Exp ' + fmtNumber(bestVariantRow.expectancy, 2) + " · PF " + fmtNumber(bestVariantRow.profit_factor, 2) + " · DD/PnL " + fmtNumber(bestVariantRow.dd_to_profit * 100, 1) + "%</div>",
+        "</div>",
+        '<div class="research-card">',
+        "<strong>Dias fuertes</strong>",
+        '<div class="value">' + escapeHtml(weekdayTop[0]?.day || "-") + "</div>",
+        '<div class="note">' + escapeHtml(weekdayText) + "</div>",
+        "</div>",
+        "</div>",
+        '<div class="research-insights">',
+        '<div class="research-insight"><strong>Lectura operativa</strong><span>' + escapeHtml(bestVariantRow.reading) + ". Variante sugerida " + recommendedVariant.label + " sobre " + fmtInt(datasetWeekdayMap.size) + " datasets en filtro.</span></div>",
+        '<div class="research-insight"><strong>Riesgo visible</strong><span>Drawdown medio de ' + fmtNumber(recommendedVariant.avgDd, 1) + " y expectativa media " + fmtNumber(recommendedVariant.avgExpectancy, 2) + " por trade en la variante recomendada.</span></div>",
+        '<div class="research-insight"><strong>Que significa cada variante</strong><span>Size 1: operas siempre con 1 contrato. Size 2: siempre con 2 contratos. Weekday mix: Lunes/Jueves/Viernes usa 2 contratos y Martes/Miercoles usa 1 contrato. Equity ladder: usa 2 contratos cuando la curva esta por encima de 4000 y vuelve a 1 contrato si cae por debajo de 3300.</span></div>',
+        '<div class="research-insight"><strong>Dinero por dia de semana</strong><span>Mejor dia: ' + escapeHtml(weekdayBestText) + " · Peor dia: " + escapeHtml(weekdayWorstText) + ".</span>" + weekdayMoneyChart(weekdayMoney) + "</div>",
+        "</div>",
+        "</div>"
+      ].join("");
+
+      const table = [
+        '<table class="research-table">',
+        "<thead><tr>",
+        "<th>Dataset</th>",
+        "<th>Perfil</th>",
+        "<th>Variante</th>",
+        "<th>Regla</th>",
+        "<th>P/L total</th>",
+        "<th>Trades</th>",
+        "<th>Win rate</th>",
+        "<th>Expectativa/trade</th>",
+        "<th>Profit factor</th>",
+        "<th>Max DD</th>",
+        "<th>DD/PnL</th>",
+        "<th>Dia mas fuerte</th>",
+        "<th>Lectura</th>",
+        "</tr></thead>",
+        "<tbody>",
+        rowsSorted.map((row) => [
+          "<tr>",
+          "<td>" + escapeHtml(row.dataset) + "</td>",
+          "<td>" + escapeHtml(row.label) + "</td>",
+          "<td class=\"mono\">" + escapeHtml(row.variantLabel) + "</td>",
+          "<td>" + escapeHtml(row.variantRule) + "</td>",
+          "<td class=\"mono\">" + fmtNumber(row.total, 1) + "</td>",
+          "<td class=\"mono\">" + fmtInt(row.trades) + "</td>",
+          "<td class=\"mono\">" + fmtPercent(row.win_rate, 1) + "</td>",
+          "<td class=\"mono\">" + fmtNumber(row.expectancy, 2) + "</td>",
+          "<td class=\"mono\">" + fmtNumber(row.profit_factor, 2) + "</td>",
+          "<td class=\"mono\">" + fmtNumber(row.max_dd, 1) + "</td>",
+          "<td class=\"mono\">" + (Number.isFinite(row.dd_to_profit) ? fmtNumber(row.dd_to_profit * 100, 1) + "%" : "-") + "</td>",
+          "<td class=\"mono\">" + escapeHtml(row.best_weekday || "-") + "</td>",
+          "<td>" + escapeHtml(row.reading) + "</td>",
+          "</tr>"
+        ].join("")).join(""),
+        "</tbody></table>"
+      ].join("");
+
+      els.researchSummary.innerHTML = summary;
+      els.researchWrap.innerHTML = table;
+    }
+
     function metricCard(title, value, subtitle) {
       return [
         '<div class="window-card">',
@@ -3620,15 +4842,25 @@
       ].join("");
     }
 
+    function safeRender(name, fn) {
+      try {
+        fn();
+      } catch (error) {
+        console.error("Error in", name, error);
+        updateStatus("Error en " + name + ": " + (error?.message || error), "err");
+      }
+    }
+
     function renderAll() {
-      renderSummary();
-      renderScreener();
-      renderDatasetMap();
-      renderStrategy();
-      renderRanking();
-      renderDetail();
-      renderExhaustion();
-      renderValidation();
+      safeRender("resumen", renderSummary);
+      safeRender("screener", renderScreener);
+      safeRender("dataset map", renderDatasetMap);
+      safeRender("estrategia combinada", renderStrategy);
+      safeRender("ranking", renderRanking);
+      safeRender("detalle", renderDetail);
+      safeRender("agotamiento", renderExhaustion);
+      safeRender("validacion", renderValidation);
+      safeRender("research", renderResearch);
     }
 
     function exportCsv(filename, rows) {
@@ -3737,6 +4969,7 @@
           throw new Error("Selecciona al menos un archivo CSV valido.");
         }
 
+        setProcessingStage("reading");
         els.fileMeta.textContent = files.length + " archivos en cola · iniciando lectura";
         updateStatus("Leyendo archivos", "warn");
 
@@ -3757,6 +4990,7 @@
           try {
             const text = await file.text();
             const rows = parseCsv(text);
+            setProcessingStage("normalizing");
             const normalized = normalizeRows(rows);
             if (!normalized.records.length) {
               discardedFiles += 1;
@@ -3796,6 +5030,7 @@
           throw new Error("No se pudo procesar ningun CSV valido con Date, Hora y P/L.");
         }
 
+        setProcessingStage("analyzing");
         state.aggregate = buildAggregate(datasets);
         state.datasets = state.aggregate.ranking;
         state.selectedDatasetKey = state.aggregate.best?.key || state.datasets[0]?.key || null;
@@ -3811,6 +5046,7 @@
           fmtInt(totalSkipped) + " filas omitidas" +
           (discardedFiles ? " · " + discardedFiles + " archivos descartados" : "");
 
+        setProcessingStage("ready");
         updateStatus("Analisis completado de " + state.datasets.length + " datasets", "ok");
         renderAll();
       } catch (error) {
@@ -3822,6 +5058,7 @@
         initializeScreenerDefaults();
         els.fileMeta.textContent = "Sin archivos cargados";
         renderAll();
+        setProcessingStage("idle");
         updateStatus(error.message || "No se pudieron procesar los archivos.", "err");
       }
     }
@@ -3831,12 +5068,39 @@
       els.loadStatus.className = "status-pill " + tone;
     }
 
+    function renderProcessSteps(stageKey = "idle") {
+      if (!els.processSteps) return;
+      const activeIndex = PROCESS_STAGES.findIndex((stage) => stage.key === stageKey);
+      const markup = PROCESS_STAGES.map((stage, index) => {
+        const state = activeIndex === -1
+          ? ""
+          : index < activeIndex
+            ? "done"
+            : index === activeIndex
+              ? "active"
+              : "";
+        return [
+          '<div class="status-step ' + state + '">',
+          '<span class="dot"></span>',
+          "<span>" + escapeHtml(stage.label) + "</span>",
+          "</div>"
+        ].join("");
+      }).join("");
+      els.processSteps.innerHTML = markup;
+    }
+
+    function setProcessingStage(stageKey) {
+      renderProcessSteps(stageKey);
+    }
+
     function handleFiles(fileList) {
       if (!fileList || !fileList.length) return;
+      setProcessingStage("detecting");
       const csvFiles = Array.from(fileList).filter((file) => /\.csv$/i.test(file.name));
       if (!csvFiles.length) {
         els.fileMeta.textContent = "No se detectaron CSV validos en la seleccion actual";
         updateStatus("Seleccion no valida", "err");
+        setProcessingStage("idle");
         return;
       }
       els.fileMeta.textContent = csvFiles.length + " archivos detectados · preparando lectura";
@@ -3860,6 +5124,20 @@
       event.stopPropagation();
       els.folderInput.click();
     });
+
+    if (els.uploadCsvBtn) {
+      els.uploadCsvBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        els.csvInput.click();
+      });
+    }
+
+    if (els.uploadFolderBtn) {
+      els.uploadFolderBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        els.folderInput.click();
+      });
+    }
 
     [
       ["1m", els.preset1mBtn],
@@ -3930,7 +5208,8 @@
       els.screenerEndTime,
       els.metricProfitability,
       els.metricWinRate,
-      els.metricLowDrawdown
+      els.metricLowDrawdown,
+      els.screenerLabelFilter
     ].forEach((control) => {
       control.addEventListener("change", () => {
         computeScreenerResults();
@@ -3938,6 +5217,32 @@
       });
     });
 
+    [
+      els.datasetMapLabelFilter,
+      els.datasetMapMinForecast,
+      els.datasetMapMinDatasetScore,
+      els.datasetMapMaxExhaustion,
+      els.datasetMapMinHealth,
+      els.datasetMapSort
+    ].filter(Boolean).forEach((control) => {
+      control.addEventListener("change", () => {
+        renderAll();
+      });
+    });
+
+    [
+      els.rankingLabelStateFilter,
+      els.rankingMinForecast,
+      els.rankingMaxExhaustion,
+      els.rankingMinRatio1063,
+      els.rankingSort
+    ].filter(Boolean).forEach((control) => {
+      control.addEventListener("change", () => {
+        renderAll();
+      });
+    });
+
+    renderProcessSteps("idle");
     initializeScreenerDefaults();
     renderAll();
   </script>
