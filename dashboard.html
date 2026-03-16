@@ -3215,9 +3215,10 @@
     }
 
     function readDatasetMapFilters() {
-      syncDatasetMapFilterOptions();
       const mapFilters = state.viewFilters.datasetMap;
-      mapFilters.label = els.datasetMapLabelFilter?.value || "";
+      mapFilters.label = els.datasetMapLabelFilter?.value || mapFilters.label || "";
+      syncDatasetMapFilterOptions();
+      mapFilters.label = els.datasetMapLabelFilter?.value || mapFilters.label || "";
       mapFilters.minForecast = els.datasetMapMinForecast?.value || "";
       mapFilters.minDatasetScore = els.datasetMapMinDatasetScore?.value || "";
       mapFilters.maxExhaustion = els.datasetMapMaxExhaustion?.value || "";
