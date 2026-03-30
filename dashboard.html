@@ -3315,6 +3315,9 @@
           <span class="pill-note">Se alimenta de los CSV ya cargados</span>
         </div>
       </div>
+      <div id="researchContext" class="section-context-shell">
+        <div class="section-context-empty">Carga CSV para ver una lectura rapida del estado semanal, dias mas robustos, alertas y alcance del diagnostico.</div>
+      </div>
       <div class="research-grid">
         <div id="researchSummary" class="research-summary-shell">
           <div class="empty-state">
@@ -3473,6 +3476,7 @@
       downloadDatasetsBtn: document.getElementById("downloadDatasetsBtn"),
       downloadRankingBtn: document.getElementById("downloadRankingBtn"),
       downloadExhaustionBtn: document.getElementById("downloadExhaustionBtn"),
+      researchContext: document.getElementById("researchContext"),
       researchWrap: document.getElementById("researchWrap"),
       researchSummary: document.getElementById("researchSummary")
     };
@@ -6967,11 +6971,17 @@
         els.researchWrap = document.getElementById("researchWrap");
         if (!els.researchWrap) return;
       }
+      if (!els.researchContext) {
+        els.researchContext = document.getElementById("researchContext");
+      }
       if (!els.researchSummary) {
         els.researchSummary = document.getElementById("researchSummary");
       }
       const rows = computeWeekdayQualityRows();
       if (!rows.length) {
+        if (els.researchContext) {
+          els.researchContext.innerHTML = '<div class="section-context-empty">Carga CSV para ver una lectura rapida del estado semanal, dias mas robustos, alertas y alcance del diagnostico.</div>';
+        }
         els.researchSummary.innerHTML = [
           '<div class="empty-state">',
           "<strong>Sin diagnostico semanal todavia.</strong>",
@@ -7024,9 +7034,63 @@
         "</div>"
       ].join(" ");
 
+      if (els.researchContext) {
+        const chips = [
+          sectionContextChip(fmtInt(state.datasets.length) + " datasets", "primary"),
+          sectionContextChip(fmtInt(allRecords.length) + " registros weekday"),
+          sectionContextChip("Robusto " + strongestRow.day, weekdayQualityTone(strongestRow.qualityLabel)),
+          sectionContextChip("Fragil " + fragileRow.day, weekdayQualityTone(fragileRow.qualityLabel)),
+          alertRows.length ? sectionContextChip("Alertas " + fmtInt(alertRows.length), "warn") : sectionContextChip("Sin alertas mayores", "good")
+        ];
+        const contextCards = [
+          sectionContextStat(
+            "Dia mas robusto",
+            strongestRow.day,
+            "score " + fmtNumber(strongestRow.qualityScore, 1) + " · exp " + fmtSignedCurrency(strongestRow.expectancy, 2)
+          ),
+          sectionContextStat(
+            "Mejor expectativa",
+            expectancyLeader.day,
+            fmtSignedCurrency(expectancyLeader.expectancy, 2) + " · PF " + fmtNumber(expectancyLeader.profit_factor, 2)
+          ),
+          sectionContextStat(
+            "Mayor estabilidad",
+            stableRow.day,
+            fmtInt(stableRow.positive_months) + "/" + fmtInt(stableRow.months) + " meses +"
+          ),
+          sectionContextStat(
+            "Dia mas fragil",
+            fragileRow.day,
+            "score " + fmtNumber(fragileRow.qualityScore, 1) + " · " + (fragileRow.flags[0] || "sin alerta visible")
+          )
+        ].join("");
+
+        els.researchContext.innerHTML = [
+          '<div class="section-context-panel">',
+          '<div class="section-context-top">',
+          '<div class="section-context-copy">',
+          '<span class="section-context-kicker">Lectura rapida del perfil semanal</span>',
+          '<h3 class="section-context-title">Como esta la calidad de lunes a viernes</h3>',
+          '<span class="section-context-file mono">' + escapeHtml((dates[0] || "-") + " -> " + (dates[dates.length - 1] || "-")) + "</span>",
+          '<div class="section-context-chips">' + chips.join("") + "</div>",
+          "</div>",
+          "</div>",
+          '<div class="section-context-stats">' + contextCards + "</div>",
+          "</div>"
+        ].join("");
+      }
+
+      const radarChips = [
+        '<span class="signal-chip ' + weekdayQualityTone(strongestRow.qualityLabel) + '">Robusto: ' + escapeHtml(strongestRow.day) + "</span>",
+        '<span class="signal-chip ' + weekdayQualityTone(expectancyLeader.qualityLabel) + '">Expectativa: ' + escapeHtml(expectancyLeader.day) + "</span>",
+        '<span class="signal-chip ' + weekdayQualityTone(stableRow.qualityLabel) + '">Estable: ' + escapeHtml(stableRow.day) + "</span>",
+        '<span class="signal-chip ' + weekdayQualityTone(fragileRow.qualityLabel) + '">Fragil: ' + escapeHtml(fragileRow.day) + "</span>"
+      ].join("");
+
       const summary = [
         '<div class="research-overview">',
         scopeLine,
+        '<div class="signal-row">' + radarChips + "</div>",
         '<div class="research-summary">',
         '<div class="research-card">',
         "<strong>Dia mas robusto</strong>",
@@ -7051,7 +7115,7 @@
         "</div>",
         '<div class="research-insights">',
         '<div class="research-insight"><strong>Lectura actual</strong><span>' + escapeHtml(strongestRow.day + " lidera por robustez con score " + fmtNumber(strongestRow.qualityScore, 1) + " y etiqueta " + strongestRow.qualityLabel + ". " + fragileRow.day + " es el dia mas fragil del corte actual con score " + fmtNumber(fragileRow.qualityScore, 1) + ".") + "</span></div>",
-        '<div class="research-insight"><strong>Que mide el score</strong><span>Combina expectativa, profit factor, win rate, drawdown invertido, meses positivos, muestra, severidad de perdida y delta reciente. Es diagnostico; no decide operativa.</span></div>',
+        '<div class="research-insight"><strong>Como leerlo</strong><span>GREEN = dia robusto, YELLOW = dia util pero fragil, RED = dia inestable o costoso. El score combina expectativa, profit factor, win rate, drawdown invertido, meses positivos, muestra, severidad de perdida y delta reciente.</span></div>',
         '<div class="research-insight"><strong>Alertas visibles</strong><span>' + escapeHtml(alertText) + "</span></div>",
         '<div class="research-insight"><strong>Mapa rapido por dia</strong><span>Score relativo por dia y expectativa media por trade.</span>' + weekdayQualityChart(rows) + "</div>",
         "</div>",
