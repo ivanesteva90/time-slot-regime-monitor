@@ -1162,6 +1162,10 @@
       gap: 10px;
     }
 
+    .outlook-context-stats {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
     .section-context-stat {
       display: grid;
       gap: 6px;
@@ -1451,6 +1455,149 @@
       border: 1px solid rgba(17, 33, 48, 0.08);
       font-weight: 700;
       color: var(--navy);
+    }
+
+    .outlook-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.35fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .outlook-cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .outlook-card {
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(243, 248, 253, 0.95));
+      box-shadow: var(--card-shadow);
+      display: grid;
+      gap: 6px;
+    }
+
+    .outlook-card strong {
+      display: block;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .outlook-card .value {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 1.8vw, 2rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--navy);
+    }
+
+    .outlook-card .value.positive {
+      color: #27653a;
+    }
+
+    .outlook-card .value.negative {
+      color: #943c30;
+    }
+
+    .outlook-card .note {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .outlook-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .outlook-summary-block {
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      border-radius: 14px;
+      padding: 12px 13px;
+      background: rgba(247, 250, 253, 0.96);
+    }
+
+    .outlook-summary-block strong {
+      display: block;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .outlook-summary-block p {
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.5;
+      font-size: 0.92rem;
+    }
+
+    .outlook-day-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .outlook-day-card {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(243, 248, 253, 0.95));
+      box-shadow: 0 8px 18px rgba(17, 33, 48, 0.06);
+    }
+
+    .outlook-day-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .outlook-day-id {
+      display: grid;
+      gap: 2px;
+    }
+
+    .outlook-day-id strong {
+      font-size: 1rem;
+      color: var(--navy);
+    }
+
+    .outlook-day-id span {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .outlook-day-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .outlook-day-metric {
+      display: grid;
+      gap: 3px;
+    }
+
+    .outlook-day-metric span {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .outlook-day-metric strong {
+      color: var(--ink);
+      font-size: 0.96rem;
+      line-height: 1.2;
     }
 
     .research-table {
@@ -2721,6 +2868,10 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+      .outlook-context-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
       .content-grid,
       .lower-grid,
       .hero,
@@ -2776,6 +2927,10 @@
       .filter-grid,
       .rank-cards,
       .research-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .outlook-context-stats {
         grid-template-columns: 1fr;
       }
 
@@ -2872,11 +3027,12 @@
         <a class="nav-pill" href="#detail">Seleccion</a>
         <a class="nav-pill" href="#datasets">Datasets</a>
         <a class="nav-pill" href="#ranking">Ranking</a>
-        <a class="nav-pill" href="#combo">Mix</a>
+        <a class="nav-pill" href="#combo">Mix sugerido</a>
         <a class="nav-pill" href="#health">Agotamiento</a>
         <a class="nav-pill" href="#validation">Validacion</a>
-        <a class="nav-pill" href="#metodologia">Metodo</a>
-        <a class="nav-pill" href="#research">Weekday</a>
+        <a class="nav-pill" href="#outlook">Weekly Outlook</a>
+        <a class="nav-pill" href="#research">Weekday Quality</a>
+        <a class="nav-pill" href="#metodologia">Metodologia</a>
       </nav>
 
       <section class="panel rail-card">
@@ -3290,58 +3446,33 @@
       </article>
     </section>
 
-    <section class="panel methodology" id="metodologia">
-      <h2 class="panel-title">Metodologia embebida</h2>
-      <details open>
-        <summary>1. Como se calcula el forecast score</summary>
-        <p>
-          Cada horario recibe metricas rolling de 10, 21, 63, 126 y 252 observaciones. Luego se convierten
-          en percentiles cross-sectional para mezclar senales heterogeneas sin escalar a mano. El score final
-          prioriza robustez estructural, luego regimen medio y despues momentum corto sin publicar la composicion exacta.
-        </p>
-      </details>
-      <details>
-        <summary>2. Como se calcula el indice de agotamiento</summary>
-        <p>
-          El agotamiento sube cuando un slot pierde rango 21d frente a 63d, cuando el promedio 10d cae por
-          debajo de su propia base, cuando el ultimo bloque de observaciones empeora frente al bloque anterior
-          y cuando el win rate corto cede frente al mediano.
-        </p>
-      </details>
-      <details>
-        <summary>3. Reglas de etiqueta KEEP / WATCH / ROTATE</summary>
-        <p>
-          Las etiquetas son relativas al ranking actual. KEEP marca slots en el cuartil alto de forecast con
-          agotamiento controlado; WATCH captura candidatos razonables o lideres con alerta media; ROTATE senala
-          combinaciones de score flojo o deterioro alto.
-        </p>
-      </details>
-      <details>
-        <summary>4. Recomendaciones de uso en produccion</summary>
-        <ul class="clean">
-          <li>Actualiza tus CSV con disciplina diaria y vuelve a cargarlos para recalcular el tablero.</li>
-          <li>Si quieres comparar todo el universo, selecciona la carpeta <span class="mono">data</span> completa en vez de un archivo suelto.</li>
-          <li>Usa el ranking actual como vista principal, pero no ignores la tabla de agotamiento del lider.</li>
-          <li>Revisa siempre la validacion walk-forward antes de cambiar la logica o los pesos.</li>
-          <li>Si anades nuevas features, mantenlas interpretables y compite contra esta base simple.</li>
-        </ul>
-      </details>
-      <details>
-        <summary>5. Como se arma la estrategia combinada</summary>
-        <p>
-          El mix combinado puntua cada dataset con metricas sin sesgo de escala entre subyacentes, combinando
-          calidad del lider, agotamiento, profundidad del top 3 y salud de la validacion. Luego propone un
-          esquema core / satellite / diversifier intentando repartir simbolo, estructura y nivel de riesgo.
-        </p>
-      </details>
-      <details>
-        <summary>6. Como funciona el screener</summary>
-        <p>
-          El screener adicional filtra por rango de fechas y horas, busca el mejor slot de cada dataset dentro
-          de ese marco y luego rankea estrategias con los criterios marcados. Las tarjetas muestran P/L bruto,
-          win rate, drawdown, profit factor, desvio estandar y boton directo para abrir el analisis detallado.
-        </p>
-      </details>
+    <section class="panel" id="outlook">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Weekly Outlook</h2>
+          <p class="subtle">Forecast probabilistico semanal V1 sin live feed. Usa estado estructural actual, historial por weekday, validacion previa y simulacion de escenarios para proyectar la siguiente ventana operativa.</p>
+        </div>
+        <div class="panel-actions">
+          <span class="pill-note">V1 offline · POP estructural</span>
+        </div>
+      </div>
+      <div id="outlookContext" class="section-context-shell">
+        <div class="section-context-empty">Carga CSV para proyectar la proxima semana o lo que reste de la actual con base en el estado vigente del framework y el historial previo.</div>
+      </div>
+      <div class="outlook-grid">
+        <div id="outlookSummary" class="research-summary-shell">
+          <div class="empty-state">
+            <strong>Sin outlook todavia.</strong>
+            Carga datasets para calcular probabilidad semanal, EV restante, bandas de escenario y validacion del modelo.
+          </div>
+        </div>
+        <div id="outlookWrap" class="table-wrap">
+          <div class="empty-state">
+            <strong>La tabla del forecast aparecera aqui.</strong>
+            Mostrara el mejor candidato previsto para cada dia objetivo, su POP, EV, confianza, lectura de riesgo y drivers visibles del modelo.
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="panel" id="research">
@@ -3372,11 +3503,80 @@
         </div>
       </div>
     </section>
+
+    <section class="panel methodology" id="metodologia">
+      <h2 class="panel-title">Metodologia embebida</h2>
+      <details open>
+        <summary>1. Ingestion, DATA y normalizacion base</summary>
+        <p>
+          El dashboard puede leer CSV subidos manualmente o la <span class="mono">DATA</span> guardada via
+          <span class="mono">manifest.json</span>. Cada archivo se normaliza a <span class="mono">Date</span>,
+          <span class="mono">Hora</span> y <span class="mono">P/L</span>, eliminando filas invalidas y compactando duplicados
+          por promedio antes de entrar al motor analitico.
+        </p>
+      </details>
+      <details>
+        <summary>2. Forecast score, agotamiento y etiquetas</summary>
+        <p>
+          Cada slot se puntua con ventanas rolling de 10, 21, 63, 126 y 252 observaciones. El
+          <strong>forecast</strong> prioriza robustez estructural y continuidad del slot; el
+          <strong>agotamiento</strong> detecta deterioro reciente por perdida de rango, caida del bloque corto,
+          slip de win rate y ratio 10d/63d. Las etiquetas <strong>KEEP / WATCH / ROTATE</strong> salen del equilibrio
+          entre fuerza relativa y cansancio actual.
+        </p>
+      </details>
+      <details>
+        <summary>3. Walk-forward y validation health</summary>
+        <p>
+          La validacion del dataset usa un walk-forward secuencial: para cada fecha se rankean slots con solo
+          la historia previa y luego se compara el slot elegido contra el resultado real de ese dia. De ahi salen
+          <strong>hit rate</strong>, <strong>beat average</strong>, <strong>top 3 coverage</strong> y el
+          <strong>validation health</strong> agregado del dataset.
+        </p>
+      </details>
+      <details>
+        <summary>4. Screener y scope compartido</summary>
+        <p>
+          El screener filtra por fechas, horas, indice, perfil y tipo. Desde esta version,
+          <strong>Weekly Outlook</strong>, <strong>Weekday Quality</strong> y
+          <strong>Estrategia combinada sugerida</strong> ya no miran siempre el universo completo:
+          se recalculan con el mismo scope activo del screener para que la lectura sea coherente entre secciones.
+        </p>
+      </details>
+      <details>
+        <summary>5. Weekly Outlook V1</summary>
+        <p>
+          El outlook semanal V1 es offline. No usa live feed todavia. La probabilidad diaria mezcla historia del slot,
+          comportamiento del weekday, tramo reciente y estado estructural actual. El EV usa medias suavizadas de ganancia
+          y perdida; el horizonte semanal se proyecta con simulacion Monte Carlo sobre pools historicos de outcomes.
+          La validacion muestra <strong>next-day</strong> y <strong>next-week</strong>. El modulo usa dias habiles
+          simples; todavia no descuenta holidays ni POP teorico de mercado.
+        </p>
+      </details>
+      <details>
+        <summary>6. Weekday Quality y mix sugerido</summary>
+        <p>
+          <strong>Weekday Quality</strong> diagnostica cada dia por expectativa, profit factor, drawdown,
+          estabilidad mensual, muestra y tendencia reciente. No asigna sizing. La
+          <strong>estrategia combinada</strong> arma un esquema core / satellite / diversifier con los datasets
+          mejor posicionados dentro del scope vigente, intentando repartir simbolo, estructura y perfil sin perder salud.
+        </p>
+      </details>
+      <details>
+        <summary>7. Reglas practicas de uso</summary>
+        <ul class="clean">
+          <li>Recalcula el tablero cada vez que actualices CSV o cambies el screener si quieres coherencia entre ranking y secciones derivadas.</li>
+          <li>Usa la validacion walk-forward antes de perseguir un slot o un mix que se vea demasiado bien en bruto.</li>
+          <li>Si el scope del screener deja poca muestra, el dashboard prioriza mostrar insuficiencia antes que inventar conclusiones.</li>
+          <li>El V1 del outlook sirve para escenarios y priorizacion, no para prometer P/L exacto ni para reemplazar disciplina de riesgo.</li>
+        </ul>
+      </details>
+    </section>
     <footer class="page-footer" aria-label="Version de la aplicacion">
       <span class="page-footer-label">Update version</span>
       <div class="page-footer-copy">
-        <strong>v2026.03.30.1</strong>
-        <span>Updated 30 Mar 2026 · Dashboard UX refresh, saved data por indice y mejoras de lectura en mix, agotamiento, validacion y weekday quality.</span>
+        <strong>v2026.03.30.5</strong>
+        <span>Updated 30 Mar 2026 · Scope compartido del screener para Weekly Outlook, Weekday Quality y mix sugerido, metodologia movida al final, Weekly Outlook V1, rail lateral alineado, Logic Agent actualizado y validacion del outlook separada en next-day y semanal.</span>
       </div>
     </footer>
     </main>
@@ -3439,13 +3639,24 @@
         selectedPaths: {},
         error: ""
       },
+      outlook: {
+        cacheKey: "",
+        report: null
+      },
+      screenerScope: {
+        cacheKey: "",
+        active: false,
+        filters: null,
+        aggregate: null,
+        datasets: []
+      },
       logicAgent: {
         open: false,
         draft: "",
         messages: [
           {
             role: "assistant",
-            text: "Soy Logic Agent. Explico la seleccion activa, metricas estandar, forecast, exhaustion, validation y rolling sin usar APIs externas ni revelar detalles internos replicables."
+            text: "Soy Logic Agent. Explico la seleccion activa, el scope del screener, Weekly Outlook, Weekday Quality, mix sugerido y metricas estandar sin usar APIs externas ni revelar detalles internos replicables."
           }
         ]
       }
@@ -3501,6 +3712,9 @@
       exhaustionWrap: document.getElementById("exhaustionWrap"),
       validationContext: document.getElementById("validationContext"),
       validationWrap: document.getElementById("validationWrap"),
+      outlookContext: document.getElementById("outlookContext"),
+      outlookSummary: document.getElementById("outlookSummary"),
+      outlookWrap: document.getElementById("outlookWrap"),
       selectedDatasetMeta: document.getElementById("selectedDatasetMeta"),
       preset1mBtn: document.getElementById("preset1mBtn"),
       preset2mBtn: document.getElementById("preset2mBtn"),
@@ -3532,6 +3746,10 @@
     const FORECAST_MIN_COUNT = 10;
     const VALIDATION_MIN_DATES = 63;
     const SCREENER_MIN_SAMPLES = 3;
+    const OUTLOOK_TOP_SLOTS = 3;
+    const OUTLOOK_RECENT_SLOT_WINDOW = 20;
+    const OUTLOOK_PRIOR_WEIGHT = 8;
+    const OUTLOOK_SIMULATIONS = 1500;
     const RISK_ORDER = {
       conservador: 1,
       intermedio: 2,
@@ -3676,7 +3894,8 @@
       const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, 1));
       return new Intl.DateTimeFormat("es-ES", {
         month: "short",
-        year: "numeric"
+        year: "numeric",
+        timeZone: "UTC"
       }).format(date);
     }
 
@@ -4092,19 +4311,59 @@
       };
     }
 
+    function summarizeValidationResults(results) {
+      if (!results.length) return null;
+
+      const avgRealized = mean(results.map((item) => item.realizedPl));
+      const beatAverageRate = mean(results.map((item) => (item.beatAverage ? 1 : 0)));
+      const positiveRate = mean(results.map((item) => (item.positive ? 1 : 0)));
+      const top3Coverage = mean(results.map((item) => (item.bestInTop3 ? 1 : 0)));
+      const avgRank = mean(results.map((item) => item.realizedRank));
+
+      return {
+        tests: results.length,
+        avgRealizedPl: round(avgRealized, 1),
+        beatAverageRate: round(beatAverageRate * 100, 1),
+        positiveRate: round(positiveRate * 100, 1),
+        top3Coverage: round(top3Coverage * 100, 1),
+        avgRank: round(avgRank, 1)
+      };
+    }
+
+    function validationHealthFromSummary(summary) {
+      if (!summary) return 0.5;
+      return clamp(
+        (0.4 * (summary.positiveRate / 100)) +
+        (0.4 * (summary.beatAverageRate / 100)) +
+        (0.2 * (summary.top3Coverage / 100))
+      );
+    }
+
     function buildWalkForward(dataset) {
       if (dataset.dates.length <= VALIDATION_MIN_DATES) {
         return {
           summary: null,
-          recent: []
+          recent: [],
+          timeline: new Map()
         };
       }
 
       const results = [];
+      const timeline = new Map();
 
       for (let index = VALIDATION_MIN_DATES; index < dataset.dates.length; index += 1) {
         const targetDate = dataset.dates[index];
         const cutoffDate = dataset.dates[index - 1];
+        const priorSummary = summarizeValidationResults(results);
+        timeline.set(
+          targetDate,
+          priorSummary
+            ? {
+              ...priorSummary,
+              health: round(validationHealthFromSummary(priorSummary), 4)
+            }
+            : null
+        );
         const snapshot = buildSnapshot(dataset.bySlot, { cutoffDate });
         if (!snapshot.ranking.length) continue;
 
@@ -4141,32 +4400,22 @@
       if (!results.length) {
         return {
           summary: null,
-          recent: []
+          recent: [],
+          timeline
         };
       }
 
-      const avgRealized = mean(results.map((item) => item.realizedPl));
-      const beatAverageRate = mean(results.map((item) => (item.beatAverage ? 1 : 0)));
-      const positiveRate = mean(results.map((item) => (item.positive ? 1 : 0)));
-      const top3Coverage = mean(results.map((item) => (item.bestInTop3 ? 1 : 0)));
-      const avgRank = mean(results.map((item) => item.realizedRank));
-
       return {
-        summary: {
-          tests: results.length,
-          avgRealizedPl: round(avgRealized, 1),
-          beatAverageRate: round(beatAverageRate * 100, 1),
-          positiveRate: round(positiveRate * 100, 1),
-          top3Coverage: round(top3Coverage * 100, 1),
-          avgRank: round(avgRank, 1)
-        },
-        recent: results.slice(-12).reverse()
+        summary: summarizeValidationResults(results),
+        recent: results.slice(-12).reverse(),
+        timeline
       };
     }
 
     function analyze(records) {
       const bySlot = new Map();
       const byDate = new Map();
+      const byWeekday = new Map();
       const datesSet = new Set();
 
       records.forEach((record) => {
@@ -4174,10 +4423,14 @@
         bySlot.get(record.slot).push({ date: record.date, pl: record.pl });
         if (!byDate.has(record.date)) byDate.set(record.date, new Map());
         byDate.get(record.date).set(record.slot, record.pl);
+        const dayIndex = new Date(record.date + "T00:00:00Z").getUTCDay();
+        if (!byWeekday.has(dayIndex)) byWeekday.set(dayIndex, []);
+        byWeekday.get(dayIndex).push({ date: record.date, pl: record.pl, slot: record.slot });
         datesSet.add(record.date);
       });
 
       bySlot.forEach((series) => series.sort((a, b) => a.date.localeCompare(b.date)));
+      byWeekday.forEach((series) => series.sort((a, b) => a.date.localeCompare(b.date)));
       const dates = Array.from(datesSet).sort();
       const slots = Array.from(bySlot.keys()).sort();
 
@@ -4187,6 +4440,7 @@
       return {
         bySlot,
         byDate,
+        byWeekday,
         dates,
         slots,
         ranking: snapshot.ranking,
@@ -5218,7 +5472,8 @@
       return new Intl.DateTimeFormat("es-ES", {
         day: "2-digit",
         month: "short",
-        year: "numeric"
+        year: "numeric",
+        timeZone: "UTC"
       }).format(date);
     }
 
@@ -5388,7 +5643,7 @@
       state.screener.rangePreset = presetKey;
       syncScreenerControls();
       computeScreenerResults();
-      renderScreener();
+      renderAll();
     }
 
     function syncScreenerControls() {
@@ -5614,6 +5869,160 @@
         if (filters.endTime && record.slot > filters.endTime) return false;
         return true;
       });
+    }
+
+    function currentScreenerScopeFilters() {
+      const slots = uniqueSortedSlots();
+      return {
+        startDate: state.screener.startDate || state.aggregate?.stats?.startDate || "",
+        endDate: state.screener.endDate || state.aggregate?.stats?.endDate || "",
+        startTime: state.screener.startTime || slots[0] || "",
+        endTime: state.screener.endTime || slots[slots.length - 1] || "",
+        symbols: uniqueFacetValues(state.screener.symbols, "symbols"),
+        risks: uniqueFacetValues(state.screener.risks, "risks"),
+        structures: uniqueFacetValues(state.screener.structures, "structures")
+      };
+    }
+
+    function screenerScopeIsActive(filters) {
+      if (!state.aggregate) return false;
+      const slots = uniqueSortedSlots();
+      const defaultStartTime = slots[0] || "";
+      const defaultEndTime = slots[slots.length - 1] || "";
+
+      return Boolean(
+        filters.symbols?.length ||
+        filters.risks?.length ||
+        filters.structures?.length ||
+        (filters.startDate && filters.startDate !== state.aggregate.stats.startDate) ||
+        (filters.endDate && filters.endDate !== state.aggregate.stats.endDate) ||
+        (filters.startTime && filters.startTime !== defaultStartTime) ||
+        (filters.endTime && filters.endTime !== defaultEndTime)
+      );
+    }
+
+    function screenerScopeCacheKey(filters) {
+      if (!state.aggregate) return "";
+      return [
+        state.datasets.length,
+        state.aggregate.stats.records,
+        state.aggregate.stats.startDate,
+        state.aggregate.stats.endDate,
+        filters.startDate,
+        filters.endDate,
+        filters.startTime,
+        filters.endTime,
+        filters.symbols.join("|"),
+        filters.risks.join("|"),
+        filters.structures.join("|")
+      ].join("::");
+    }
+
+    function screenerScopeChips(scope, options = {}) {
+      const settings = {
+        includeDates: options.includeDates !== false,
+        includeTime: options.includeTime !== false
+      };
+      const filters = scope?.filters || currentScreenerScopeFilters();
+      const chips = [
+        sectionContextChip(scope?.active ? "Scope screener" : "Universo completo", scope?.active ? "primary" : "")
+      ];
+
+      if (settings.includeDates && filters.startDate && filters.endDate) {
+        chips.push(sectionContextChip(filters.startDate + " -> " + filters.endDate));
+      }
+      if (settings.includeTime && filters.startTime && filters.endTime) {
+        chips.push(sectionContextChip(filters.startTime + " -> " + filters.endTime));
+      }
+      if (filters.symbols?.length) chips.push(sectionContextChip("Indice " + filters.symbols.join(" · ")));
+      if (filters.risks?.length) chips.push(sectionContextChip("Perfil " + filters.risks.join(" · ")));
+      if (filters.structures?.length) chips.push(sectionContextChip("Tipo " + filters.structures.join(" · ")));
+
+      return chips;
+    }
+
+    function screenerScopeSummary(scope = getScreenerScopedAggregate()) {
+      if (!scope) return "sin scope";
+      const filters = scope.filters || currentScreenerScopeFilters();
+      const parts = [scope.active ? "scope del screener activo" : "universo completo"];
+
+      if (filters.startDate && filters.endDate) parts.push(filters.startDate + " -> " + filters.endDate);
+      if (filters.startTime && filters.endTime) parts.push(filters.startTime + " -> " + filters.endTime);
+      if (filters.symbols?.length) parts.push("indices " + filters.symbols.join(", "));
+      if (filters.risks?.length) parts.push("perfiles " + filters.risks.join(", "));
+      if (filters.structures?.length) parts.push("tipos " + filters.structures.join(", "));
+      if (scope.datasets?.length) parts.push(fmtInt(scope.datasets.length) + " datasets");
+
+      return parts.join(" · ");
+    }
+
+    function selectionInsideScope(context, scope = getScreenerScopedAggregate()) {
+      if (!context || !scope?.active) return true;
+      return scope.datasets.some((dataset) => dataset.key === context.dataset.key);
+    }
+
+    function getScreenerScopedAggregate() {
+      if (!state.aggregate || !state.datasets.length) {
+        const emptyScope = {
+          cacheKey: "",
+          active: false,
+          filters: currentScreenerScopeFilters(),
+          aggregate: null,
+          datasets: []
+        };
+        state.screenerScope = emptyScope;
+        return emptyScope;
+      }
+
+      const filters = currentScreenerScopeFilters();
+      const active = screenerScopeIsActive(filters);
+      const cacheKey = screenerScopeCacheKey(filters);
+
+      if (state.screenerScope?.cacheKey === cacheKey) {
+        return state.screenerScope;
+      }
+
+      if (!active) {
+        const fullScope = {
+          cacheKey,
+          active: false,
+          filters,
+          aggregate: state.aggregate,
+          datasets: state.datasets
+        };
+        state.screenerScope = fullScope;
+        return fullScope;
+      }
+
+      const rawDatasets = state.datasets
+        .filter((dataset) => datasetMatchesActiveFilters(dataset, filters))
+        .map((dataset) => {
+          const scopedRecords = filterRecordsForScreener(dataset.records, filters);
+          if (!scopedRecords.length) return null;
+          const analysis = analyze(scopedRecords);
+          if (!analysis.ranking.length) return null;
+          return {
+            key: dataset.key,
+            fileName: dataset.fileName,
+            relativePath: dataset.relativePath,
+            meta: dataset.meta,
+            records: scopedRecords,
+            normalization: dataset.normalization,
+            analysis
+          };
+        })
+        .filter(Boolean);
+
+      const aggregate = rawDatasets.length ? buildAggregate(rawDatasets) : null;
+      const scopedView = {
+        cacheKey,
+        active: true,
+        filters,
+        aggregate,
+        datasets: aggregate?.ranking || []
+      };
+      state.screenerScope = scopedView;
+      return scopedView;
     }
 
     function buildSimpleMetrics(records) {
@@ -6064,15 +6473,35 @@
     }
 
     function renderStrategy() {
-      const strategy = state.aggregate?.strategy;
+      const scope = getScreenerScopedAggregate();
+      const aggregate = scope.aggregate;
+      const strategy = aggregate?.strategy;
       if (els.strategyContext) {
-        els.strategyContext.innerHTML = '<div class="section-context-empty">Carga varios datasets para ver la mezcla sugerida, su dispersion por subyacente y un acceso directo a cada pierna del mix.</div>';
+        const baseMessage = scope.active
+          ? "La mezcla se ajusta al mismo scope activo del screener: fecha, hora, indice, perfil y tipo."
+          : "Carga varios datasets para ver la mezcla sugerida, su dispersion por subyacente y un acceso directo a cada pierna del mix.";
+        els.strategyContext.innerHTML = '<div class="section-context-empty">' + escapeHtml(baseMessage) + "</div>";
       }
+
+      if (!aggregate || !scope.datasets.length) {
+        els.strategyWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Sin mezcla visible con el scope actual.</strong>",
+          scope.active
+            ? "El filtro del screener no deja datasets con historia suficiente para armar un mix interpretable."
+            : "Cuando se carguen varios datasets, el dashboard sugerira una mezcla operativa con pesos y ventana horaria.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
       if (!strategy) {
         els.strategyWrap.innerHTML = [
           '<div class="empty-state">',
           "<strong>Sin estrategia combinada todavia.</strong>",
-          "Cuando se carguen varios datasets, el dashboard sugerira una mezcla operativa con pesos y ventana horaria.",
+          scope.active
+            ? ("El filtro del screener deja " + fmtInt(scope.datasets.length) + " dataset(s) utiles. La mezcla necesita al menos 2 para proponer core / satellite / diversifier.")
+            : "Cuando se carguen varios datasets, el dashboard sugerira una mezcla operativa con pesos y ventana horaria.",
           "</div>"
         ].join("");
         return;
@@ -6082,11 +6511,12 @@
       const overlapText = strategy.concentrationFlags.length
         ? strategy.concentrationFlags.join(" · ")
         : "sin overlap clave entre simbolo, estructura y perfil";
-      const contextLine = core.meta.shortLabel + " lidera el mix · ventana " + strategy.executionWindow + " · confianza " + fmtNumber(strategy.confidence, 1);
+      const contextLine = core.meta.shortLabel + " lidera el mix · ventana " + strategy.executionWindow + " · confianza " + fmtNumber(strategy.confidence, 1) + (scope.active ? " · ajustado al screener activo" : "");
 
       if (els.strategyContext) {
         const chips = [
-          sectionContextChip(fmtInt(strategy.legs.length) + " piernas", "primary"),
+          ...screenerScopeChips(scope),
+          sectionContextChip(fmtInt(strategy.legs.length) + " piernas"),
           sectionContextChip("Ventana " + strategy.executionWindow),
           sectionContextChip("Confianza " + fmtNumber(strategy.confidence, 1), scoreTone(strategy.confidence)),
           sectionContextChip("Diversificacion " + fmtNumber(strategy.diversificationScore, 1), scoreTone(strategy.diversificationScore)),
@@ -6099,7 +6529,7 @@
           sectionContextStat(
             "Reparto",
             strategy.weightText,
-            "ventana " + strategy.executionWindow + " · " + fmtInt(strategy.legs.length) + " piernas"
+            "ventana " + strategy.executionWindow + " · " + fmtInt(strategy.legs.length) + " piernas · " + fmtInt(scope.datasets.length) + " datasets scope"
           ),
           sectionContextStat(
             "Core",
@@ -6176,7 +6606,7 @@
         '<div class="spark-shell">',
         '<div class="spark-head"><strong>Lectura operativa</strong><span class="mono">core / satellite / diversifier</span></div>',
         '<p class="subtle">' + escapeHtml(strategy.summaryText) + "</p>",
-        '<p class="subtle">Overlap: ' + escapeHtml(overlapText) + '. La confianza del mix resume score relativo, agotamiento, validacion y dispersion entre piernas.</p>',
+        '<p class="subtle">Overlap: ' + escapeHtml(overlapText) + '. La confianza del mix resume score relativo, agotamiento, validacion y dispersion entre piernas' + (scope.active ? " dentro del scope activo del screener." : ".") + "</p>",
         "</div>"
       ].join("");
 
@@ -6906,12 +7336,12 @@
       ].join("");
     }
 
-    function computeWeekdayQualityRows() {
-      if (!state.datasets.length) return [];
+    function computeWeekdayQualityRows(datasets = state.datasets) {
+      if (!datasets.length) return [];
 
       const grouped = new Map();
 
-      state.datasets.forEach((dataset) => {
+      datasets.forEach((dataset) => {
         (dataset.records || []).forEach((record) => {
           const dayIndex = new Date(record.date + "T00:00:00Z").getUTCDay();
           if (dayIndex === 0 || dayIndex === 6) return;
@@ -7023,21 +7453,29 @@
       if (!els.researchSummary) {
         els.researchSummary = document.getElementById("researchSummary");
       }
-      const rows = computeWeekdayQualityRows();
+      const scope = getScreenerScopedAggregate();
+      const scopedDatasets = scope.datasets;
+      const rows = computeWeekdayQualityRows(scopedDatasets);
       if (!rows.length) {
         if (els.researchContext) {
-          els.researchContext.innerHTML = '<div class="section-context-empty">Carga CSV para ver una lectura rapida del estado semanal, dias mas robustos, alertas y alcance del diagnostico.</div>';
+          els.researchContext.innerHTML = '<div class="section-context-empty">' + escapeHtml(scope.active
+            ? "El screener activo deja sin muestra weekday suficiente para diagnosticar calidad semanal."
+            : "Carga CSV para ver una lectura rapida del estado semanal, dias mas robustos, alertas y alcance del diagnostico.") + "</div>";
         }
         els.researchSummary.innerHTML = [
           '<div class="empty-state">',
           "<strong>Sin diagnostico semanal todavia.</strong>",
-          "Carga uno o varios CSV para medir la calidad y fragilidad de cada dia de la semana.",
+          scope.active
+            ? "Amplia fechas, horas o filtros del screener para recuperar muestra por dia de la semana."
+            : "Carga uno o varios CSV para medir la calidad y fragilidad de cada dia de la semana.",
           "</div>"
         ].join("");
         els.researchWrap.innerHTML = [
           '<div class="empty-state">',
-          "<strong>Sube archivos para abrir el perfil semanal.</strong>",
-          "La seccion mostrara metricas por dia, flags de fragilidad, comparacion reciente vs baseline y una etiqueta GREEN / YELLOW / RED de calidad diagnostica.",
+          "<strong>" + (scope.active ? "El scope actual del screener es demasiado estrecho." : "Sube archivos para abrir el perfil semanal.") + "</strong>",
+          scope.active
+            ? "Weekday Quality se recalcula con el mismo recorte activo del screener: fecha, hora, indice, perfil y tipo."
+            : "La seccion mostrara metricas por dia, flags de fragilidad, comparacion reciente vs baseline y una etiqueta GREEN / YELLOW / RED de calidad diagnostica.",
           "</div>"
         ].join("");
         return;
@@ -7062,7 +7500,7 @@
           .join(" · ") + (alertRows.length > 3 ? " · +" + (alertRows.length - 3) + " mas" : "")
         : "Sin alertas mayores en el corte actual.";
 
-      const allRecords = state.datasets
+      const allRecords = scopedDatasets
         .flatMap((dataset) => dataset.records || [])
         .filter((record) => {
           const dayIndex = new Date(record.date + "T00:00:00Z").getUTCDay();
@@ -7072,7 +7510,7 @@
       const scopeLine = [
         '<div class="research-filter-line">',
         "<strong>Scope diagnostico:</strong>",
-        fmtInt(state.datasets.length) + " datasets",
+        fmtInt(scopedDatasets.length) + " datasets",
         "·",
         fmtInt(allRecords.length) + " registros weekday",
         "·",
@@ -7082,7 +7520,8 @@
 
       if (els.researchContext) {
         const chips = [
-          sectionContextChip(fmtInt(state.datasets.length) + " datasets", "primary"),
+          ...screenerScopeChips(scope),
+          sectionContextChip(fmtInt(scopedDatasets.length) + " datasets", "primary"),
           sectionContextChip(fmtInt(allRecords.length) + " registros weekday"),
           sectionContextChip("Robusto " + strongestRow.day, weekdayQualityTone(strongestRow.qualityLabel)),
           sectionContextChip("Fragil " + fragileRow.day, weekdayQualityTone(fragileRow.qualityLabel)),
@@ -7117,7 +7556,7 @@
           '<div class="section-context-copy">',
           '<span class="section-context-kicker">Lectura rapida del perfil semanal</span>',
           '<h3 class="section-context-title">Como esta la calidad de lunes a viernes</h3>',
-          '<span class="section-context-file mono">' + escapeHtml((dates[0] || "-") + " -> " + (dates[dates.length - 1] || "-")) + "</span>",
+          '<span class="section-context-file mono">' + escapeHtml((dates[0] || "-") + " -> " + (dates[dates.length - 1] || "-") + (scope.active ? " · scope screener activo" : "")) + "</span>",
           '<div class="section-context-chips">' + chips.join("") + "</div>",
           "</div>",
           "</div>",
@@ -7212,6 +7651,766 @@
       els.researchWrap.innerHTML = table;
     }
 
+    function sigmoid(value) {
+      const bounded = Math.max(-12, Math.min(12, value));
+      return 1 / (1 + Math.exp(-bounded));
+    }
+
+    function safeProbability(probability, fallback = 0.5) {
+      if (!Number.isFinite(probability)) return fallback;
+      return clamp(probability, 0.02, 0.98);
+    }
+
+    function safeLogit(probability) {
+      const p = safeProbability(probability);
+      return Math.log(p / (1 - p));
+    }
+
+    function isoDayIndex(dateStr) {
+      const date = parseIsoDateUtc(dateStr);
+      return date ? date.getUTCDay() : 0;
+    }
+
+    function seriesUntil(series, cutoffDate) {
+      if (!series?.length) return [];
+      if (!cutoffDate) return series.slice();
+      return series.slice(0, upperBoundByDate(series, cutoffDate));
+    }
+
+    function outcomeStatsFromSeries(series) {
+      const values = (series || []).map((item) => item.pl);
+      const positiveValues = values.filter((value) => value > 0);
+      const negativeValues = values.filter((value) => value < 0);
+      return {
+        count: values.length,
+        positiveCount: positiveValues.length,
+        negativeCount: negativeValues.length,
+        total: sum(values),
+        winRate: values.length ? positiveValues.length / values.length : 0,
+        avgWin: positiveValues.length ? mean(positiveValues) : 0,
+        avgLoss: negativeValues.length ? mean(negativeValues) : 0,
+        expectancy: values.length ? mean(values) : 0,
+        positiveValues,
+        negativeValues
+      };
+    }
+
+    function smoothedProbability(successes, total, priorProbability = 0.5, priorWeight = OUTLOOK_PRIOR_WEIGHT) {
+      if (!total && total !== 0) return safeProbability(priorProbability);
+      return safeProbability(((successes || 0) + (priorWeight * priorProbability)) / ((total || 0) + priorWeight));
+    }
+
+    function shrinkMean(sampleMean, sampleCount, priorMean, priorWeight = OUTLOOK_PRIOR_WEIGHT) {
+      if (!sampleCount) return priorMean;
+      return (((sampleMean || 0) * sampleCount) + ((priorMean || 0) * priorWeight)) / (sampleCount + priorWeight);
+    }
+
+    function blendedPositiveEstimate(slotDayStats, slotRecentStats, datasetDayStats, datasetAllStats) {
+      let estimate = datasetAllStats.positiveCount ? datasetAllStats.avgWin : Math.max(datasetAllStats.expectancy, 1);
+      estimate = shrinkMean(datasetDayStats.avgWin, datasetDayStats.positiveCount, estimate, 10);
+      estimate = shrinkMean(slotRecentStats.avgWin, slotRecentStats.positiveCount, estimate, 8);
+      estimate = shrinkMean(slotDayStats.avgWin, slotDayStats.positiveCount, estimate, 6);
+      return estimate;
+    }
+
+    function blendedNegativeEstimate(slotDayStats, slotRecentStats, datasetDayStats, datasetAllStats) {
+      let estimate = datasetAllStats.negativeCount ? datasetAllStats.avgLoss : -Math.max(Math.abs(datasetAllStats.expectancy), 1);
+      estimate = shrinkMean(datasetDayStats.avgLoss, datasetDayStats.negativeCount, estimate, 10);
+      estimate = shrinkMean(slotRecentStats.avgLoss, slotRecentStats.negativeCount, estimate, 8);
+      estimate = shrinkMean(slotDayStats.avgLoss, slotDayStats.negativeCount, estimate, 6);
+      return estimate;
+    }
+
+    function chooseOutcomePool(chain, key) {
+      const rich = chain.find((stats) => (stats?.[key]?.length || 0) >= 6);
+      if (rich) return rich[key];
+      const fallback = chain.find((stats) => (stats?.[key]?.length || 0) > 0);
+      return fallback ? fallback[key] : [];
+    }
+
+    function normalizeRatioSignal(ratio) {
+      return clamp(((ratio || 0) - 0.55) / 0.9);
+    }
+
+    function structureProbability(entry, baseProbability, validationHealth) {
+      const forecast = clamp((entry?.forecastScore || 0) / 100);
+      const exhaustionShield = 1 - clamp((entry?.exhaustionScore || 100) / 100);
+      const ratioSignal = normalizeRatioSignal(entry?.ratio10to63 || 0);
+      const validation = clamp(validationHealth ?? 0.5);
+      const consistency = clamp(entry?.metrics?.qc || 0);
+      const labelBonus = entry?.label === "KEEP" ? 0.28 : entry?.label === "WATCH" ? 0.08 : -0.18;
+
+      return safeProbability(sigmoid(
+        safeLogit(baseProbability) +
+        (1.35 * (forecast - 0.5)) +
+        (0.90 * (exhaustionShield - 0.5)) +
+        (0.75 * (ratioSignal - 0.5)) +
+        (0.55 * (validation - 0.5)) +
+        (0.40 * (consistency - 0.5)) +
+        labelBonus
+      ));
+    }
+
+    function addUtcDays(dateStr, days) {
+      const date = parseIsoDateUtc(dateStr);
+      if (!date) return null;
+      date.setUTCDate(date.getUTCDate() + days);
+      return formatIsoDateUtc(date);
+    }
+
+    function nextBusinessDate(dateStr) {
+      let probe = dateStr;
+      for (let index = 0; index < 10; index += 1) {
+        probe = addUtcDays(probe, 1);
+        const dayIndex = isoDayIndex(probe);
+        if (dayIndex >= 1 && dayIndex <= 5) return probe;
+      }
+      return null;
+    }
+
+    function remainingWeekBusinessDates(anchorDate) {
+      const dates = [];
+      let probe = anchorDate;
+      const anchorDay = isoDayIndex(anchorDate);
+      for (let index = 0; index < 5; index += 1) {
+        probe = nextBusinessDate(probe);
+        if (!probe) break;
+        const dayIndex = isoDayIndex(probe);
+        if (dayIndex <= anchorDay) break;
+        dates.push(probe);
+        if (dayIndex === 5) break;
+      }
+      return dates;
+    }
+
+    function nextWeekBusinessDates(anchorDate) {
+      let probe = anchorDate;
+      for (let index = 0; index < 10; index += 1) {
+        probe = nextBusinessDate(probe);
+        if (!probe) break;
+        if (isoDayIndex(probe) === 1) break;
+      }
+      const dates = [];
+      if (!probe) return dates;
+      dates.push(probe);
+      while (dates.length < 5) {
+        probe = nextBusinessDate(probe);
+        if (!probe) break;
+        dates.push(probe);
+      }
+      return dates;
+    }
+
+    function outlookDateLabel(dateStr) {
+      const date = parseIsoDateUtc(dateStr);
+      if (!date) return dateStr || "-";
+      const weekday = WEEKDAY_FULL_ES[date.getUTCDay()] || "-";
+      const label = new Intl.DateTimeFormat("es-ES", {
+        day: "2-digit",
+        month: "short",
+        timeZone: "UTC"
+      }).format(date);
+      return weekday + " · " + label;
+    }
+
+    function validationHealthForDate(dataset, targetDate, fallback = null) {
+      const entry = dataset?.analysis?.validation?.timeline?.get?.(targetDate);
+      if (!entry) {
+        if (fallback !== null) return clamp(fallback);
+        return clamp(dataset?.validationHealth ?? 0.5);
+      }
+      return clamp(entry.health ?? fallback ?? dataset?.validationHealth ?? 0.5);
+    }
+
+    function buildOutlookPrediction(dataset, entry, targetDayIndex, cutoffDate, validationHealth) {
+      const datasetAllSeries = seriesUntil(dataset.records, cutoffDate);
+      const datasetDaySeries = seriesUntil(dataset.analysis.byWeekday.get(targetDayIndex) || [], cutoffDate);
+      const slotSeries = dataset.analysis.bySlot.get(entry.slot) || [];
+      const slotAllSeries = seriesUntil(slotSeries, cutoffDate);
+      const slotDaySeries = slotAllSeries.filter((item) => isoDayIndex(item.date) === targetDayIndex);
+      const slotRecentSeries = slotAllSeries.slice(-OUTLOOK_RECENT_SLOT_WINDOW);
+
+      const datasetAllStats = outcomeStatsFromSeries(datasetAllSeries);
+      const datasetDayStats = outcomeStatsFromSeries(datasetDaySeries);
+      const slotAllStats = outcomeStatsFromSeries(slotAllSeries);
+      const slotDayStats = outcomeStatsFromSeries(slotDaySeries);
+      const slotRecentStats = outcomeStatsFromSeries(slotRecentSeries);
+
+      const datasetBaseProbability = smoothedProbability(datasetAllStats.positiveCount, datasetAllStats.count, 0.55, 12);
+      const weekdayProbability = smoothedProbability(datasetDayStats.positiveCount, datasetDayStats.count, datasetBaseProbability, 10);
+      const slotProbability = smoothedProbability(slotAllStats.positiveCount, slotAllStats.count, datasetBaseProbability, 8);
+      const slotWeekdayProbability = smoothedProbability(slotDayStats.positiveCount, slotDayStats.count, weekdayProbability, 8);
+      const recentProbability = smoothedProbability(slotRecentStats.positiveCount, slotRecentStats.count, slotProbability, 6);
+      const structuralProbability = structureProbability(entry, weekdayProbability, validationHealth);
+
+      const probability = safeProbability(sigmoid(
+        (0.35 * safeLogit(slotWeekdayProbability)) +
+        (0.20 * safeLogit(recentProbability)) +
+        (0.15 * safeLogit(slotProbability)) +
+        (0.30 * safeLogit(structuralProbability))
+      ));
+
+      const avgWin = blendedPositiveEstimate(slotDayStats, slotRecentStats, datasetDayStats, datasetAllStats);
+      const avgLoss = blendedNegativeEstimate(slotDayStats, slotRecentStats, datasetDayStats, datasetAllStats);
+      const expectedValue = (probability * avgWin) + ((1 - probability) * avgLoss);
+      const riskAdjustedEv = expectedValue / Math.max(Math.abs(avgLoss), 1);
+
+      const confidence = 100 * (
+        (0.30 * Math.sqrt(clamp(slotDayStats.count / 16))) +
+        (0.20 * Math.sqrt(clamp(slotRecentStats.count / OUTLOOK_RECENT_SLOT_WINDOW))) +
+        (0.20 * Math.sqrt(clamp(datasetDayStats.count / 48))) +
+        (0.20 * clamp(validationHealth)) +
+        (0.10 * (entry.label === "KEEP" ? 1 : entry.label === "WATCH" ? 0.7 : 0.4))
+      );
+
+      const decisionScore =
+        (0.42 * probability) +
+        (0.18 * clamp(confidence / 100)) +
+        (0.20 * clamp((entry.forecastScore || 0) / 100)) +
+        (0.10 * (1 - clamp((entry.exhaustionScore || 100) / 100))) +
+        (0.10 * clamp((riskAdjustedEv + 0.5) / 1.5));
+
+      return {
+        probability: round(probability, 4),
+        expectedValue: round(expectedValue, 2),
+        avgWin: round(avgWin, 2),
+        avgLoss: round(avgLoss, 2),
+        confidence: round(confidence, 1),
+        decisionScore: round(decisionScore, 4),
+        slotWeekdayProbability: round(slotWeekdayProbability, 4),
+        recentProbability: round(recentProbability, 4),
+        slotProbability: round(slotProbability, 4),
+        weekdayProbability: round(weekdayProbability, 4),
+        structuralProbability: round(structuralProbability, 4),
+        riskAdjustedEv: round(riskAdjustedEv, 4),
+        slotDayCount: slotDayStats.count,
+        recentCount: slotRecentStats.count,
+        datasetDayCount: datasetDayStats.count,
+        positivePool: chooseOutcomePool([slotDayStats, slotRecentStats, datasetDayStats, datasetAllStats], "positiveValues"),
+        negativePool: chooseOutcomePool([slotDayStats, slotRecentStats, datasetDayStats, datasetAllStats], "negativeValues")
+      };
+    }
+
+    function buildOutlookDrivers(entry, prediction) {
+      const drivers = [];
+
+      if (prediction.slotWeekdayProbability >= 0.62) drivers.push({ text: "weekday del slot fuerte", tone: "good" });
+      if (prediction.recentProbability >= prediction.slotProbability + 0.04) drivers.push({ text: "momento reciente mejora", tone: "good" });
+      if (prediction.structuralProbability >= prediction.weekdayProbability + 0.05) drivers.push({ text: "estructura actual acompana", tone: "good" });
+      if ((entry.exhaustionScore || 100) <= 25) drivers.push({ text: "agotamiento controlado", tone: "good" });
+      if ((entry.exhaustionScore || 0) >= 55) drivers.push({ text: "agotamiento alto", tone: "warn" });
+      if ((entry.forecastScore || 0) < 60) drivers.push({ text: "forecast discreto", tone: "warn" });
+      if ((prediction.confidence || 0) < 55) drivers.push({ text: "muestra limitada", tone: "warn" });
+      if (!drivers.length) drivers.push({ text: "senal balanceada", tone: "neutral" });
+
+      return drivers.slice(0, 4);
+    }
+
+    function compareOutlookCandidates(a, b) {
+      if ((b.decisionScore || 0) !== (a.decisionScore || 0)) return (b.decisionScore || 0) - (a.decisionScore || 0);
+      if ((b.expectedValue || 0) !== (a.expectedValue || 0)) return (b.expectedValue || 0) - (a.expectedValue || 0);
+      return (b.probability || 0) - (a.probability || 0);
+    }
+
+    function chooseBestForecastForDay(dataset, targetDate, cutoffDate, options = {}) {
+      const targetDayIndex = isoDayIndex(targetDate);
+      const snapshot = buildSnapshot(dataset.analysis.bySlot, { cutoffDate });
+      if (!snapshot.ranking.length) return null;
+
+      const availability = dataset.analysis.byDate.get(targetDate);
+      const validationHealth = options.validationHealth ?? validationHealthForDate(dataset, targetDate);
+      const candidates = snapshot.ranking
+        .slice(0, OUTLOOK_TOP_SLOTS)
+        .filter((entry) => !availability || availability.has(entry.slot))
+        .map((entry) => {
+          const prediction = buildOutlookPrediction(dataset, entry, targetDayIndex, cutoffDate, validationHealth);
+          return {
+            ...prediction,
+            datasetKey: dataset.key,
+            datasetLabel: dataset.meta.shortLabel,
+            strategyName: dataset.meta.strategyName,
+            symbol: dataset.meta.symbol,
+            riskLabel: dataset.meta.riskLabel,
+            structureLabel: dataset.meta.structureLabel,
+            slot: entry.slot,
+            label: entry.label,
+            focusWindow: dataset.focusWindow,
+            forecastScore: entry.forecastScore,
+            exhaustionScore: entry.exhaustionScore,
+            validationHealth: round(validationHealth * 100, 1),
+            targetDate,
+            drivers: buildOutlookDrivers(entry, prediction)
+          };
+        })
+        .sort(compareOutlookCandidates);
+
+      if (!candidates.length) return null;
+
+      const best = candidates[0];
+      return {
+        ...best,
+        alternatives: candidates.slice(1, 3)
+      };
+    }
+
+    function hashString(value) {
+      let hash = 2166136261;
+      const text = String(value || "");
+      for (let index = 0; index < text.length; index += 1) {
+        hash ^= text.charCodeAt(index);
+        hash = Math.imul(hash, 16777619);
+      }
+      return hash >>> 0;
+    }
+
+    function seededRandom(seed) {
+      let value = seed >>> 0;
+      return () => {
+        value += 0x6D2B79F5;
+        let t = value;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function quantile(sortedValues, quantileValue) {
+      if (!sortedValues.length) return 0;
+      const index = (sortedValues.length - 1) * clamp(quantileValue);
+      const low = Math.floor(index);
+      const high = Math.ceil(index);
+      if (low === high) return sortedValues[low];
+      const weight = index - low;
+      return sortedValues[low] + ((sortedValues[high] - sortedValues[low]) * weight);
+    }
+
+    function buildScenarioEnvelope(days, seedKey) {
+      if (!days.length) {
+        return {
+          low: 0,
+          median: 0,
+          high: 0,
+          positiveProbability: 0,
+          expectedValue: 0
+        };
+      }
+
+      const rng = seededRandom(hashString(seedKey));
+      const totals = [];
+
+      for (let index = 0; index < OUTLOOK_SIMULATIONS; index += 1) {
+        let total = 0;
+        days.forEach((day) => {
+          const drawPositive = rng() < day.probability;
+          const pool = drawPositive ? day.positivePool : day.negativePool;
+          if (pool.length) {
+            total += pool[Math.floor(rng() * pool.length)];
+          } else {
+            total += day.expectedValue;
+          }
+        });
+        totals.push(total);
+      }
+
+      totals.sort((a, b) => a - b);
+      return {
+        low: round(quantile(totals, 0.10), 1),
+        median: round(quantile(totals, 0.50), 1),
+        high: round(quantile(totals, 0.90), 1),
+        positiveProbability: round((totals.filter((value) => value > 0).length / totals.length), 4),
+        expectedValue: round(mean(totals), 1)
+      };
+    }
+
+    function buildHorizonForecast(datasets, targetDates, cutoffDate, modeLabel, options = {}) {
+      const validationProvider = options.validationProvider || ((dataset, targetDate) => validationHealthForDate(dataset, targetDate));
+      const days = targetDates
+        .map((targetDate) => {
+          const candidates = datasets
+            .map((dataset) => chooseBestForecastForDay(dataset, targetDate, cutoffDate, {
+              validationHealth: validationProvider(dataset, targetDate)
+            }))
+            .filter(Boolean)
+            .sort(compareOutlookCandidates);
+
+          if (!candidates.length) return null;
+          const leader = candidates[0];
+          return {
+            ...leader,
+            mode: modeLabel,
+            date: targetDate,
+            alternatives: candidates.slice(1, 3)
+          };
+        })
+        .filter(Boolean);
+
+      const scenario = buildScenarioEnvelope(days, modeLabel + "|" + cutoffDate + "|" + targetDates.join("|"));
+      return {
+        mode: modeLabel,
+        days,
+        startDate: targetDates[0] || null,
+        endDate: targetDates[targetDates.length - 1] || null,
+        scenario,
+        totalExpectedValue: round(sum(days.map((day) => day.expectedValue)), 1),
+        averageConfidence: round(mean(days.map((day) => day.confidence)), 1)
+      };
+    }
+
+    function allTimelineDates(datasets = state.datasets) {
+      return Array.from(new Set((datasets || []).flatMap((dataset) => dataset.analysis.dates))).sort();
+    }
+
+    function summarizeNextDayBacktest(results) {
+      if (!results.length) return null;
+      const brier = mean(results.map((row) => ((row.probability || 0) - (row.realizedPl > 0 ? 1 : 0)) ** 2));
+      const hitRate = mean(results.map((row) => (row.realizedPl > 0 ? 1 : 0)));
+      const calibrationGap = Math.abs(mean(results.map((row) => row.probability || 0)) - hitRate);
+      const avgRealized = mean(results.map((row) => row.realizedPl || 0));
+      const avgExpected = mean(results.map((row) => row.expectedValue || 0));
+      return {
+        tests: results.length,
+        brier: round(brier, 4),
+        hitRate: round(hitRate * 100, 1),
+        calibrationGap: round(calibrationGap * 100, 1),
+        avgRealized: round(avgRealized, 1),
+        avgExpected: round(avgExpected, 1)
+      };
+    }
+
+    function summarizeWeeklyBacktest(results) {
+      if (!results.length) return null;
+      const brier = mean(results.map((row) => ((row.positiveProbability || 0) - (row.realizedTotal > 0 ? 1 : 0)) ** 2));
+      const hitRate = mean(results.map((row) => (row.realizedTotal > 0 ? 1 : 0)));
+      const coverage = mean(results.map((row) => (row.covered ? 1 : 0)));
+      const mae = mean(results.map((row) => Math.abs((row.expectedValue || 0) - (row.realizedTotal || 0))));
+      return {
+        tests: results.length,
+        brier: round(brier, 4),
+        positiveHitRate: round(hitRate * 100, 1),
+        intervalCoverage: round(coverage * 100, 1),
+        meanAbsoluteError: round(mae, 1)
+      };
+    }
+
+    function buildNextDayBacktestResults(datasets = state.datasets) {
+      const dates = allTimelineDates(datasets);
+      const results = [];
+
+      for (let index = VALIDATION_MIN_DATES; index < dates.length - 1; index += 1) {
+        const cutoffDate = dates[index];
+        const targetDate = dates[index + 1];
+        const candidates = datasets
+          .map((dataset) => {
+            if (!dataset.analysis.byDate.has(targetDate)) return null;
+            return chooseBestForecastForDay(dataset, targetDate, cutoffDate, {
+              validationHealth: validationHealthForDate(dataset, targetDate, 0.5)
+            });
+          })
+          .filter(Boolean)
+          .sort(compareOutlookCandidates);
+
+        if (!candidates.length) continue;
+        const leader = candidates[0];
+        const dataset = datasets.find((entry) => entry.key === leader.datasetKey);
+        const realizedPl = dataset?.analysis?.byDate?.get(targetDate)?.get(leader.slot);
+        if (realizedPl === undefined) continue;
+
+        results.push({
+          cutoffDate,
+          targetDate,
+          probability: leader.probability,
+          expectedValue: leader.expectedValue,
+          realizedPl,
+          confidence: leader.confidence
+        });
+      }
+
+      return results;
+    }
+
+    function buildWeeklyBacktestResults(datasets = state.datasets) {
+      const allDates = allTimelineDates(datasets);
+      const availableDates = new Set(allDates);
+      const fridayAnchors = allDates.filter((date) => isoDayIndex(date) === 5);
+      const results = [];
+
+      fridayAnchors.forEach((cutoffDate) => {
+        const targetDates = nextWeekBusinessDates(cutoffDate).filter((date) => availableDates.has(date));
+        if (targetDates.length < 3) return;
+
+        const horizon = buildHorizonForecast(datasets, targetDates, cutoffDate, "next_week_backtest", {
+          validationProvider: (dataset, targetDate) => validationHealthForDate(dataset, targetDate, 0.5)
+        });
+
+        if (!horizon.days.length) return;
+
+        const realizedTotal = sum(horizon.days.map((day) => {
+          const dataset = datasets.find((entry) => entry.key === day.datasetKey);
+          return dataset?.analysis?.byDate?.get(day.date)?.get(day.slot) ?? 0;
+        }));
+
+        results.push({
+          cutoffDate,
+          expectedValue: horizon.totalExpectedValue,
+          positiveProbability: horizon.scenario.positiveProbability,
+          realizedTotal: round(realizedTotal, 1),
+          covered: realizedTotal >= horizon.scenario.low && realizedTotal <= horizon.scenario.high
+        });
+      });
+
+      return results;
+    }
+
+    function outlookCacheKey(scope = getScreenerScopedAggregate()) {
+      return scope?.cacheKey || "";
+    }
+
+    function buildWeeklyOutlookReport(scope = getScreenerScopedAggregate()) {
+      const aggregate = scope?.aggregate;
+      const datasets = scope?.datasets || [];
+      if (!aggregate || !datasets.length) return null;
+      const anchorDate = aggregate.stats.endDate;
+      if (!anchorDate) return null;
+
+      const remainingDates = remainingWeekBusinessDates(anchorDate);
+      const nextWeekDates = nextWeekBusinessDates(anchorDate);
+      const remainingWeek = remainingDates.length
+        ? buildHorizonForecast(datasets, remainingDates, anchorDate, "remaining_week", {
+          validationProvider: (dataset) => dataset.validationHealth
+        })
+        : null;
+      const nextWeek = nextWeekDates.length
+        ? buildHorizonForecast(datasets, nextWeekDates, anchorDate, "next_week", {
+          validationProvider: (dataset) => dataset.validationHealth
+        })
+        : null;
+
+      const nextDayBacktest = buildNextDayBacktestResults(datasets);
+      const weeklyBacktest = buildWeeklyBacktestResults(datasets);
+
+      return {
+        anchorDate,
+        remainingWeek,
+        nextWeek,
+        primaryHorizon: remainingWeek?.days?.length ? remainingWeek : nextWeek,
+        nextSession: remainingWeek?.days?.[0] || nextWeek?.days?.[0] || null,
+        validation: {
+          nextDay: summarizeNextDayBacktest(nextDayBacktest),
+          weekly: summarizeWeeklyBacktest(weeklyBacktest)
+        },
+        scopeActive: !!scope?.active,
+        scopedDatasets: datasets.length
+      };
+    }
+
+    function getWeeklyOutlookReport(scope = getScreenerScopedAggregate()) {
+      const cacheKey = outlookCacheKey(scope);
+      if (!cacheKey) return null;
+      if (state.outlook?.cacheKey === cacheKey && state.outlook?.report) return state.outlook.report;
+      const report = buildWeeklyOutlookReport(scope);
+      state.outlook = {
+        cacheKey,
+        report
+      };
+      return report;
+    }
+
+    function renderOutlook() {
+      if (!els.outlookWrap || !els.outlookSummary || !els.outlookContext) return;
+      const scope = getScreenerScopedAggregate();
+      if (!scope.datasets.length || !scope.aggregate) {
+        els.outlookContext.innerHTML = '<div class="section-context-empty">' + escapeHtml(scope.active
+          ? "El screener activo deja sin base suficiente para proyectar la siguiente ventana semanal."
+          : "Carga CSV para proyectar la proxima semana o lo que reste de la actual con base en el estado vigente del framework y el historial previo.") + "</div>";
+        els.outlookSummary.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Sin outlook todavia.</strong>",
+          scope.active
+            ? "Amplia fechas, horas o filtros del screener para recuperar historia valida para el forecast semanal."
+            : "Carga datasets para calcular probabilidad semanal, EV restante, bandas de escenario y validacion del modelo.",
+          "</div>"
+        ].join("");
+        els.outlookWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>" + (scope.active ? "El scope actual del screener es insuficiente." : "La tabla del forecast aparecera aqui.") + "</strong>",
+          scope.active
+            ? "Weekly Outlook usa el mismo recorte activo del screener: fecha, hora, indice, perfil y tipo."
+            : "Mostrara el mejor candidato previsto para cada dia objetivo, su POP, EV, confianza, lectura de riesgo y drivers visibles del modelo.",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const report = getWeeklyOutlookReport(scope);
+      const primary = report?.primaryHorizon;
+      const nextWeek = report?.nextWeek;
+      const nextSession = report?.nextSession;
+      const validation = report?.validation || {};
+
+      if (!report || !primary?.days?.length) {
+        els.outlookContext.innerHTML = '<div class="section-context-empty">' + escapeHtml(scope.active
+          ? "El screener activo deja historia insuficiente para construir un Weekly Outlook estable."
+          : "La data actual no tiene suficiente historia para construir un Weekly Outlook estable.") + "</div>";
+        els.outlookSummary.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Historia insuficiente.</strong>",
+          scope.active
+            ? "Amplia el scope del screener para recuperar suficiente recorrido historico y volver a proyectar."
+            : "El outlook semanal necesita mas recorrido historico para producir una proyeccion con POP y validacion minima.",
+          "</div>"
+        ].join("");
+        els.outlookWrap.innerHTML = "";
+        return;
+      }
+
+      const chips = [
+        ...screenerScopeChips(scope),
+        sectionContextChip("Corte " + report.anchorDate, "primary"),
+        sectionContextChip(primary.mode === "remaining_week" ? "Resto semana" : "Proxima semana"),
+        nextSession ? sectionContextChip("Proxima sesion " + nextSession.slot, nextSession.label === "KEEP" ? "good" : nextSession.label === "WATCH" ? "warn" : "bad") : "",
+        nextWeek?.scenario ? sectionContextChip("P semana + " + fmtNumber(nextWeek.scenario.positiveProbability * 100, 1) + "%", scoreTone(nextWeek.scenario.positiveProbability * 100)) : "",
+        validation.nextDay ? sectionContextChip("Brier next-day " + fmtNumber(validation.nextDay.brier, 3), validation.nextDay.brier <= 0.22 ? "good" : validation.nextDay.brier <= 0.28 ? "warn" : "bad") : ""
+      ].filter(Boolean);
+
+      const contextCards = [
+        sectionContextStat(
+          "Proxima sesion",
+          nextSession ? nextSession.datasetLabel : "-",
+          nextSession ? (nextSession.slot + " · POP " + fmtNumber(nextSession.probability * 100, 1) + "% · EV " + fmtSignedCurrency(nextSession.expectedValue, 1)) : "sin candidato"
+        ),
+        sectionContextStat(
+          "Semana objetivo",
+          fmtNumber(primary.scenario.positiveProbability * 100, 1) + "%",
+          fmtSignedCurrency(primary.totalExpectedValue, 1) + " EV · " + fmtInt(primary.days.length) + " sesiones"
+        ),
+        sectionContextStat(
+          "Escenario 10/50/90",
+          fmtCurrency(primary.scenario.low, 0) + " / " + fmtCurrency(primary.scenario.median, 0) + " / " + fmtCurrency(primary.scenario.high, 0),
+          "distribucion Monte Carlo del horizonte"
+        ),
+        sectionContextStat(
+          "Validacion next-day",
+          validation.nextDay ? fmtNumber(validation.nextDay.hitRate, 1) + "%" : "N/D",
+          validation.nextDay
+            ? ("Brier " + fmtNumber(validation.nextDay.brier, 3) + " · gap calib. " + fmtNumber(validation.nextDay.calibrationGap, 1) + "%")
+            : "sin serie next-day suficiente"
+        ),
+        sectionContextStat(
+          "Validacion semanal",
+          validation.weekly ? fmtNumber(validation.weekly.positiveHitRate, 1) + "%" : "N/D",
+          validation.weekly
+            ? ("cov " + fmtNumber(validation.weekly.intervalCoverage, 1) + "% · Brier " + fmtNumber(validation.weekly.brier, 3))
+            : "sin serie semanal suficiente"
+        )
+      ].join("");
+
+      els.outlookContext.innerHTML = [
+        '<div class="section-context-panel">',
+        '<div class="section-context-top">',
+        '<div class="section-context-copy">',
+        '<span class="section-context-kicker">Forecast semanal probabilistico</span>',
+        '<h3 class="section-context-title">Projection V1 basada en estructura + historial por weekday</h3>',
+        '<span class="section-context-file mono">Sin live feed: el V1 proyecta con el estado actual del framework y se recalibra cuando entra un nuevo cierre diario' + (scope.active ? " dentro del scope activo del screener." : ".") + "</span>",
+        '<div class="section-context-chips">' + chips.join("") + "</div>",
+        "</div>",
+        "</div>",
+        '<div class="section-context-stats outlook-context-stats">' + contextCards + "</div>",
+        "</div>"
+      ].join("");
+
+      const summaryCards = [
+        {
+          title: "Next session POP",
+          value: fmtNumber((nextSession?.probability || 0) * 100, 1) + "%",
+          valueClass: (nextSession?.probability || 0) >= 0.6 ? "positive" : (nextSession?.probability || 0) < 0.5 ? "negative" : "",
+          note: nextSession ? (nextSession.datasetLabel + " · " + nextSession.slot + " · conf " + fmtNumber(nextSession.confidence, 1)) : "sin candidato"
+        },
+        {
+          title: "Target horizon P(+)",
+          value: fmtNumber(primary.scenario.positiveProbability * 100, 1) + "%",
+          valueClass: primary.scenario.positiveProbability >= 0.6 ? "positive" : primary.scenario.positiveProbability < 0.5 ? "negative" : "",
+          note: primary.mode === "remaining_week" ? "resto de la semana actual" : "proxima semana completa"
+        },
+        {
+          title: "EV horizonte",
+          value: fmtSignedCurrency(primary.totalExpectedValue, 1),
+          valueClass: primary.totalExpectedValue >= 0 ? "positive" : "negative",
+          note: "media simulada " + fmtSignedCurrency(primary.scenario.expectedValue, 1)
+        },
+        {
+          title: "Range 10/50/90",
+          value: fmtCurrency(primary.scenario.low, 0) + " / " + fmtCurrency(primary.scenario.median, 0) + " / " + fmtCurrency(primary.scenario.high, 0),
+          note: "bandas de escenario"
+        }
+      ].map((card) => [
+        '<article class="outlook-card">',
+        "<strong>" + escapeHtml(card.title) + "</strong>",
+        '<div class="value ' + escapeHtml(card.valueClass || "") + '">' + escapeHtml(card.value) + "</div>",
+        '<div class="note">' + escapeHtml(card.note) + "</div>",
+        "</article>"
+      ].join("")).join("");
+
+      const validationText = validation.nextDay
+        ? [
+          "next-day: Brier " + fmtNumber(validation.nextDay.brier, 3),
+          "hit " + fmtNumber(validation.nextDay.hitRate, 1) + "%",
+          "gap calib. " + fmtNumber(validation.nextDay.calibrationGap, 1) + "%",
+          "EV " + fmtSignedCurrency(validation.nextDay.avgExpected, 1) + " vs real " + fmtSignedCurrency(validation.nextDay.avgRealized, 1)
+        ].join(" · ")
+        : "sin validacion next-day suficiente";
+
+      const weeklyValidationText = validation.weekly
+        ? [
+          "week hit " + fmtNumber(validation.weekly.positiveHitRate, 1) + "%",
+          "Brier " + fmtNumber(validation.weekly.brier, 3),
+          "coverage " + fmtNumber(validation.weekly.intervalCoverage, 1) + "%",
+          "MAE " + fmtCurrency(validation.weekly.meanAbsoluteError, 0)
+        ].join(" · ")
+        : "sin validacion semanal suficiente";
+
+      els.outlookSummary.innerHTML = [
+        '<div class="outlook-stack">',
+        '<div class="outlook-cards">' + summaryCards + "</div>",
+        '<div class="outlook-summary-block"><strong>Como leerlo</strong><p>POP = probabilidad empirica-modelada de cerrar positivo. EV = valor esperado del candidato o del horizonte. Las bandas 10/50/90 no son promesa; describen escenarios probables segun la distribucion historica del sistema.</p></div>',
+        '<div class="outlook-summary-block"><strong>Validacion next-day</strong><p>' + escapeHtml(validationText) + "</p></div>",
+        '<div class="outlook-summary-block"><strong>Validacion semanal</strong><p>' + escapeHtml(weeklyValidationText) + "</p></div>",
+        "</div>"
+      ].join("");
+
+      els.outlookWrap.innerHTML = [
+        '<div class="outlook-day-list">',
+        primary.days.map((day) => [
+          '<article class="outlook-day-card">',
+          '<div class="outlook-day-top">',
+          '<div class="outlook-day-id">',
+          "<strong>" + escapeHtml(outlookDateLabel(day.date)) + "</strong>",
+          "<span>" + escapeHtml(day.datasetLabel + " · " + day.slot + " · " + day.symbol + " · " + day.riskLabel + " · " + day.structureLabel) + "</span>",
+          "</div>",
+          '<span class="badge ' + escapeHtml(day.label) + '">' + escapeHtml(day.label) + "</span>",
+          "</div>",
+          '<div class="section-context-chips">' + [
+            sectionContextChip("POP " + fmtNumber(day.probability * 100, 1) + "%", scoreTone(day.probability * 100)),
+            sectionContextChip("EV " + fmtSignedCurrency(day.expectedValue, 1), day.expectedValue >= 0 ? "good" : "bad"),
+            sectionContextChip("Conf " + fmtNumber(day.confidence, 1), scoreTone(day.confidence)),
+            sectionContextChip("Forecast " + fmtNumber(day.forecastScore, 1)),
+            sectionContextChip("Agot " + fmtNumber(day.exhaustionScore, 1), day.exhaustionScore <= 30 ? "good" : day.exhaustionScore >= 55 ? "warn" : "")
+          ].join("") + "</div>",
+          '<div class="outlook-day-metrics">',
+          '<div class="outlook-day-metric"><span>Avg win</span><strong>' + escapeHtml(fmtCurrency(day.avgWin, 0)) + "</strong></div>",
+          '<div class="outlook-day-metric"><span>Avg loss</span><strong>' + escapeHtml(fmtCurrency(day.avgLoss, 0)) + "</strong></div>",
+          '<div class="outlook-day-metric"><span>Ventana</span><strong>' + escapeHtml(day.focusWindow || "-") + "</strong></div>",
+          '<div class="outlook-day-metric"><span>Validation</span><strong>' + escapeHtml(fmtNumber(day.validationHealth, 1) + "%") + "</strong></div>",
+          "</div>",
+          '<div class="signal-row">' + day.drivers.map((driver) => '<span class="signal-chip ' + escapeHtml(driver.tone) + '">' + escapeHtml(driver.text) + "</span>").join("") + "</div>",
+          day.alternatives?.length
+            ? ('<div class="subtle">Alternativas: ' + escapeHtml(day.alternatives.map((alt) => alt.datasetLabel + " " + alt.slot + " (" + fmtNumber(alt.probability * 100, 1) + "%)").join(" · ")) + "</div>")
+            : "",
+          "</article>"
+        ].join("")).join(""),
+        "</div>"
+      ].join("");
+    }
+
     function currentSelectionContext() {
       const dataset = selectedDataset();
       if (!dataset) return null;
@@ -7256,9 +8455,12 @@
     function logicAgentReply(rawQuestion) {
       const question = normalizeAgentQuery(rawQuestion);
       const context = currentSelectionContext();
+      const scope = getScreenerScopedAggregate();
+      const scopeText = screenerScopeSummary(scope);
+      const selectionInScope = selectionInsideScope(context, scope);
 
       if (!question) {
-        return "Pregunta por forecast, exhaustion, validation, rolling o por la seleccion actual.";
+        return "Pregunta por la seleccion actual, el scope del screener, Weekly Outlook, Weekday Quality, mix sugerido o metricas como win rate / PF / max DD.";
       }
 
       if (agentHas(question, [
@@ -7288,9 +8490,16 @@
         return "Este agente es local: no usa APIs externas, no envía preguntas fuera de la página y responde solo con conocimiento curado. Aun así, cualquier lógica servida al navegador puede inspeccionarse; si quieres proteger IP real, lo sensible debe salir del HTML cliente y moverse a servidor.";
       }
 
+      if (agentHas(question, ["scope", "screener", "filtro", "filtros", "filtrado", "filter"])) {
+        if (!scope.active) {
+          return "Ahora mismo no hay recorte adicional del screener. Las secciones derivadas trabajan sobre el universo completo: " + scopeText + ".";
+        }
+        return "Ahora mismo el scope activo del screener es: " + scopeText + ". Weekly Outlook, Weekday Quality y Mix sugerido ya se recalculan dentro de ese mismo recorte.";
+      }
+
       if (
         agentHas(question, ["formula", "calculo", "calcula", "metrica", "metricas"]) &&
-        !agentHas(question, ["forecast", "exhaust", "agot", "deterioro", "validation", "walk", "rolling", "dataset"])
+        !agentHas(question, ["forecast", "exhaust", "agot", "deterioro", "validation", "walk", "rolling", "dataset", "outlook", "weekday", "mix", "screener"])
       ) {
         return "Puedo explicar formulas aprobadas como win rate, expectativa, profit factor, avg win, avg loss y max drawdown. No expongo la composicion exacta de forecast, dataset score ni ranking interno.";
       }
@@ -7302,8 +8511,73 @@
         return [
           "Seleccion actual: " + context.selected.slot + " en " + context.dataset.meta.shortLabel + ".",
           "Forecast " + fmtNumber(context.selected.forecastScore, 1) + ", exhaustion " + fmtNumber(context.selected.exhaustionScore, 1) + ", validation " + fmtNumber(context.validationHealthPct, 1) + "% y rolling " + context.rollingText + ".",
-          "La etiqueta actual es " + context.selected.label + " y sus senales visibles son: " + (context.selected.signals.map((signal) => signal.text).join(", ") || "sin senales destacadas") + "."
+          "La etiqueta actual es " + context.selected.label + " y sus senales visibles son: " + (context.selected.signals.map((signal) => signal.text).join(", ") || "sin senales destacadas") + ".",
+          scope.active
+            ? (selectionInScope
+              ? "La seleccion actual tambien pertenece al scope vigente del screener."
+              : "La seleccion actual queda fuera del scope vigente del screener; Outlook, Weekday y Mix usan ese scope, no esta seleccion.")
+            : "El screener no tiene recorte adicional activo."
         ].join(" ");
+      }
+
+      if (agentHas(question, ["outlook", "pop", "semanal", "weekly", "next session", "proxima semana", "proxima sesion"])) {
+        const report = getWeeklyOutlookReport(scope);
+        const primary = report?.primaryHorizon;
+        const nextSession = report?.nextSession;
+        if (!report || !primary?.days?.length) {
+          return "No hay Weekly Outlook util con el scope actual. " + (scope.active
+            ? "Amplia el screener para recuperar historia suficiente."
+            : "Carga mas historia o datasets para construir una proyeccion estable.");
+        }
+        const validation = report.validation || {};
+        return [
+          "Weekly Outlook trabaja sobre " + scopeText + ".",
+          nextSession
+            ? ("Proxima sesion: " + nextSession.datasetLabel + " " + nextSession.slot + " con POP " + fmtNumber(nextSession.probability * 100, 1) + "% y EV " + fmtSignedCurrency(nextSession.expectedValue, 1) + ".")
+            : "No hay candidata inmediata visible.",
+          "Horizonte principal: P(+) " + fmtNumber(primary.scenario.positiveProbability * 100, 1) + "%, EV " + fmtSignedCurrency(primary.totalExpectedValue, 1) + " y rango 10/50/90 " + fmtCurrency(primary.scenario.low, 0) + " / " + fmtCurrency(primary.scenario.median, 0) + " / " + fmtCurrency(primary.scenario.high, 0) + ".",
+          validation.nextDay
+            ? ("Validacion next-day: Brier " + fmtNumber(validation.nextDay.brier, 3) + " y hit " + fmtNumber(validation.nextDay.hitRate, 1) + "%.")
+            : "Sin validacion next-day suficiente."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["weekday", "day of week", "dia de la semana", "dias de la semana", "weekday quality"])) {
+        const rows = computeWeekdayQualityRows(scope.datasets);
+        if (!rows.length) {
+          return "No hay Weekday Quality util con el scope actual. " + (scope.active
+            ? "Amplia el screener para recuperar muestra weekday."
+            : "Carga mas historia para diagnosticar calidad semanal.");
+        }
+        const strongest = rows.slice().sort((a, b) => (b.qualityScore - a.qualityScore) || (b.expectancy - a.expectancy))[0];
+        const fragile = rows.slice().sort((a, b) => (a.qualityScore - b.qualityScore) || (a.expectancy - b.expectancy))[0];
+        return [
+          "Weekday Quality trabaja sobre " + scopeText + ".",
+          strongest.day + " es el dia mas robusto con score " + fmtNumber(strongest.qualityScore, 1) + ", expectativa " + fmtSignedCurrency(strongest.expectancy, 2) + " y etiqueta " + strongest.qualityLabel + ".",
+          fragile.day + " es el dia mas fragil con score " + fmtNumber(fragile.qualityScore, 1) + " y flags " + (fragile.flags.join(", ") || "sin alerta mayor") + ".",
+          "Recuerda que esta seccion diagnostica calidad; no asigna sizing."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["mix", "estrategia combinada", "combinada", "satellite", "diversifier", "diversifier", "core"])) {
+        const strategy = scope.aggregate?.strategy;
+        if (!strategy) {
+          return "No hay mix sugerido util con el scope actual. " + (scope.active
+            ? "El screener no deja suficientes datasets compatibles para proponer una mezcla interpretable."
+            : "Carga varios datasets para construir una mezcla core / satellite / diversifier.");
+        }
+        return [
+          "El mix sugerido trabaja sobre " + scopeText + ".",
+          "Ventana " + strategy.executionWindow + ", confianza " + fmtNumber(strategy.confidence, 1) + " y reparto " + strategy.weightText + ".",
+          strategy.legs.map((leg) => leg.role + " " + leg.weight + "% en " + leg.meta.shortLabel + " " + leg.executionSlot).join(" · ") + ".",
+          strategy.concentrationFlags.length
+            ? ("Alertas de overlap: " + strategy.concentrationFlags.join(", ") + ".")
+            : "No hay overlap critico dominante en la mezcla actual."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["metodo", "metodologia"])) {
+        return "La metodologia embebida ahora esta al final del dashboard. Resume ingestion desde DATA/manual, forecast, agotamiento, walk-forward, scope compartido del screener, Weekly Outlook V1, Weekday Quality, mix sugerido y reglas practicas de uso.";
       }
 
       if (agentHas(question, ["forecast"])) {
@@ -7413,10 +8687,10 @@
         if (!context) {
           return "Dataset score resume la calidad global del dataset combinando fuerza del lider, agotamiento, profundidad del top 3 y salud de validacion.";
         }
-        return "El dataset activo es " + context.dataset.meta.shortLabel + " y su dataset score actual es " + fmtNumber(context.dataset.datasetScore, 1) + ". Esa nota combina fuerza del lider, agotamiento controlado, profundidad del top 3 y validacion.";
+        return "El dataset activo es " + context.dataset.meta.shortLabel + " y su dataset score actual es " + fmtNumber(context.dataset.datasetScore, 1) + ". Esa nota combina fuerza del lider, agotamiento controlado, profundidad del top 3 y validacion." + (scope.active ? " El scope vigente del screener es: " + scopeText + "." : "");
       }
 
-      return "Puedo ayudar con forecast, exhaustion, validation, rolling, etiquetas KEEP/WATCH/ROTATE o con la lectura de la seleccion actual. No expongo pesos exactos ni implementacion replicable.";
+      return "Puedo ayudar con seleccion actual, scope del screener, Weekly Outlook, Weekday Quality, mix sugerido, forecast, exhaustion, validation, rolling o etiquetas KEEP/WATCH/ROTATE. No expongo pesos exactos ni implementacion replicable.";
     }
 
     function pushLogicAgentMessage(role, text) {
@@ -7437,10 +8711,20 @@
       if (!els.logicAgentRoot) return;
 
       const context = currentSelectionContext();
-      const chips = ["Seleccion actual", "Win rate", "Profit factor", "Max DD", "Forecast", "Validation", "Rolling", "Seguridad"];
+      const scope = getScreenerScopedAggregate();
+      const selectionInScope = selectionInsideScope(context, scope);
+      const chips = ["Seleccion actual", "Scope screener", "Weekly Outlook", "Weekday Quality", "Mix sugerido", "Forecast", "Validation", "Seguridad"];
       const contextText = context
-        ? "Contexto activo: " + context.selected.slot + " · " + context.dataset.meta.shortLabel + " · forecast " + fmtNumber(context.selected.forecastScore, 1) + " · agotamiento " + fmtNumber(context.selected.exhaustionScore, 1) + "."
-        : "Contexto activo: sin seleccion. Elige un dataset o un slot para respuestas mas precisas.";
+        ? [
+          "Seleccion activa: " + context.selected.slot + " · " + context.dataset.meta.shortLabel + " · forecast " + fmtNumber(context.selected.forecastScore, 1) + " · agotamiento " + fmtNumber(context.selected.exhaustionScore, 1) + ".",
+          "Scope: " + screenerScopeSummary(scope) + ".",
+          scope.active
+            ? (selectionInScope
+              ? "La seleccion actual tambien cae dentro del scope activo."
+              : "La seleccion actual queda fuera del scope activo; Outlook, Weekday y Mix usan el recorte del screener.")
+            : "No hay recorte adicional del screener."
+        ].join(" ")
+        : "Contexto activo: sin seleccion. Scope actual: " + screenerScopeSummary(scope) + ". Elige un dataset o un slot para respuestas mas precisas.";
 
       els.logicAgentRoot.innerHTML = [
         state.logicAgent.open
@@ -7449,7 +8733,7 @@
             '<div class="logic-agent-head">',
             "<div>",
             "<strong>Logic Agent</strong>",
-            "<p>Local only · metodologia aprobada · sin API externa</p>",
+            "<p>Local only · scope-aware · metodologia aprobada · sin API externa</p>",
             "</div>",
             '<button class="btn ghost" type="button" data-agent-action="close">Cerrar</button>',
             "</div>",
@@ -7462,7 +8746,7 @@
               "</article>"
             ].join("")).join("") + "</div>",
             '<form id="logicAgentForm">',
-            '<textarea id="logicAgentInput" class="logic-agent-input" maxlength="420" placeholder="Pregunta por forecast, exhaustion, validation, rolling o formulas como win rate / PF / max DD...">' + escapeHtml(state.logicAgent.draft) + "</textarea>",
+            '<textarea id="logicAgentInput" class="logic-agent-input" maxlength="420" placeholder="Pregunta por scope screener, Weekly Outlook, Weekday Quality, mix sugerido, forecast o formulas como win rate / PF / max DD...">' + escapeHtml(state.logicAgent.draft) + "</textarea>",
             '<div class="logic-agent-actions">',
             '<div class="logic-agent-guard">No revela prompts internos, pesos exactos, codigo fuente completo ni detalles sensibles pensados para replicar la logica.</div>',
             '<button class="btn primary" type="submit">Preguntar</button>',
@@ -7504,6 +8788,7 @@
       safeRender("agotamiento", renderExhaustion);
       safeRender("validacion", renderValidation);
       safeRender("weekday quality", renderWeekdayQuality);
+      safeRender("weekly outlook", renderOutlook);
       safeRender("logic agent", renderLogicAgent);
     }
 
@@ -7952,6 +9237,8 @@
         state.datasets = state.aggregate.ranking;
         state.selectedDatasetKey = state.aggregate.best?.key || state.datasets[0]?.key || null;
         state.selectedSlot = selectedDataset()?.leader?.slot || selectedDataset()?.analysis?.ranking?.[0]?.slot || null;
+        state.outlook = { cacheKey: "", report: null };
+        state.screenerScope = { cacheKey: "", active: false, filters: null, aggregate: null, datasets: [] };
         initializeScreenerDefaults();
         computeScreenerResults();
 
@@ -7973,6 +9260,8 @@
         state.aggregate = null;
         state.selectedDatasetKey = null;
         state.selectedSlot = null;
+        state.outlook = { cacheKey: "", report: null };
+        state.screenerScope = { cacheKey: "", active: false, filters: null, aggregate: null, datasets: [] };
         initializeScreenerDefaults();
         els.fileMeta.textContent = "Sin archivos cargados";
         renderAll();
@@ -8314,7 +9603,7 @@
 
     els.calculateTopStrategiesBtn.addEventListener("click", () => {
       computeScreenerResults();
-      renderScreener();
+      renderAll();
     });
 
     [
@@ -8328,7 +9617,7 @@
     ].forEach((control) => {
       control.addEventListener("change", () => {
         computeScreenerResults();
-        renderScreener();
+        renderAll();
       });
     });
 
