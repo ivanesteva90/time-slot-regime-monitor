@@ -11,16 +11,20 @@ def iso_from_timestamp(timestamp: float) -> str:
 
 
 def build_manifest(data_dir: Path) -> dict:
-    csv_files = sorted(path for path in data_dir.glob("*.csv") if path.is_file())
+    csv_files = sorted(path for path in data_dir.rglob("*.csv") if path.is_file())
     files = []
 
     for path in csv_files:
         stat = path.stat()
         uploaded_at = iso_from_timestamp(stat.st_mtime)
+        relative_path = path.relative_to(data_dir.parent).as_posix()
+        parts = relative_path.split("/")
+        symbol = parts[1].upper() if len(parts) > 2 else data_dir.name.upper()
         files.append(
             {
                 "name": path.name,
-                "path": f"{data_dir.name}/{path.name}",
+                "path": relative_path,
+                "symbol": symbol,
                 "size": stat.st_size,
                 "uploaded_at": uploaded_at,
                 "modified_at": uploaded_at,

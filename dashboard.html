@@ -3,25 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  <meta name="referrer" content="no-referrer">
   <title>Dashboard SPX Iron Condor</title>
   <style>
     :root {
-      --bg: #eef2f3;
+      --bg: #f3f7fb;
       --bg-deep: #0f172a;
-      --panel: rgba(255, 255, 255, 0.9);
-      --panel-strong: rgba(255, 255, 255, 0.98);
-      --line: rgba(20, 32, 43, 0.12);
-      --ink: #0e1a2b;
-      --muted: #556578;
+      --panel: rgba(255, 255, 255, 0.94);
+      --panel-strong: rgba(255, 255, 255, 0.99);
+      --panel-soft: rgba(241, 246, 252, 0.86);
+      --line: rgba(20, 32, 43, 0.1);
+      --ink: #102033;
+      --muted: #5c6b7e;
       --teal: #0f766e;
-      --lime: #8bb452;
-      --amber: #d28a3e;
-      --coral: #c9574b;
-      --navy: #162437;
-      --shadow: 0 26px 52px rgba(17, 33, 48, 0.12);
-      --amber-strong: #f6b17a;
+      --lime: #7ea84d;
+      --amber: #c08a45;
+      --coral: #c55b4e;
+      --navy: #112033;
+      --shadow: 0 18px 40px rgba(17, 33, 48, 0.08);
+      --amber-strong: #f2ba87;
       --amber-ink: #8a5a28;
-      --card-shadow: 0 14px 30px rgba(17, 33, 48, 0.12), 0 3px 10px rgba(17, 33, 48, 0.06);
+      --card-shadow: 0 12px 28px rgba(17, 33, 48, 0.08), 0 2px 8px rgba(17, 33, 48, 0.04);
       --radius: 24px;
       --mono: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
       --sans: "Inter", "Manrope", "Avenir Next", "Helvetica Neue", sans-serif;
@@ -42,10 +46,10 @@
       font-family: var(--sans);
       color: var(--ink);
       background:
-        radial-gradient(circle at 20% 20%, rgba(124, 167, 82, 0.16), transparent 36%),
-        radial-gradient(circle at 78% 10%, rgba(15, 118, 110, 0.14), transparent 28%),
-        radial-gradient(circle at 40% 80%, rgba(64, 99, 168, 0.12), transparent 38%),
-        linear-gradient(180deg, #f7f8f9 0%, #eef1f3 50%, #e8ebef 100%);
+        radial-gradient(circle at 14% 12%, rgba(112, 157, 82, 0.12), transparent 28%),
+        radial-gradient(circle at 86% 8%, rgba(57, 93, 160, 0.1), transparent 22%),
+        radial-gradient(circle at 72% 80%, rgba(15, 118, 110, 0.08), transparent 24%),
+        linear-gradient(180deg, #f8fbff 0%, #f1f5fb 48%, #eef3f9 100%);
       position: relative;
       overflow-x: hidden;
     }
@@ -62,28 +66,192 @@
       mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 92%);
     }
 
-    main {
-      width: min(1900px, calc(100% - 16px));
+    .dashboard-shell {
+      width: min(1880px, calc(100% - 24px));
       margin: 0 auto;
-      padding: 24px 0 44px;
+      padding: 18px 0 44px;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .dashboard-rail {
+      position: sticky;
+      top: 14px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .rail-card {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .brand-panel {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(240, 247, 255, 0.96));
+    }
+
+    .brand-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #102033, #1f4d61);
+      color: #f8fbff;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .brand-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    .brand-copy span {
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .brand-copy strong {
+      font-size: 1rem;
+      line-height: 1.15;
+      color: var(--navy);
+    }
+
+    .brand-note {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    .rail-kicker {
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .rail-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    .dashboard-stage {
+      width: 100%;
+      padding: 0 0 44px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .workspace-header {
+      padding: 18px 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(236, 244, 251, 0.94));
+    }
+
+    .workspace-copy {
+      display: grid;
+      gap: 10px;
+    }
+
+    .workspace-kicker {
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .workspace-title {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.7rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--navy);
+    }
+
+    .workspace-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 760px;
+    }
+
+    .workspace-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .workspace-chip {
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      background: rgba(255, 255, 255, 0.8);
+      display: grid;
+      gap: 4px;
+      min-height: 88px;
+    }
+
+    .workspace-chip strong {
+      color: var(--navy);
+      font-size: 0.92rem;
+    }
+
+    .workspace-chip span {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
     }
 
     .panel {
       position: relative;
       overflow: hidden;
-      background: var(--panel);
-      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 249, 253, 0.95));
+      border: 1px solid rgba(17, 33, 48, 0.08);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      box-shadow: 0 18px 36px rgba(17, 33, 48, 0.07);
       backdrop-filter: blur(14px);
       animation: fade-up 0.6s ease both;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: linear-gradient(90deg, rgba(15, 118, 110, 0.9), rgba(88, 123, 210, 0.5), transparent 82%);
+      pointer-events: none;
+      opacity: 0.88;
     }
 
     .panel::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 34%);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 34%);
       pointer-events: none;
     }
 
@@ -92,56 +260,68 @@
       margin-bottom: 18px;
     }
 
+    main {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(340px, 1fr);
-      gap: 12px;
+      grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.95fr);
+      gap: 16px;
       align-items: start;
-      margin-bottom: 8px;
+      margin-bottom: 2px;
     }
 
     .nav-pills {
-      position: sticky;
-      top: 10px;
-      z-index: 5;
-      display: inline-flex;
-      gap: 10px;
-      padding: 12px 14px;
-      margin: 0 0 14px;
-      background: rgba(255, 255, 255, 0.82);
-      border-radius: 18px;
+      position: static;
+      z-index: 1;
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      margin: 0;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 20px;
       border: 1px solid rgba(17, 33, 48, 0.08);
-      box-shadow: 0 10px 24px rgba(17, 33, 48, 0.08);
+      box-shadow: 0 10px 24px rgba(17, 33, 48, 0.06);
       backdrop-filter: blur(10px);
     }
 
     .nav-pill {
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(17, 33, 48, 0.1);
-      background: rgba(255, 255, 255, 0.9);
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(17, 33, 48, 0.06);
+      background: rgba(246, 249, 253, 0.92);
       color: var(--navy);
       font-weight: 700;
       text-decoration: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nav-pill::after {
+      content: "›";
+      font-size: 0.95rem;
+      color: rgba(17, 32, 51, 0.42);
     }
 
     .nav-pill:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 14px rgba(17, 33, 48, 0.12);
+      transform: translateX(2px);
+      box-shadow: 0 8px 18px rgba(17, 33, 48, 0.08);
       color: var(--teal);
+      border-color: rgba(15, 118, 110, 0.18);
     }
 
 
     .hero-copy {
-      padding: 20px 22px 22px;
+      padding: 22px 22px 24px;
       background:
-        linear-gradient(135deg, rgba(20, 32, 43, 0.9), rgba(17, 33, 48, 0.82)),
-        radial-gradient(circle at 20% 20%, rgba(122, 164, 58, 0.14), transparent 46%);
-      color: #f9f5ee;
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(240, 247, 255, 0.96));
+      color: var(--ink);
     }
 
     .eyebrow {
@@ -150,11 +330,12 @@
       gap: 8px;
       padding: 8px 12px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(15, 118, 110, 0.08);
+      border: 1px solid rgba(15, 118, 110, 0.12);
       font-size: 12px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
+      color: var(--teal);
     }
 
     .hero-copy h1 {
@@ -169,9 +350,9 @@
     .hero-copy p {
       max-width: 720px;
       margin: 0;
-      color: rgba(249, 245, 238, 0.84);
+      color: var(--muted);
       font-size: 0.98rem;
-      line-height: 1.55;
+      line-height: 1.6;
     }
 
     .hero-tags {
@@ -184,14 +365,15 @@
     .hero-tag {
       padding: 9px 12px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      font-size: 0.9rem;
+      background: rgba(226, 237, 248, 0.76);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      font-size: 0.88rem;
+      color: var(--navy);
     }
 
     .uploader {
       padding: 14px;
-      background: var(--panel-strong);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(242, 247, 252, 0.96));
       display: flex;
       align-items: center;
     }
@@ -200,8 +382,9 @@
     .panel-title {
       margin: 0 0 10px;
       font-family: var(--serif);
-      font-size: 1.6rem;
-      letter-spacing: -0.02em;
+      font-size: 1.55rem;
+      line-height: 1.06;
+      letter-spacing: -0.03em;
     }
 
     .uploader p,
@@ -226,7 +409,7 @@
       gap: 12px;
       padding: 14px 16px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.72);
+      background: rgba(246, 250, 255, 0.92);
       border: 1px solid rgba(17, 33, 48, 0.08);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
     }
@@ -288,7 +471,7 @@
       align-items: start;
       padding: 12px 14px;
       border-radius: 16px;
-      background: rgba(246, 242, 235, 0.82);
+      background: rgba(247, 250, 253, 0.92);
       border: 1px solid rgba(17, 33, 48, 0.08);
       cursor: pointer;
     }
@@ -320,6 +503,134 @@
       line-height: 1.6;
     }
 
+    .multi-filter-shell,
+    .check-dropdown {
+      width: 100%;
+      position: relative;
+      display: grid;
+      gap: 10px;
+    }
+
+    .check-dropdown-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(17, 33, 48, 0.1);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    }
+
+    .check-dropdown-trigger::after {
+      content: "▾";
+      color: var(--muted);
+      font-size: 0.9rem;
+      flex: 0 0 auto;
+    }
+
+    .check-dropdown-panel {
+      display: grid;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid rgba(17, 33, 48, 0.1);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(243, 248, 253, 0.97));
+      box-shadow: 0 18px 40px rgba(17, 33, 48, 0.09);
+      max-height: 320px;
+      overflow: auto;
+    }
+
+    .check-dropdown-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .check-dropdown-summary {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .check-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .check-group-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(17, 33, 48, 0.08);
+    }
+
+    .check-group-head input[type="checkbox"],
+    .check-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      flex: 0 0 auto;
+    }
+
+    .check-group-title {
+      color: var(--navy);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .check-group-count {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .check-option {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(247, 250, 253, 0.92);
+      border: 1px solid rgba(17, 33, 48, 0.06);
+      cursor: pointer;
+    }
+
+    .check-option-label {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .check-option-title {
+      color: var(--ink);
+      font-weight: 600;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+
+    .check-option-meta {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .check-option-size {
+      color: var(--muted);
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
     .dropzone {
       display: grid;
       place-items: center;
@@ -330,8 +641,8 @@
       border-radius: 24px;
       border: 1px dashed rgba(31, 50, 66, 0.18);
       background:
-        radial-gradient(circle at top, rgba(207, 218, 221, 0.28), transparent 45%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 238, 229, 0.94));
+        radial-gradient(circle at top, rgba(111, 157, 219, 0.12), transparent 45%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(242, 247, 253, 0.95));
       text-align: center;
       cursor: pointer;
       transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
@@ -342,8 +653,8 @@
       transform: translateY(-2px);
       border-color: rgba(15, 118, 110, 0.55);
       background:
-        radial-gradient(circle at top, rgba(15, 118, 110, 0.16), transparent 46%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(242, 247, 243, 0.94));
+        radial-gradient(circle at top, rgba(15, 118, 110, 0.12), transparent 46%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(240, 247, 251, 0.95));
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
     }
 
@@ -398,7 +709,7 @@
       margin-top: 16px;
       padding: 14px 16px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.68);
+      background: rgba(245, 250, 255, 0.88);
       border: 1px solid rgba(17, 33, 48, 0.08);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
     }
@@ -535,7 +846,7 @@
     .info-chip {
       padding: 14px 16px;
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.58);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 248, 253, 0.94));
       border: 1px solid rgba(17, 33, 48, 0.08);
     }
 
@@ -563,6 +874,7 @@
 
     .stat-card {
       padding: 22px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(244, 249, 254, 0.95));
     }
 
     .stat-kicker {
@@ -600,49 +912,49 @@
       margin-top: 14px;
     }
 
-  .signal-chip,
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    border: 1px solid transparent;
-    white-space: nowrap;
-    background: rgba(255, 255, 255, 0.18);
-    color: #0e1a2b;
-    border-color: rgba(255, 255, 255, 0.55);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-  }
+    .signal-chip,
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      background: rgba(243, 247, 252, 0.96);
+      color: #0e1a2b;
+      border-color: rgba(17, 33, 48, 0.1);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
 
-  .signal-chip.neutral {
-    background: rgba(255, 255, 255, 0.88);
-    color: var(--navy);
-    border-color: rgba(17, 33, 48, 0.18);
-  }
+    .signal-chip.neutral {
+      background: rgba(243, 247, 252, 0.98);
+      color: var(--navy);
+      border-color: rgba(17, 33, 48, 0.12);
+    }
 
-  .signal-chip.good,
-  .badge.KEEP {
-    background: rgba(255, 255, 255, 0.92);
-    color: #2f6b2b;
-    border-color: rgba(122, 164, 58, 0.42);
-  }
+    .signal-chip.good,
+    .badge.KEEP {
+      background: rgba(231, 247, 234, 0.98);
+      color: #296737;
+      border-color: rgba(93, 153, 90, 0.28);
+    }
 
-  .signal-chip.warn,
-  .badge.WATCH {
-    background: rgba(246, 177, 122, 0.38);
-    color: var(--amber-ink);
-    border-color: rgba(246, 177, 122, 0.62);
-  }
+    .signal-chip.warn,
+    .badge.WATCH {
+      background: rgba(251, 241, 222, 0.98);
+      color: var(--amber-ink);
+      border-color: rgba(213, 164, 75, 0.32);
+    }
 
-  .signal-chip.bad,
-  .badge.ROTATE {
-    background: rgba(255, 255, 255, 0.92);
-    color: #943c30;
-    border-color: rgba(184, 79, 64, 0.52);
-  }
+    .signal-chip.bad,
+    .badge.ROTATE {
+      background: rgba(252, 236, 234, 0.98);
+      color: #943c30;
+      border-color: rgba(184, 79, 64, 0.26);
+    }
 
     .content-grid,
     .lower-grid {
@@ -664,8 +976,10 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 16px;
-      padding: 24px 24px 0;
+      padding: 22px 24px 14px;
       flex-wrap: wrap;
+      border-bottom: 1px solid rgba(17, 33, 48, 0.06);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0));
     }
 
     .panel-actions {
@@ -694,9 +1008,9 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      min-height: 42px;
+      min-height: 44px;
       padding: 0 16px;
-      border-radius: 14px;
+      border-radius: 999px;
       font-weight: 700;
       border: 1px solid rgba(17, 33, 48, 0.1);
       cursor: pointer;
@@ -704,19 +1018,188 @@
     }
 
     .btn.primary {
-      background: linear-gradient(135deg, #173142, #0f766e);
+      background: linear-gradient(135deg, #173142, #126b77);
       color: #fff;
       border-color: rgba(15, 118, 110, 0.3);
+      box-shadow: 0 10px 24px rgba(17, 70, 84, 0.18);
     }
 
     .btn.ghost {
-      background: rgba(255, 255, 255, 0.78);
+      background: rgba(248, 251, 255, 0.94);
       color: var(--navy);
     }
 
     .table-wrap {
-      padding: 18px 24px 24px;
+      padding: 6px 24px 24px;
       overflow: auto;
+    }
+
+    .table-wrap table,
+    .research-table {
+      background: rgba(255, 255, 255, 0.84);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .section-context-shell {
+      display: grid;
+      gap: 12px;
+      padding: 0 24px 12px;
+    }
+
+    .section-context-empty {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(245, 249, 253, 0.96);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .section-context-panel {
+      display: grid;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(247, 251, 255, 0.98), rgba(242, 247, 253, 0.95));
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    }
+
+    .section-context-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .section-context-copy {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .section-context-kicker {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .section-context-title {
+      margin: 0;
+      color: var(--navy);
+      font-size: 1.08rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .section-context-file {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      font-size: 0.82rem;
+      color: var(--muted);
+      width: fit-content;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+
+    .section-context-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .section-context-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(17, 33, 48, 0.1);
+      color: var(--navy);
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .section-context-chip.primary {
+      background: rgba(231, 243, 252, 0.98);
+      border-color: rgba(76, 115, 223, 0.22);
+      color: #2b4b97;
+    }
+
+    .section-context-chip.good {
+      background: rgba(231, 247, 234, 0.98);
+      border-color: rgba(93, 153, 90, 0.24);
+      color: #296737;
+    }
+
+    .section-context-chip.warn {
+      background: rgba(251, 241, 222, 0.98);
+      border-color: rgba(213, 164, 75, 0.3);
+      color: var(--amber-ink);
+    }
+
+    .section-context-chip.bad {
+      background: rgba(252, 236, 234, 0.98);
+      border-color: rgba(184, 79, 64, 0.24);
+      color: #943c30;
+    }
+
+    .section-context-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .section-context-stat {
+      display: grid;
+      gap: 6px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      min-width: 0;
+    }
+
+    .section-context-stat-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .section-context-stat-value {
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: clamp(1.25rem, 1.8vw, 1.7rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      overflow-wrap: anywhere;
+    }
+
+    .section-context-stat-value.mono {
+      font-family: var(--mono);
+      font-size: 1.12rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-context-stat-note {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
     }
 
     .table-filters {
@@ -766,7 +1249,7 @@
     .research-summary-shell {
       padding: 14px 16px;
       border-radius: var(--radius);
-      background: var(--panel);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(245, 249, 253, 0.96));
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
       position: relative;
@@ -815,7 +1298,7 @@
     .research-card {
       padding: 16px 16px 14px;
       border-radius: 16px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 250, 252, 0.86));
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(243, 248, 253, 0.94));
       border: 1px solid rgba(17, 33, 48, 0.09);
       box-shadow: 0 6px 16px rgba(17, 33, 48, 0.08);
     }
@@ -862,7 +1345,7 @@
       border: 1px solid rgba(17, 33, 48, 0.08);
       border-radius: 14px;
       padding: 12px 13px;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(247, 250, 253, 0.96);
     }
 
     .research-insight strong {
@@ -928,6 +1411,36 @@
       background: linear-gradient(90deg, #c16850, #9e4735);
     }
 
+    .weekday-money-row .bar.good {
+      background: linear-gradient(90deg, #4c9c55, #2c6b36);
+    }
+
+    .weekday-money-row .bar.warn {
+      background: linear-gradient(90deg, #d6a63a, #a87a1d);
+    }
+
+    .weekday-money-row .bar.bad {
+      background: linear-gradient(90deg, #c16850, #9e4735);
+    }
+
+    .weekday-flag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .weekday-flag {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(17, 33, 48, 0.07);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      color: var(--ink);
+      font-size: 0.78rem;
+      line-height: 1.2;
+    }
+
     .pill-note {
       display: inline-flex;
       align-items: center;
@@ -942,7 +1455,7 @@
 
     .research-table {
       width: 100%;
-      min-width: 1080px;
+      min-width: 1320px;
       border-collapse: collapse;
     }
 
@@ -952,17 +1465,16 @@
 
     .research-table td:nth-child(1),
     .research-table td:nth-child(2),
-    .research-table td:nth-child(3),
-    .research-table td:nth-child(4),
-    .research-table td:nth-child(12),
-    .research-table td:nth-child(13) {
+    .research-table td:nth-child(9),
+    .research-table td:nth-child(13),
+    .research-table td:nth-child(14) {
       max-width: 220px;
       overflow-wrap: anywhere;
       line-height: 1.35;
     }
 
-    .research-table td:nth-child(4),
-    .research-table td:nth-child(13) {
+    .research-table td:nth-child(13),
+    .research-table td:nth-child(14) {
       font-size: 0.9rem;
       color: #33475d;
     }
@@ -985,7 +1497,7 @@
     th {
       position: sticky;
       top: 0;
-      background: rgba(252, 248, 242, 0.96);
+      background: rgba(244, 249, 254, 0.98);
       backdrop-filter: blur(8px);
       z-index: 1;
       font-size: 0.78rem;
@@ -999,11 +1511,11 @@
     }
 
     tbody tr:hover {
-      background: rgba(15, 118, 110, 0.05);
+      background: rgba(79, 132, 220, 0.06);
     }
 
     tbody tr.is-selected {
-      background: rgba(15, 118, 110, 0.08);
+      background: rgba(15, 118, 110, 0.1);
     }
 
     .slot-button {
@@ -1040,7 +1552,7 @@
       padding: 14px 16px;
       border-radius: 16px;
       background:
-        linear-gradient(135deg, rgba(14, 38, 54, 0.9), rgba(6, 110, 100, 0.82)),
+        linear-gradient(135deg, rgba(18, 34, 55, 0.96), rgba(19, 95, 110, 0.88)),
         radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), transparent 45%);
       color: #f8f5ef;
     }
@@ -1092,6 +1604,227 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
+    .selection-shell {
+      display: grid;
+      gap: 16px;
+    }
+
+    .selection-meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .selection-meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.84rem;
+      line-height: 1.2;
+    }
+
+    .selection-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .selection-card,
+    .selection-chart-card,
+    .selection-explain-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(243, 248, 253, 0.95));
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      box-shadow: var(--card-shadow);
+      min-width: 0;
+    }
+
+    .selection-card strong,
+    .selection-chart-card strong,
+    .selection-explain-card strong {
+      display: block;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .selection-value {
+      display: block;
+      font-family: var(--serif);
+      font-size: clamp(1.7rem, 2.4vw, 2.45rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+      margin-bottom: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .selection-value.mono {
+      font-family: var(--mono);
+      letter-spacing: -0.02em;
+    }
+
+    .selection-value.positive {
+      color: #1f7a45;
+    }
+
+    .selection-value.negative {
+      color: var(--coral);
+    }
+
+    .selection-note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .selection-help {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .selection-chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .selection-chart-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .selection-chart-subtle {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .selection-bar-chart {
+      display: grid;
+      gap: 10px;
+    }
+
+    .selection-bar-row {
+      display: grid;
+      grid-template-columns: 104px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.88rem;
+    }
+
+    .selection-bar-label {
+      color: #33475d;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .selection-bar-track {
+      position: relative;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(17, 33, 48, 0.08);
+      overflow: hidden;
+    }
+
+    .selection-bar-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      border-radius: 999px;
+    }
+
+    .selection-bar-fill.positive {
+      background: linear-gradient(90deg, #6ea43d, #427c28);
+    }
+
+    .selection-bar-fill.negative {
+      background: linear-gradient(90deg, #cf7058, #a94736);
+    }
+
+    .selection-bar-fill.neutral {
+      background: linear-gradient(90deg, rgba(15, 118, 110, 0.72), rgba(56, 189, 148, 0.82));
+    }
+
+    .selection-bar-value {
+      font-family: var(--mono);
+      color: #2a3d52;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .selection-line-chart {
+      width: 100%;
+      height: 230px;
+      display: block;
+    }
+
+    .selection-window-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .selection-window-card {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(247, 250, 254, 0.98);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .selection-window-card strong {
+      margin-bottom: 0;
+      font-size: 0.78rem;
+    }
+
+    .selection-window-card .number {
+      display: block;
+      font-family: var(--mono);
+      font-size: 1.15rem;
+      line-height: 1.1;
+      color: var(--ink);
+    }
+
+    .selection-window-card small {
+      display: block;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .selection-explain-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .selection-explain-card p {
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
     .window-grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1114,10 +1847,15 @@
       min-height: 100%;
       padding: 16px;
       border-radius: 16px;
-      background: rgba(255, 255, 255, 0.9);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(244, 248, 253, 0.95));
       border: 1px solid rgba(17, 33, 48, 0.06);
       box-shadow: var(--card-shadow);
       min-height: 100%;
+    }
+
+    .mix-card.is-core {
+      border-color: rgba(15, 118, 110, 0.18);
+      box-shadow: 0 16px 34px rgba(15, 118, 110, 0.12), 0 2px 8px rgba(17, 33, 48, 0.04);
     }
 
     .mix-card-head {
@@ -1192,6 +1930,15 @@
       overflow-wrap: anywhere;
     }
 
+    .mix-card-chips {
+      gap: 8px;
+      margin-top: -2px;
+    }
+
+    .mix-card .signal-row {
+      margin-top: 0;
+    }
+
     .mix-metrics {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1219,10 +1966,17 @@
       overflow-wrap: anywhere;
     }
 
+    .mix-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
     .window-card {
       padding: 16px;
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.72);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(244, 248, 253, 0.95));
       border: 1px solid rgba(17, 33, 48, 0.08);
     }
 
@@ -1253,7 +2007,7 @@
     .spark-shell {
       padding: 16px 18px 14px;
       border-radius: 18px;
-      background: rgba(255, 255, 255, 0.72);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(244, 248, 253, 0.95));
       border: 1px solid rgba(17, 33, 48, 0.08);
     }
 
@@ -1310,6 +2064,7 @@
     .methodology {
       margin-top: 18px;
       padding: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(244, 248, 253, 0.95));
     }
 
     details {
@@ -1360,8 +2115,8 @@
       margin-top: 18px;
       padding-bottom: 24px;
       background:
-        linear-gradient(180deg, rgba(255, 251, 244, 0.96), rgba(243, 236, 224, 0.9)),
-        radial-gradient(circle at top left, rgba(122, 164, 58, 0.12), transparent 34%);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(243, 248, 253, 0.95)),
+        radial-gradient(circle at top left, rgba(79, 132, 220, 0.1), transparent 34%);
     }
 
     .screener-body {
@@ -1406,7 +2161,7 @@
       margin-top: 6px;
       padding: 18px;
       border-radius: 22px;
-      background: rgba(255, 255, 255, 0.52);
+      background: rgba(247, 250, 254, 0.98);
       border: 1px solid rgba(17, 33, 48, 0.08);
     }
 
@@ -1448,7 +2203,7 @@
       gap: 8px;
       padding: 9px 12px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.78);
+      background: rgba(247, 250, 254, 0.96);
       border: 1px solid rgba(17, 33, 48, 0.1);
       color: var(--navy);
       font-weight: 700;
@@ -1529,11 +2284,11 @@
       padding: 20px;
       border-radius: 22px;
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 241, 232, 0.92)),
-        radial-gradient(circle at top left, rgba(122, 164, 58, 0.12), transparent 32%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(244, 248, 253, 0.95)),
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.08), transparent 32%),
         radial-gradient(circle at top right, rgba(76, 115, 223, 0.08), transparent 30%);
       border: 1px solid rgba(17, 33, 48, 0.08);
-      box-shadow: 0 20px 44px rgba(17, 33, 48, 0.08);
+      box-shadow: 0 18px 34px rgba(17, 33, 48, 0.07);
       min-height: 100%;
       overflow: hidden;
       min-width: 0;
@@ -1727,6 +2482,170 @@
       line-height: 1.65;
     }
 
+    .logic-agent-root {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 50;
+      display: grid;
+      justify-items: end;
+      gap: 12px;
+    }
+
+    .logic-agent-orb {
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      border: 1px solid rgba(17, 33, 48, 0.12);
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.58), transparent 34%),
+        linear-gradient(135deg, rgba(18, 34, 55, 0.98), rgba(19, 95, 110, 0.96));
+      color: #f8f5ef;
+      box-shadow: 0 18px 40px rgba(17, 33, 48, 0.18);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .logic-agent-orb span {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .logic-agent-panel {
+      position: relative;
+      overflow: hidden;
+      width: min(420px, calc(100vw - 28px));
+      max-height: min(72vh, 700px);
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(242, 247, 252, 0.97));
+      border: 1px solid rgba(17, 33, 48, 0.1);
+      box-shadow: 0 24px 50px rgba(17, 33, 48, 0.14);
+      backdrop-filter: blur(18px);
+    }
+
+    .logic-agent-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      border-radius: 22px 22px 0 0;
+      background: linear-gradient(90deg, rgba(15, 118, 110, 0.96), rgba(76, 115, 223, 0.72), transparent 90%);
+    }
+
+    .logic-agent-head,
+    .logic-agent-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .logic-agent-head {
+      padding-top: 4px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(17, 33, 48, 0.06);
+    }
+
+    .logic-agent-head strong {
+      display: block;
+      color: var(--navy);
+      font-size: 1rem;
+      line-height: 1.15;
+    }
+
+    .logic-agent-head p,
+    .logic-agent-guard,
+    .logic-agent-context,
+    .logic-agent-message p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .logic-agent-context {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(244, 248, 253, 0.98);
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      font-size: 0.86rem;
+    }
+
+    .logic-agent-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .logic-agent-chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(17, 33, 48, 0.1);
+      background: rgba(247, 250, 254, 0.98);
+      color: var(--navy);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .logic-agent-messages {
+      max-height: 280px;
+      overflow: auto;
+      display: grid;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    .logic-agent-message {
+      padding: 12px 13px;
+      border-radius: 16px;
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      background: rgba(255, 255, 255, 0.98);
+      min-width: 0;
+    }
+
+    .logic-agent-message.user {
+      background: rgba(235, 244, 251, 0.98);
+    }
+
+    .logic-agent-message strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.76rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .logic-agent-message p {
+      color: var(--ink);
+      font-size: 0.92rem;
+      overflow-wrap: anywhere;
+    }
+
+    .logic-agent-input {
+      width: 100%;
+      min-height: 96px;
+      resize: vertical;
+      border-radius: 16px;
+      border: 1px solid rgba(17, 33, 48, 0.12);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      font: inherit;
+      padding: 12px 14px;
+    }
+
+    .logic-agent-guard {
+      font-size: 0.78rem;
+      max-width: 260px;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -1743,8 +2662,21 @@
     }
 
     @media (max-width: 1180px) {
+      .dashboard-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-rail {
+        position: static;
+      }
+
+      .workspace-header {
+        grid-template-columns: 1fr;
+      }
+
       .info-strip,
       .stats-grid,
+      .section-context-stats,
       .window-grid,
       .filter-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1763,14 +2695,26 @@
     }
 
     @media (max-width: 760px) {
-      main {
+      .dashboard-shell {
         width: min(100% - 20px, 100%);
+        gap: 14px;
+        padding-top: 12px;
       }
 
+      .dashboard-stage {
+        gap: 14px;
+      }
+
+      .dashboard-rail {
+        gap: 12px;
+      }
+
+      .workspace-header,
       .hero-copy,
       .uploader,
       .stat-card,
       .panel-head,
+      .section-context-shell,
       .table-wrap,
       .metric-stack,
       .methodology {
@@ -1778,8 +2722,17 @@
         padding-right: 18px;
       }
 
+      .workspace-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-pills {
+        grid-template-columns: 1fr 1fr;
+      }
+
       .info-strip,
       .stats-grid,
+      .section-context-stats,
       .window-grid,
       .filter-grid,
       .rank-cards,
@@ -1825,8 +2778,25 @@
         grid-column: 2;
       }
 
+      .check-option {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .check-option-size {
+        grid-column: 2;
+      }
+
       .research-summary-shell {
         padding: 12px 12px;
+      }
+
+      .logic-agent-root {
+        right: 12px;
+        bottom: 12px;
+      }
+
+      .logic-agent-panel {
+        width: min(100vw - 24px, 100%);
       }
     }
 
@@ -1844,7 +2814,69 @@
   </style>
 </head>
 <body>
-  <main>
+  <div class="dashboard-shell">
+    <aside class="dashboard-rail">
+      <section class="panel rail-card brand-panel">
+        <div class="brand-top">
+          <div class="brand-mark">TS</div>
+          <div class="brand-copy">
+            <span>Research Terminal</span>
+            <strong>Time-Slot Regime Monitor</strong>
+          </div>
+        </div>
+        <p class="brand-note">Centro local para cargar CSV, comparar datasets, leer regimenes y validar slots sin depender de backend ni servicios externos.</p>
+      </section>
+
+      <nav class="nav-pills" aria-label="Navegacion principal">
+        <a class="nav-pill" href="#upload">Carga</a>
+        <a class="nav-pill" href="#screener">Screener</a>
+        <a class="nav-pill" href="#detail">Seleccion</a>
+        <a class="nav-pill" href="#datasets">Datasets</a>
+        <a class="nav-pill" href="#ranking">Ranking</a>
+        <a class="nav-pill" href="#combo">Mix</a>
+        <a class="nav-pill" href="#health">Agotamiento</a>
+        <a class="nav-pill" href="#validation">Validacion</a>
+        <a class="nav-pill" href="#metodologia">Metodo</a>
+        <a class="nav-pill" href="#research">Weekday</a>
+      </nav>
+
+      <section class="panel rail-card">
+        <span class="rail-kicker">Guardrails</span>
+        <ul class="clean rail-list">
+          <li>Prioriza robustez y supervivencia sobre retorno bruto.</li>
+          <li>Usa datos locales y no expone prompts internos ni pesos exactos.</li>
+          <li>El agente embebido explica metricas aprobadas, no la IP replicable.</li>
+        </ul>
+      </section>
+    </aside>
+
+    <main class="dashboard-stage">
+      <section class="panel workspace-header" id="workspace">
+        <div class="workspace-copy">
+          <span class="workspace-kicker">Dashboard claro · inspirado en un command center SaaS</span>
+          <h2 class="workspace-title">Lee el universo cargado como una consola de decision</h2>
+          <p>Reordenamos el tablero para que la carga, el contexto operativo, la seleccion activa y la validacion convivan en una sola vista clara. La logica sigue siendo local; lo que cambia es la jerarquia visual.</p>
+        </div>
+        <div class="workspace-metrics">
+          <div class="workspace-chip">
+            <strong>Datos locales</strong>
+            <span>Lee tus CSV cargados o la carpeta `DATA/` sin depender de APIs externas.</span>
+          </div>
+          <div class="workspace-chip">
+            <strong>Contexto operativo</strong>
+            <span>Forecast, exhaustion, validation y rolling quedan siempre visibles en la lectura de seleccion.</span>
+          </div>
+          <div class="workspace-chip">
+            <strong>Agente protegido</strong>
+            <span>La burbuja responde en local y bloquea prompts internos, pesos exactos y rutas sensibles.</span>
+          </div>
+          <div class="workspace-chip">
+            <strong>Flujo de trabajo</strong>
+            <span>Primero carga, luego filtra, compara, abre el detalle y valida antes de mover la operativa.</span>
+          </div>
+        </div>
+      </section>
+
     <section class="hero" id="upload">
       <article class="panel hero-copy">
         <div class="eyebrow">Dashboard local · un solo HTML</div>
@@ -1856,7 +2888,7 @@
         </p>
         <div class="hero-tags">
           <span class="hero-tag">Rolling metrics 10d / 21d / 63d / 126d / 252d</span>
-          <span class="hero-tag">Score interpretable 55 / 30 / 15</span>
+          <span class="hero-tag">Score interpretable multi-horizonte</span>
           <span class="hero-tag">Multi-CSV + carpeta data</span>
           <span class="hero-tag">Sin servidor, sin backend</span>
         </div>
@@ -1889,18 +2921,6 @@
       </aside>
     </section>
 
-    <nav class="nav-pills" aria-label="Navegacion principal">
-      <a class="nav-pill" href="#upload">Carga</a>
-      <a class="nav-pill" href="#screener">Screener</a>
-      <a class="nav-pill" href="#datasets">Datasets</a>
-      <a class="nav-pill" href="#combo">Estrategia</a>
-      <a class="nav-pill" href="#ranking">Ranking</a>
-      <a class="nav-pill" href="#health">Agotamiento</a>
-      <a class="nav-pill" href="#validation">Validacion</a>
-      <a class="nav-pill" href="#metodologia">Metodologia</a>
-      <a class="nav-pill" href="#research">Research Lab</a>
-    </nav>
-
     <section class="panel info-strip" id="resumen">
       <div class="info-chip">
         <strong>Normalizacion</strong>
@@ -1908,7 +2928,7 @@
       </div>
       <div class="info-chip">
         <strong>Forecast</strong>
-        <span>Mezcla robustez estructural, regimen medio y momentum corto con pesos 55% / 30% / 15%.</span>
+        <span>Mezcla robustez estructural, regimen medio y momentum corto para ordenar slots sin depender de una sola metrica.</span>
       </div>
       <div class="info-chip">
         <strong>Agotamiento</strong>
@@ -1969,7 +2989,7 @@
     <section class="panel screener-panel" id="screener">
       <div class="panel-head">
         <div>
-          <h2 class="panel-title">Top 5 estrategias</h2>
+          <h2 class="panel-title">Screener de estrategias</h2>
           <p class="subtle">Modulo adicional para filtrar fechas y horas, priorizar criterios y comparar el mejor slot actual de cada estrategia sin sustituir el analisis profundo.</p>
         </div>
         <div class="preset-group" aria-label="Atajos de rango temporal">
@@ -2015,17 +3035,25 @@
           <span class="choice-meta">Si marcas varios criterios, el score se mezcla por percentiles y se penaliza si la cobertura del slot es pobre.</span>
         </div>
         <div class="screener-actions">
-          <label class="filter-inline" for="screenerLabelFilter">
-            <span>Etiqueta (opc.)</span>
-            <select id="screenerLabelFilter" class="filter-control screener-select"></select>
+          <label class="filter-inline" for="screenerSymbolFilter">
+            <span>Indice / activo</span>
+            <div id="screenerSymbolFilter" class="multi-filter-shell"></div>
           </label>
-          <button id="calculateTopStrategiesBtn" class="btn primary" type="button">Calcular Top 5 estrategias</button>
+          <label class="filter-inline" for="screenerRiskFilter">
+            <span>Perfil</span>
+            <div id="screenerRiskFilter" class="multi-filter-shell"></div>
+          </label>
+          <label class="filter-inline" for="screenerStructureFilter">
+            <span>Tipo de estrategia</span>
+            <div id="screenerStructureFilter" class="multi-filter-shell"></div>
+          </label>
+          <button id="calculateTopStrategiesBtn" class="btn primary" type="button">Actualizar ranking</button>
         </div>
       </div>
       <div id="topStrategiesWrap" class="screener-results">
         <div class="empty-state">
           <strong>El screener aparecera aqui.</strong>
-          Carga varios CSV para comparar estrategias y encontrar rapidamente los cinco mejores setups bajo el filtro elegido.
+          Carga varios CSV para comparar estrategias y encontrar rapidamente los mejores setups bajo el filtro elegido.
         </div>
       </div>
     </section>
@@ -2033,14 +3061,14 @@
     <section class="panel" id="detail">
       <div class="panel-head">
         <div>
-          <h2 class="panel-title">Detalle del horario</h2>
-          <p class="subtle">Vista de metricas rolling, estado actual y sparkline del horario dentro del dataset seleccionado.</p>
+          <h2 class="panel-title">Detalles de la seleccion</h2>
+          <p class="subtle">Ficha ampliada del dataset y slot activos: rendimiento historico, estado del framework, comportamiento temporal y una lectura corta de forecast, exhaustion, validation y rolling.</p>
         </div>
       </div>
       <div id="detailWrap" class="metric-stack">
         <div class="empty-state">
-          <strong>No hay horario seleccionado.</strong>
-          Selecciona una fila del ranking para abrir su estado estructural, momentum reciente y senales de agotamiento.
+          <strong>No hay seleccion activa.</strong>
+          Selecciona una fila del ranking, un resultado del screener o un dataset para abrir su ficha completa.
         </div>
       </div>
     </section>
@@ -2056,12 +3084,21 @@
             <button id="downloadDatasetsBtn" class="btn ghost" type="button">Exportar datasets</button>
           </div>
         </div>
+        <div id="datasetMapContext" class="section-context-shell">
+          <div class="section-context-empty">Carga CSV para ver contexto, filtros activos y lectura rapida del universo.</div>
+        </div>
         <div class="table-filters">
-          <label class="table-filter" for="datasetMapLabelFilter">
-            <span>Etiqueta</span>
-            <select id="datasetMapLabelFilter">
-              <option value="">Todas</option>
-            </select>
+          <label class="table-filter" for="datasetMapSymbolFilter">
+            <span>Indice / activo</span>
+            <div id="datasetMapSymbolFilter" class="multi-filter-shell"></div>
+          </label>
+          <label class="table-filter" for="datasetMapRiskFilter">
+            <span>Perfil</span>
+            <div id="datasetMapRiskFilter" class="multi-filter-shell"></div>
+          </label>
+          <label class="table-filter" for="datasetMapStructureFilter">
+            <span>Tipo de estrategia</span>
+            <div id="datasetMapStructureFilter" class="multi-filter-shell"></div>
           </label>
           <label class="table-filter" for="datasetMapMinForecast">
             <span>Leader forecast min</span>
@@ -2108,6 +3145,9 @@
           <div class="panel-actions">
             <button id="downloadRankingBtn" class="btn ghost" type="button">Exportar ranking</button>
           </div>
+        </div>
+        <div id="rankingContext" class="section-context-shell">
+          <div class="section-context-empty">Selecciona un dataset para ver identidad, estados y metrica rapida del ranking.</div>
         </div>
         <div class="table-filters">
           <label class="table-filter" for="rankingLabelStateFilter">
@@ -2159,6 +3199,9 @@
           <p class="subtle">Propuesta core / satellite / diversifier basada en la fuerza relativa de cada dataset cargado.</p>
         </div>
       </div>
+      <div id="strategyContext" class="section-context-shell">
+        <div class="section-context-empty">Carga varios datasets para ver la mezcla sugerida, su dispersion por subyacente y un acceso directo a cada pierna del mix.</div>
+      </div>
       <div id="strategyWrap" class="metric-stack">
         <div class="empty-state">
           <strong>Sin estrategia combinada todavia.</strong>
@@ -2178,6 +3221,9 @@
             <button id="downloadExhaustionBtn" class="btn ghost" type="button">Exportar agotamiento</button>
           </div>
         </div>
+        <div id="exhaustionContext" class="section-context-shell">
+          <div class="section-context-empty">Selecciona un dataset para ver que slots estan mas fatigados, cuales siguen sanos y como queda parado el slot activo.</div>
+        </div>
         <div id="exhaustionWrap" class="table-wrap">
           <div class="empty-state">
             <strong>Sin tabla de agotamiento todavia.</strong>
@@ -2192,6 +3238,9 @@
             <h2 class="panel-title">Walk-forward del dataset</h2>
             <p class="subtle">Backtest secuencial del top slot pronosticado usando solo la historia previa del dataset seleccionado.</p>
           </div>
+        </div>
+        <div id="validationContext" class="section-context-shell">
+          <div class="section-context-empty">Selecciona un dataset con historia suficiente para ver calidad de validacion, ultima prediccion y cobertura del top pronosticado.</div>
         </div>
         <div id="validationWrap" class="table-wrap">
           <div class="empty-state">
@@ -2209,15 +3258,15 @@
         <p>
           Cada horario recibe metricas rolling de 10, 21, 63, 126 y 252 observaciones. Luego se convierten
           en percentiles cross-sectional para mezclar senales heterogeneas sin escalar a mano. El score final
-          prioriza robustez estructural (55%), regimen medio (30%) y momentum corto (15%).
+          prioriza robustez estructural, luego regimen medio y despues momentum corto sin publicar la composicion exacta.
         </p>
       </details>
       <details>
         <summary>2. Como se calcula el indice de agotamiento</summary>
         <p>
           El agotamiento sube cuando un slot pierde rango 21d frente a 63d, cuando el promedio 10d cae por
-          debajo de una fraccion del 63d, cuando el ultimo bloque de 10 observaciones empeora frente al bloque
-          anterior y cuando el win rate corto cede frente al mediano.
+          debajo de su propia base, cuando el ultimo bloque de observaciones empeora frente al bloque anterior
+          y cuando el win rate corto cede frente al mediano.
         </p>
       </details>
       <details>
@@ -2247,7 +3296,7 @@
         </p>
       </details>
       <details>
-        <summary>6. Como funciona el Top 5 estrategias</summary>
+        <summary>6. Como funciona el screener</summary>
         <p>
           El screener adicional filtra por rango de fechas y horas, busca el mejor slot de cada dataset dentro
           de ese marco y luego rankea estrategias con los criterios marcados. Las tarjetas muestran P/L bruto,
@@ -2259,8 +3308,8 @@
     <section class="panel" id="research">
       <div class="panel-head">
         <div>
-          <h2 class="panel-title">Research Lab (Sizing & Weekday)</h2>
-          <p class="subtle">Vista separada para probar variantes de tamano fijo, mix por weekday y escalera de equity sin mezclar con el dashboard principal.</p>
+          <h2 class="panel-title">Weekday Quality</h2>
+          <p class="subtle">Diagnostico por dia de la semana basado en expectativa, drawdown, estabilidad mensual, muestra y tendencia reciente. No propone sizing.</p>
         </div>
         <div class="panel-actions">
           <span class="pill-note">Se alimenta de los CSV ya cargados</span>
@@ -2269,19 +3318,22 @@
       <div class="research-grid">
         <div id="researchSummary" class="research-summary-shell">
           <div class="empty-state">
-            <strong>Sin datos del lab.</strong>
-            Carga CSV para ver el analisis independiente de sizing y weekdays.
+            <strong>Sin diagnostico semanal todavia.</strong>
+            Carga CSV para medir la calidad y fragilidad de cada dia de la semana.
           </div>
         </div>
         <div id="researchWrap" class="table-wrap">
           <div class="empty-state">
-            <strong>Sube archivos para correr el lab.</strong>
-            Cuando cargues CSV en el dashboard, aqui veras las variantes de sizing: Size 1 (1 contrato), Size 2 (2 contratos), Weekday mix (Lunes/Jueves/Viernes 2c y Martes/Miercoles 1c) y Equity ladder (2c sobre 4000, 1c bajo 3300).
+            <strong>Sube archivos para abrir el perfil semanal.</strong>
+            La seccion mostrara metricas por dia, flags de fragilidad, comparacion reciente vs baseline y una etiqueta GREEN / YELLOW / RED de calidad diagnostica.
           </div>
         </div>
       </div>
     </section>
-  </main>
+    </main>
+  </div>
+
+  <div id="logicAgentRoot" class="logic-agent-root" aria-live="polite"></div>
 
   <script>
     const state = {
@@ -2291,7 +3343,12 @@
       selectedSlot: null,
       viewFilters: {
         datasetMap: {
-          label: "",
+          symbols: [],
+          symbolMenuOpen: false,
+          risks: [],
+          riskMenuOpen: false,
+          structures: [],
+          structureMenuOpen: false,
           minForecast: "",
           minDatasetScore: "",
           maxExhaustion: "",
@@ -2315,7 +3372,12 @@
         profitability: true,
         winRate: false,
         lowDrawdown: false,
-        labelFilter: "",
+        symbols: [],
+        symbolMenuOpen: false,
+        risks: [],
+        riskMenuOpen: false,
+        structures: [],
+        structureMenuOpen: false,
         results: [],
         totalCandidates: 0,
         criteriaLabels: []
@@ -2324,12 +3386,24 @@
         status: "loading",
         manifest: null,
         expanded: false,
+        menuOpen: false,
         selectedPaths: {},
         error: ""
+      },
+      logicAgent: {
+        open: false,
+        draft: "",
+        messages: [
+          {
+            role: "assistant",
+            text: "Soy Logic Agent. Explico la seleccion activa, metricas estandar, forecast, exhaustion, validation y rolling sin usar APIs externas ni revelar detalles internos replicables."
+          }
+        ]
       }
     };
 
     const els = {
+      logicAgentRoot: document.getElementById("logicAgentRoot"),
       csvInput: document.getElementById("csvInput"),
       folderInput: document.getElementById("folderInput"),
       dropzone: document.getElementById("dropzone"),
@@ -2353,15 +3427,20 @@
       validationMeta: document.getElementById("validationMeta"),
       validationSignals: document.getElementById("validationSignals"),
       datasetWrap: document.getElementById("datasetWrap"),
-      datasetMapLabelFilter: document.getElementById("datasetMapLabelFilter"),
+      datasetMapSymbolFilter: document.getElementById("datasetMapSymbolFilter"),
+      datasetMapRiskFilter: document.getElementById("datasetMapRiskFilter"),
+      datasetMapStructureFilter: document.getElementById("datasetMapStructureFilter"),
       datasetMapMinForecast: document.getElementById("datasetMapMinForecast"),
       datasetMapMinDatasetScore: document.getElementById("datasetMapMinDatasetScore"),
       datasetMapMaxExhaustion: document.getElementById("datasetMapMaxExhaustion"),
       datasetMapMinHealth: document.getElementById("datasetMapMinHealth"),
       datasetMapSort: document.getElementById("datasetMapSort"),
+      datasetMapContext: document.getElementById("datasetMapContext"),
       datasetMapFilterMeta: document.getElementById("datasetMapFilterMeta"),
+      strategyContext: document.getElementById("strategyContext"),
       strategyWrap: document.getElementById("strategyWrap"),
       rankingWrap: document.getElementById("rankingWrap"),
+      rankingContext: document.getElementById("rankingContext"),
       rankingLabelStateFilter: document.getElementById("rankingLabelStateFilter"),
       rankingMinForecast: document.getElementById("rankingMinForecast"),
       rankingMaxExhaustion: document.getElementById("rankingMaxExhaustion"),
@@ -2369,7 +3448,9 @@
       rankingSort: document.getElementById("rankingSort"),
       rankingFilterMeta: document.getElementById("rankingFilterMeta"),
       detailWrap: document.getElementById("detailWrap"),
+      exhaustionContext: document.getElementById("exhaustionContext"),
       exhaustionWrap: document.getElementById("exhaustionWrap"),
+      validationContext: document.getElementById("validationContext"),
       validationWrap: document.getElementById("validationWrap"),
       selectedDatasetMeta: document.getElementById("selectedDatasetMeta"),
       preset1mBtn: document.getElementById("preset1mBtn"),
@@ -2384,7 +3465,9 @@
       metricProfitability: document.getElementById("metricProfitability"),
       metricWinRate: document.getElementById("metricWinRate"),
       metricLowDrawdown: document.getElementById("metricLowDrawdown"),
-      screenerLabelFilter: document.getElementById("screenerLabelFilter"),
+      screenerSymbolFilter: document.getElementById("screenerSymbolFilter"),
+      screenerRiskFilter: document.getElementById("screenerRiskFilter"),
+      screenerStructureFilter: document.getElementById("screenerStructureFilter"),
       calculateTopStrategiesBtn: document.getElementById("calculateTopStrategiesBtn"),
       topStrategiesWrap: document.getElementById("topStrategiesWrap"),
       downloadDatasetsBtn: document.getElementById("downloadDatasetsBtn"),
@@ -2405,9 +3488,12 @@
       agresivo: 3,
       ultra_agresivo: 4
     };
+    const STRUCTURE_ORDER = {
+      iron_condor: 1,
+      vertical: 2,
+      unknown: 99
+    };
     const WEEKDAY_FULL_ES = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
-    const EQUITY_UP = 4000;
-    const EQUITY_DOWN = 3300;
     const PROCESS_STAGES = [
       { key: "idle", label: "Esperando archivos" },
       { key: "detecting", label: "Archivos detectados" },
@@ -2461,6 +3547,20 @@
       return best;
     }
 
+    function longestWinningStreak(values) {
+      let streak = 0;
+      let best = 0;
+      values.forEach((value) => {
+        if (value > 0) {
+          streak += 1;
+          if (streak > best) best = streak;
+        } else {
+          streak = 0;
+        }
+      });
+      return best;
+    }
+
     function profitFactor(values) {
       const wins = sum(values.filter((value) => value > 0));
       const losses = -sum(values.filter((value) => value < 0));
@@ -2478,6 +3578,99 @@
         maxDd = Math.max(maxDd, peak - equity);
       });
       return maxDd;
+    }
+
+    function drawdownProfile(series) {
+      let equity = 0;
+      let peak = 0;
+      let peakIndex = 0;
+      let maxDd = 0;
+      let startIndex = 0;
+      let endIndex = 0;
+
+      series.forEach((item, index) => {
+        equity += item.pl;
+        if (equity > peak) {
+          peak = equity;
+          peakIndex = index;
+        }
+        const dd = peak - equity;
+        if (dd > maxDd) {
+          maxDd = dd;
+          startIndex = peakIndex;
+          endIndex = index;
+        }
+      });
+
+      return {
+        amount: maxDd,
+        startDate: series[startIndex]?.date || null,
+        endDate: series[endIndex]?.date || null
+      };
+    }
+
+    function cumulativeSeries(series) {
+      let total = 0;
+      return series.map((item) => {
+        total += item.pl;
+        return {
+          date: item.date,
+          value: total
+        };
+      });
+    }
+
+    function monthLabel(monthKey) {
+      const match = String(monthKey || "").match(/^(\d{4})-(\d{2})$/);
+      if (!match) return String(monthKey || "-");
+      const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, 1));
+      return new Intl.DateTimeFormat("es-ES", {
+        month: "short",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function monthlyTotals(series) {
+      const buckets = new Map();
+      series.forEach((item) => {
+        const key = item.date.slice(0, 7);
+        buckets.set(key, (buckets.get(key) || 0) + item.pl);
+      });
+      return Array.from(buckets.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([key, total]) => ({
+          key,
+          label: monthLabel(key),
+          value: round(total, 2)
+        }));
+    }
+
+    function weekdayTotals(series) {
+      const buckets = new Map();
+      series.forEach((item) => {
+        const dayIndex = new Date(item.date + "T00:00:00Z").getUTCDay();
+        if (!buckets.has(dayIndex)) {
+          buckets.set(dayIndex, {
+            dayIndex,
+            label: WEEKDAY_FULL_ES[dayIndex] || "-",
+            total: 0,
+            wins: 0,
+            losses: 0
+          });
+        }
+        const bucket = buckets.get(dayIndex);
+        bucket.total += item.pl;
+        if (item.pl > 0) bucket.wins += 1;
+        if (item.pl < 0) bucket.losses += 1;
+      });
+
+      return Array.from(buckets.values())
+        .filter((row) => row.dayIndex >= 1 && row.dayIndex <= 5)
+        .sort((a, b) => a.dayIndex - b.dayIndex)
+        .map((row) => ({
+          ...row,
+          total: round(row.total, 2)
+        }));
     }
 
     function normalizeDate(raw) {
@@ -3213,6 +4406,12 @@
         diversificationScore: round(diversification * 100, 1),
         executionWindow,
         concentrationFlags,
+        uniqueSymbols,
+        uniqueStructures,
+        uniqueRisks,
+        avgDatasetScore: round(mean(picks.map((dataset) => dataset.datasetScore)), 1),
+        avgValidationHealth: round(mean(picks.map((dataset) => dataset.validationHealth)) * 100, 1),
+        avgLeaderExhaustion: round(mean(picks.map((dataset) => dataset.leader.exhaustionScore)), 1),
         weightText: weights.slice(0, legs.length).join("/"),
         summaryText
       };
@@ -3296,20 +4495,153 @@
         .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
     }
 
-    function labelMatches(dataset, filterValue) {
-      if (!filterValue) return true;
-      const needleKey = normalizeLabelKey(filterValue);
-      const datasetLabelKey = normalizeLabelKey(dataset.meta.label);
-      if (datasetLabelKey && datasetLabelKey === needleKey) return true;
+    function normalizeSymbol(value) {
+      return String(value || "").trim().toUpperCase();
+    }
 
-      const fields = [
-        dataset.meta.riskLabel,
-        dataset.meta.structureLabel,
-        dataset.meta.symbol,
-        dataset.meta.strategyName,
-        dataset.fileName
-      ].map(normalizeLabelKey).filter(Boolean);
-      return fields.some((field) => field.includes(needleKey));
+    function uniqueSymbols(values) {
+      return Array.from(new Set(
+        (values || [])
+          .map(normalizeSymbol)
+          .filter(Boolean)
+      )).sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }));
+    }
+
+    function selectedSymbolsText(symbols, fallback = "Todos los indices") {
+      return symbols?.length ? symbols.join(" · ") : fallback;
+    }
+
+    function selectedFacetText(values, fallback) {
+      return values?.length ? values.join(" · ") : fallback;
+    }
+
+    function normalizeFacetValue(facetKey, value) {
+      if (facetKey === "symbols") return normalizeSymbol(value);
+      return normalizeLabelText(value);
+    }
+
+    function uniqueFacetValues(values, facetKey) {
+      return facetKey === "symbols"
+        ? uniqueSymbols(values)
+        : uniqueLabels(values);
+    }
+
+    function datasetFacetValue(dataset, facetKey) {
+      if (facetKey === "symbols") return normalizeSymbol(dataset?.meta?.symbol);
+      if (facetKey === "risks") return normalizeLabelText(dataset?.meta?.riskLabel);
+      if (facetKey === "structures") return normalizeLabelText(dataset?.meta?.structureLabel);
+      return "";
+    }
+
+    function datasetMatchesFacetFilter(dataset, facetKey, selectedValues) {
+      if (!selectedValues?.length) return true;
+      return selectedValues.includes(datasetFacetValue(dataset, facetKey));
+    }
+
+    function datasetMatchesActiveFilters(dataset, filters) {
+      return (
+        datasetMatchesFacetFilter(dataset, "symbols", filters.symbols) &&
+        datasetMatchesFacetFilter(dataset, "risks", filters.risks) &&
+        datasetMatchesFacetFilter(dataset, "structures", filters.structures)
+      );
+    }
+
+    function datasetMatchesSymbolFilter(dataset, selectedSymbols) {
+      return datasetMatchesFacetFilter(dataset, "symbols", selectedSymbols);
+    }
+
+    function datasetReadableSymbols() {
+      return uniqueSymbols(state.datasets.map((dataset) => dataset.meta.symbol));
+    }
+
+    function datasetReadableRisks() {
+      const entries = new Map();
+      state.datasets.forEach((dataset) => {
+        const label = normalizeLabelText(dataset.meta.riskLabel);
+        const key = normalizeLabelKey(label);
+        if (!key) return;
+        const rank = Number.isFinite(dataset.meta.riskRank) ? dataset.meta.riskRank : 99;
+        const current = entries.get(key);
+        if (!current || rank < current.rank) {
+          entries.set(key, { label, rank });
+        }
+      });
+      return Array.from(entries.values())
+        .sort((a, b) => (a.rank - b.rank) || a.label.localeCompare(b.label, "es", { sensitivity: "base" }))
+        .map((entry) => entry.label);
+    }
+
+    function datasetReadableStructures() {
+      const entries = new Map();
+      state.datasets.forEach((dataset) => {
+        const label = normalizeLabelText(dataset.meta.structureLabel);
+        const key = normalizeLabelKey(label);
+        if (!key) return;
+        const order = STRUCTURE_ORDER[dataset.meta.structureKey] || 99;
+        const current = entries.get(key);
+        if (!current || order < current.order) {
+          entries.set(key, { label, order });
+        }
+      });
+      return Array.from(entries.values())
+        .sort((a, b) => (a.order - b.order) || a.label.localeCompare(b.label, "es", { sensitivity: "base" }))
+        .map((entry) => entry.label);
+    }
+
+    function datasetReadableFacetValues(facetKey) {
+      if (facetKey === "symbols") return datasetReadableSymbols();
+      if (facetKey === "risks") return datasetReadableRisks();
+      if (facetKey === "structures") return datasetReadableStructures();
+      return [];
+    }
+
+    function activeFacetSummary(filters) {
+      const parts = [];
+      if (filters.symbols?.length) parts.push("indices " + filters.symbols.join(", "));
+      if (filters.risks?.length) parts.push("perfiles " + filters.risks.join(", "));
+      if (filters.structures?.length) parts.push("tipos " + filters.structures.join(", "));
+      return parts.length ? " · " + parts.join(" · ") : "";
+    }
+
+    function renderFacetDropdown(container, config) {
+      if (!container) return;
+
+      const options = uniqueFacetValues(config.options, config.facetKey);
+      const selected = uniqueFacetValues(config.selected, config.facetKey)
+        .filter((value) => options.includes(value));
+      const summary = selectedFacetText(selected, config.emptyLabel || "Todos");
+      const rows = options.map((value) => {
+        const checked = selected.includes(value);
+        return [
+          '<label class="check-option">',
+          '<input type="checkbox" data-filter-option="' + escapeHtml(value) + '"' + (checked ? " checked" : "") + ">",
+          '<div class="check-option-label">',
+          '<span class="check-option-title">' + escapeHtml(value) + "</span>",
+          '<span class="check-option-meta">' + escapeHtml(config.optionMeta || "Filtro disponible") + "</span>",
+          "</div>",
+          "</label>"
+        ].join("");
+      }).join("");
+
+      container.innerHTML = [
+        '<div class="check-dropdown" data-filter-scope="' + escapeHtml(config.filterScope) + '" data-filter-facet="' + escapeHtml(config.facetKey) + '">',
+        '<button class="check-dropdown-trigger" data-filter-action="toggle" type="button">' + escapeHtml(summary) + "</button>",
+        config.open
+          ? [
+            '<div class="check-dropdown-panel">',
+            '<div class="check-dropdown-toolbar">',
+            '<div class="check-dropdown-summary">' + fmtInt(selected.length) + " de " + fmtInt(options.length) + " seleccionados</div>",
+            '<div class="saved-data-actions">',
+            '<button data-filter-action="select-all" class="btn ghost" type="button">Todo</button>',
+            '<button data-filter-action="clear" class="btn ghost" type="button">Limpiar</button>',
+            "</div>",
+            "</div>",
+            (rows || '<div class="saved-data-empty">No hay opciones disponibles.</div>'),
+            "</div>"
+          ].join("")
+          : "",
+        "</div>"
+      ].join("");
     }
 
     function selectedDataset() {
@@ -3322,33 +4654,52 @@
       return Number.isFinite(parsed) ? parsed : null;
     }
 
-    function datasetReadableLabels() {
-      return uniqueLabels(state.datasets.map((dataset) => dataset.meta.label));
-    }
+    function syncDatasetMapFacetFilters() {
+      const facets = [
+        {
+          facetKey: "symbols",
+          container: els.datasetMapSymbolFilter,
+          openKey: "symbolMenuOpen",
+          emptyLabel: "Todos los indices",
+          optionMeta: "Filtra datasets por activo"
+        },
+        {
+          facetKey: "risks",
+          container: els.datasetMapRiskFilter,
+          openKey: "riskMenuOpen",
+          emptyLabel: "Todos los perfiles",
+          optionMeta: "Filtra datasets por perfil"
+        },
+        {
+          facetKey: "structures",
+          container: els.datasetMapStructureFilter,
+          openKey: "structureMenuOpen",
+          emptyLabel: "Todos los tipos",
+          optionMeta: "Filtra datasets por estructura"
+        }
+      ];
 
-    function syncDatasetMapFilterOptions() {
-      if (!els.datasetMapLabelFilter) return;
-      const labels = datasetReadableLabels();
-      const currentKey = normalizeLabelKey(state.viewFilters.datasetMap.label);
-      if (currentKey && !labels.some((label) => normalizeLabelKey(label) === currentKey)) {
-        state.viewFilters.datasetMap.label = "";
-      }
-      const options = ['<option value="">Todas</option>'].concat(
-        labels.map((label) => (
-          '<option value="' + escapeHtml(label) + '"' +
-          (normalizeLabelKey(label) === normalizeLabelKey(state.viewFilters.datasetMap.label) ? " selected" : "") +
-          ">" + escapeHtml(label) + "</option>"
-        ))
-      ).join("");
-      els.datasetMapLabelFilter.innerHTML = options;
-      els.datasetMapLabelFilter.value = state.viewFilters.datasetMap.label || "";
+      facets.forEach((facet) => {
+        const options = datasetReadableFacetValues(facet.facetKey);
+        state.viewFilters.datasetMap[facet.facetKey] = uniqueFacetValues(
+          state.viewFilters.datasetMap[facet.facetKey],
+          facet.facetKey
+        ).filter((value) => options.includes(value));
+        renderFacetDropdown(facet.container, {
+          filterScope: "datasetMap",
+          facetKey: facet.facetKey,
+          options,
+          selected: state.viewFilters.datasetMap[facet.facetKey],
+          open: !!state.viewFilters.datasetMap[facet.openKey],
+          emptyLabel: facet.emptyLabel,
+          optionMeta: facet.optionMeta
+        });
+      });
     }
 
     function readDatasetMapFilters() {
       const mapFilters = state.viewFilters.datasetMap;
-      mapFilters.label = els.datasetMapLabelFilter?.value || mapFilters.label || "";
-      syncDatasetMapFilterOptions();
-      mapFilters.label = els.datasetMapLabelFilter?.value || mapFilters.label || "";
+      syncDatasetMapFacetFilters();
       mapFilters.minForecast = els.datasetMapMinForecast?.value || "";
       mapFilters.minDatasetScore = els.datasetMapMinDatasetScore?.value || "";
       mapFilters.maxExhaustion = els.datasetMapMaxExhaustion?.value || "";
@@ -3362,7 +4713,9 @@
       if (els.datasetMapSort) els.datasetMapSort.value = mapFilters.sortBy;
 
       return {
-        label: mapFilters.label,
+        symbols: uniqueFacetValues(mapFilters.symbols, "symbols"),
+        risks: uniqueFacetValues(mapFilters.risks, "risks"),
+        structures: uniqueFacetValues(mapFilters.structures, "structures"),
         minForecast: parseFilterNumber(mapFilters.minForecast),
         minDatasetScore: parseFilterNumber(mapFilters.minDatasetScore),
         maxExhaustion: parseFilterNumber(mapFilters.maxExhaustion),
@@ -3426,6 +4779,338 @@
       });
     }
 
+    const DATASET_MAP_SORT_LABELS = {
+      dataset_desc: "dataset score alto",
+      forecast_desc: "forecast alto",
+      health_desc: "validation alta",
+      exhaustion_asc: "agotamiento bajo",
+      hit_desc: "hit rate alto"
+    };
+
+    const RANKING_SORT_LABELS = {
+      forecast_desc: "forecast alto",
+      exhaustion_asc: "agotamiento bajo",
+      ratio_desc: "ratio 10d/63d alto",
+      avg21_desc: "avg 21d alto",
+      shift_asc: "shift estable"
+    };
+
+    function sectionContextChip(text, tone = "") {
+      return '<span class="section-context-chip' + (tone ? " " + tone : "") + '">' + escapeHtml(text) + "</span>";
+    }
+
+    function sectionContextStat(label, value, note, options = {}) {
+      return [
+        '<article class="section-context-stat">',
+        '<span class="section-context-stat-label">' + escapeHtml(label) + "</span>",
+        '<strong class="section-context-stat-value' + (options.mono ? " mono" : "") + '">' + escapeHtml(value) + "</strong>",
+        '<span class="section-context-stat-note">' + escapeHtml(note) + "</span>",
+        "</article>"
+      ].join("");
+    }
+
+    function renderDatasetMapContext(filtered, filters) {
+      if (!els.datasetMapContext) return;
+      if (!filtered.length) {
+        els.datasetMapContext.innerHTML = '<div class="section-context-empty">Ajusta filtros o carga mas CSV para reconstruir el universo visible.</div>';
+        return;
+      }
+
+      const topDataset = filtered[0]?.dataset || null;
+      const currentDataset = selectedDataset();
+      const avgHealth = mean(filtered.map((entry) => round(entry.dataset.validationHealth * 100, 1)));
+      const avgHit = mean(filtered.map((entry) => entry.hitRate).filter((value) => Number.isFinite(value) && value > -Infinity));
+      const chips = [
+        sectionContextChip(filtered.length + " / " + state.datasets.length + " visibles", "primary"),
+        sectionContextChip("Orden: " + (DATASET_MAP_SORT_LABELS[filters.sortBy] || "dataset score alto"))
+      ];
+
+      if (filters.symbols?.length) chips.push(sectionContextChip("Indice: " + filters.symbols.join(" · ")));
+      if (filters.risks?.length) chips.push(sectionContextChip("Perfil: " + filters.risks.join(" · ")));
+      if (filters.structures?.length) chips.push(sectionContextChip("Tipo: " + filters.structures.join(" · ")));
+      if (filters.minForecast !== null) chips.push(sectionContextChip("Forecast ≥ " + fmtNumber(filters.minForecast, 1)));
+      if (filters.minDatasetScore !== null) chips.push(sectionContextChip("DS ≥ " + fmtNumber(filters.minDatasetScore, 1)));
+      if (filters.maxExhaustion !== null) chips.push(sectionContextChip("Agot. ≤ " + fmtNumber(filters.maxExhaustion, 1), "warn"));
+      if (filters.minHealth !== null) chips.push(sectionContextChip("Health ≥ " + fmtNumber(filters.minHealth, 1) + "%"));
+
+      const cards = [
+        sectionContextStat(
+          "Visibles",
+          fmtInt(filtered.length),
+          "de " + fmtInt(state.datasets.length) + " datasets tras el filtro",
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Top actual",
+          topDataset?.meta?.shortLabel || "-",
+          "ds " + fmtNumber(topDataset?.datasetScore || 0, 1) + " · leader " + escapeHtml(topDataset?.leader?.slot || "-")
+        ),
+        sectionContextStat(
+          "Validation media",
+          fmtNumber(avgHealth, 1) + "%",
+          "hit medio " + fmtNumber(avgHit, 1) + "%"
+        ),
+        sectionContextStat(
+          "Seleccion actual",
+          currentDataset?.meta?.shortLabel || "-",
+          "leader " + escapeHtml(currentDataset?.leader?.slot || "-") + " · ventana " + escapeHtml(currentDataset?.focusWindow || "-")
+        )
+      ].join("");
+
+      els.datasetMapContext.innerHTML = [
+        '<div class="section-context-panel">',
+        '<div class="section-context-top">',
+        '<div class="section-context-copy">',
+        '<span class="section-context-kicker">Lectura rapida del universo</span>',
+        '<h3 class="section-context-title">Que esta entrando al mapa ahora mismo</h3>',
+        topDataset
+          ? '<span class="section-context-file mono">Top visible · ' + escapeHtml(topDataset.meta.strategyName) + "</span>"
+          : "",
+        '<div class="section-context-chips">' + chips.join("") + "</div>",
+        "</div>",
+        "</div>",
+        '<div class="section-context-stats">' + cards + "</div>",
+        "</div>"
+      ].join("");
+    }
+
+    function renderRankingContext(dataset, rankedRows, filters) {
+      if (!els.rankingContext) return;
+      if (!dataset) {
+        els.rankingContext.innerHTML = '<div class="section-context-empty">Selecciona un dataset para ver contexto, estado de etiquetas y los filtros del ranking.</div>';
+        return;
+      }
+
+      const visibleRows = rankedRows.length ? rankedRows : [];
+      const activeEntry = visibleRows.find((entry) => entry.slot === state.selectedSlot)
+        || dataset.analysis.ranking.find((entry) => entry.slot === state.selectedSlot)
+        || rankedRows[0]
+        || dataset.leader;
+      const labelCounts = rankedRows.reduce((acc, entry) => {
+        acc[entry.label] = (acc[entry.label] || 0) + 1;
+        return acc;
+      }, { KEEP: 0, WATCH: 0, ROTATE: 0 });
+      const validationSummary = dataset.analysis.validation.summary;
+      const chips = [
+        sectionContextChip(dataset.meta.symbol, "primary"),
+        sectionContextChip(dataset.meta.riskLabel),
+        sectionContextChip(dataset.meta.structureLabel),
+        sectionContextChip("Leader " + dataset.leader.slot, "good"),
+        sectionContextChip("Slot activo " + activeEntry.slot, activeEntry.slot === dataset.leader.slot ? "good" : "primary"),
+        dataset.focusWindow !== "-" ? sectionContextChip("Ventana " + dataset.focusWindow) : "",
+        sectionContextChip("DS " + fmtNumber(dataset.datasetScore, 1))
+      ].filter(Boolean);
+
+      if (filters.label) chips.push(sectionContextChip("Etiqueta " + filters.label, filters.label === "KEEP" ? "good" : filters.label === "WATCH" ? "warn" : "bad"));
+      if (filters.minForecast !== null) chips.push(sectionContextChip("Forecast ≥ " + fmtNumber(filters.minForecast, 1)));
+      if (filters.maxExhaustion !== null) chips.push(sectionContextChip("Agot. ≤ " + fmtNumber(filters.maxExhaustion, 1), "warn"));
+      if (filters.minRatio1063 !== null) chips.push(sectionContextChip("Ratio ≥ " + fmtNumber(filters.minRatio1063, 2)));
+      chips.push(sectionContextChip("Orden: " + (RANKING_SORT_LABELS[filters.sortBy] || "forecast alto")));
+
+      const cards = [
+        sectionContextStat(
+          "Slots visibles",
+          fmtInt(rankedRows.length) + " / " + fmtInt(dataset.analysis.ranking.length),
+          "tras filtros del dataset activo",
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Forecast top",
+          fmtNumber((rankedRows[0] || dataset.leader).forecastScore, 1),
+          (rankedRows[0] || dataset.leader).slot + " · agot. " + fmtNumber((rankedRows[0] || dataset.leader).exhaustionScore, 1),
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Validation",
+          fmtNumber(dataset.validationHealth * 100, 1) + "%",
+          validationSummary
+            ? "hit " + fmtNumber(validationSummary.positiveRate, 1) + "% · beat avg " + fmtNumber(validationSummary.beatAverageRate, 1) + "%"
+            : "sin suficiente walk-forward"
+        ),
+        sectionContextStat(
+          "Estados",
+          labelCounts.KEEP + " / " + labelCounts.WATCH + " / " + labelCounts.ROTATE,
+          "KEEP · WATCH · ROTATE",
+          { mono: true }
+        )
+      ].join("");
+
+      els.rankingContext.innerHTML = [
+        '<div class="section-context-panel">',
+        '<div class="section-context-top">',
+        '<div class="section-context-copy">',
+        '<span class="section-context-kicker">Identidad del dataset activo</span>',
+        '<h3 class="section-context-title">' + escapeHtml(dataset.meta.shortLabel) + "</h3>",
+        '<span class="section-context-file mono">' + escapeHtml(dataset.meta.strategyName) + "</span>",
+        '<div class="section-context-chips">' + chips.join("") + "</div>",
+        !rankedRows.length ? '<div class="section-context-empty">El dataset sigue activo, pero ningun slot pasa los filtros actuales.</div>' : "",
+        "</div>",
+        "</div>",
+        '<div class="section-context-stats">' + cards + "</div>",
+        "</div>"
+      ].join("");
+    }
+
+    function exhaustionTone(score) {
+      if (score <= 20) return "good";
+      if (score <= 45) return "warn";
+      return "bad";
+    }
+
+    function renderExhaustionContext(dataset) {
+      if (!els.exhaustionContext) return;
+      if (!dataset) {
+        els.exhaustionContext.innerHTML = '<div class="section-context-empty">Selecciona un dataset para ver que slots estan mas fatigados, cuales siguen sanos y como queda parado el slot activo.</div>';
+        return;
+      }
+
+      const byExhaustion = dataset.analysis.ranking.slice().sort((a, b) => b.exhaustionScore - a.exhaustionScore);
+      const worst = byExhaustion[0];
+      const healthiest = byExhaustion[byExhaustion.length - 1];
+      const active = dataset.analysis.ranking.find((entry) => entry.slot === state.selectedSlot) || dataset.leader;
+      const fatigueBuckets = dataset.analysis.ranking.reduce((acc, entry) => {
+        const tone = exhaustionTone(entry.exhaustionScore);
+        acc[tone] += 1;
+        return acc;
+      }, { good: 0, warn: 0, bad: 0 });
+      const chips = [
+        sectionContextChip(dataset.meta.symbol, "primary"),
+        sectionContextChip(dataset.meta.riskLabel),
+        sectionContextChip(dataset.meta.structureLabel),
+        sectionContextChip("Leader " + dataset.leader.slot, dataset.leader.exhaustionScore <= 20 ? "good" : exhaustionTone(dataset.leader.exhaustionScore)),
+        sectionContextChip("Slot activo " + active.slot, exhaustionTone(active.exhaustionScore)),
+        dataset.focusWindow !== "-" ? sectionContextChip("Ventana " + dataset.focusWindow) : ""
+      ].filter(Boolean);
+
+      const cards = [
+        sectionContextStat(
+          "Mas fatigado",
+          worst.slot,
+          "agot. " + fmtNumber(worst.exhaustionScore, 1) + " · ratio " + fmtNumber(worst.ratio10to63, 2),
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Mas sano",
+          healthiest.slot,
+          "agot. " + fmtNumber(healthiest.exhaustionScore, 1) + " · ratio " + fmtNumber(healthiest.ratio10to63, 2),
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Slot activo",
+          active.slot,
+          "agot. " + fmtNumber(active.exhaustionScore, 1) + " · forecast " + fmtNumber(active.forecastScore, 1),
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Mapa interno",
+          fatigueBuckets.good + " / " + fatigueBuckets.warn + " / " + fatigueBuckets.bad,
+          fmtInt(dataset.analysis.ranking.length) + " slots · sano / mixto / cansado"
+        )
+      ].join("");
+
+      els.exhaustionContext.innerHTML = [
+        '<div class="section-context-panel">',
+        '<div class="section-context-top">',
+        '<div class="section-context-copy">',
+        '<span class="section-context-kicker">Lectura rapida del deterioro</span>',
+        '<h3 class="section-context-title">' + escapeHtml(dataset.meta.shortLabel) + "</h3>",
+        '<span class="section-context-file mono">' + escapeHtml(dataset.meta.strategyName) + "</span>",
+        '<div class="section-context-chips">' + chips.join("") + "</div>",
+        "</div>",
+        "</div>",
+        '<div class="section-context-stats">' + cards + "</div>",
+        "</div>"
+      ].join("");
+    }
+
+    function renderValidationContext(dataset, summary, recent) {
+      if (!els.validationContext) return;
+      if (!dataset) {
+        els.validationContext.innerHTML = '<div class="section-context-empty">Selecciona un dataset con historia suficiente para ver calidad de validacion, ultima prediccion y cobertura del top pronosticado.</div>';
+        return;
+      }
+
+      const latest = recent[0] || null;
+      const active = dataset.analysis.ranking.find((entry) => entry.slot === state.selectedSlot) || dataset.leader;
+      const activeRank = Math.max(dataset.analysis.ranking.findIndex((entry) => entry.slot === active.slot) + 1, 1);
+      const avgSlotsVisible = recent.length ? mean(recent.map((item) => item.slotsAvailable || 0)) : dataset.analysis.stats.slots;
+      const recentPositiveRate = recent.length ? mean(recent.map((item) => (item.positive ? 1 : 0))) * 100 : 0;
+      const recentBeatAverage = recent.length ? mean(recent.map((item) => (item.beatAverage ? 1 : 0))) * 100 : 0;
+      const recentSpan = latest && recent[recent.length - 1]
+        ? fmtDateLabel(recent[recent.length - 1].date) + " -> " + fmtDateLabel(latest.date)
+        : "sin ventana reciente";
+      const chips = [
+        sectionContextChip(dataset.meta.symbol, "primary"),
+        sectionContextChip(dataset.meta.riskLabel),
+        sectionContextChip(dataset.meta.structureLabel),
+        sectionContextChip("Leader " + dataset.leader.slot),
+        sectionContextChip("Activo " + active.slot, active.slot === dataset.leader.slot ? "good" : ""),
+        dataset.focusWindow !== "-" ? sectionContextChip("Ventana " + dataset.focusWindow) : "",
+        summary ? sectionContextChip("Health " + fmtNumber(dataset.validationHealth * 100, 1) + "%", scoreTone(dataset.validationHealth * 100)) : sectionContextChip("Sin validacion", "warn")
+      ].filter(Boolean);
+
+      if (!summary) {
+        els.validationContext.innerHTML = [
+          '<div class="section-context-panel">',
+          '<div class="section-context-top">',
+          '<div class="section-context-copy">',
+          '<span class="section-context-kicker">Estado de validacion</span>',
+          '<h3 class="section-context-title">' + escapeHtml(dataset.meta.shortLabel) + "</h3>",
+          '<span class="section-context-file mono">' + escapeHtml(dataset.meta.strategyName) + "</span>",
+          '<div class="section-context-chips">' + chips.join("") + "</div>",
+          '<div class="section-context-empty">El dataset activo todavia no tiene historia suficiente para un walk-forward con muestra razonable.</div>',
+          "</div>",
+          "</div>",
+          "</div>"
+        ].join("");
+        return;
+      }
+
+      const cards = [
+        sectionContextStat(
+          "Ultima prediccion",
+          latest ? latest.chosenSlot : "-",
+          latest
+            ? fmtDateLabel(latest.date) + " · P/L " + fmtSignedCurrency(latest.realizedPl, 1)
+            : "sin prediccion reciente",
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Top real ultimo test",
+          latest ? latest.actualBestSlot : "-",
+          latest
+            ? "rank " + latest.realizedRank + "/" + latest.slotsAvailable + " · forecast " + fmtNumber(latest.forecastScore, 1)
+            : "sin comparativa reciente",
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Slot activo",
+          active.slot,
+          "rank actual #" + activeRank + " · forecast " + fmtNumber(active.forecastScore, 1),
+          { mono: true }
+        ),
+        sectionContextStat(
+          "Pulso reciente",
+          fmtNumber(recentPositiveRate, 1) + "%",
+          recentSpan + " · beat avg " + fmtNumber(recentBeatAverage, 1) + "% · " + fmtNumber(avgSlotsVisible, 1) + " slots/test"
+        )
+      ].join("");
+
+      els.validationContext.innerHTML = [
+        '<div class="section-context-panel">',
+        '<div class="section-context-top">',
+        '<div class="section-context-copy">',
+        '<span class="section-context-kicker">Estado de validacion</span>',
+        '<h3 class="section-context-title">' + escapeHtml(dataset.meta.shortLabel) + "</h3>",
+        '<span class="section-context-file mono">' + escapeHtml(dataset.meta.strategyName) + "</span>",
+        '<div class="section-context-chips">' + chips.join("") + "</div>",
+        "</div>",
+        "</div>",
+        '<div class="section-context-stats">' + cards + "</div>",
+        "</div>"
+      ].join("");
+    }
+
     function fmtNumber(value, digits = 1) {
       if (value === null || value === undefined || Number.isNaN(value)) return "-";
       return new Intl.NumberFormat("es-ES", {
@@ -3474,6 +5159,16 @@
       return new Intl.DateTimeFormat("es-ES", {
         dateStyle: "medium",
         timeStyle: "short"
+      }).format(date);
+    }
+
+    function fmtDateLabel(value) {
+      const date = parseIsoDateUtc(value);
+      if (!date) return String(value || "-");
+      return new Intl.DateTimeFormat("es-ES", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
       }).format(date);
     }
 
@@ -3652,7 +5347,29 @@
       const endDate = state.aggregate?.stats?.endDate || "";
       const startTime = slots[0] || "";
       const endTime = slots[slots.length - 1] || "";
-      const labels = datasetReadableLabels();
+      const facets = [
+        {
+          facetKey: "symbols",
+          container: els.screenerSymbolFilter,
+          openKey: "symbolMenuOpen",
+          emptyLabel: "Todos los indices",
+          optionMeta: "Filtra estrategias por activo"
+        },
+        {
+          facetKey: "risks",
+          container: els.screenerRiskFilter,
+          openKey: "riskMenuOpen",
+          emptyLabel: "Todos los perfiles",
+          optionMeta: "Filtra estrategias por perfil"
+        },
+        {
+          facetKey: "structures",
+          container: els.screenerStructureFilter,
+          openKey: "structureMenuOpen",
+          emptyLabel: "Todos los tipos",
+          optionMeta: "Filtra estrategias por estructura"
+        }
+      ];
 
       if (!state.screener.startDate || state.screener.startDate < startDate || state.screener.startDate > endDate) {
         state.screener.startDate = startDate;
@@ -3691,21 +5408,23 @@
       els.metricProfitability.checked = !!state.screener.profitability;
       els.metricWinRate.checked = !!state.screener.winRate;
       els.metricLowDrawdown.checked = !!state.screener.lowDrawdown;
-      if (els.screenerLabelFilter) {
-        const currentKey = normalizeLabelKey(state.screener.labelFilter);
-        if (currentKey && !labels.some((label) => normalizeLabelKey(label) === currentKey)) {
-          state.screener.labelFilter = "";
-        }
-        const labelOptions = ['<option value="">Todas las etiquetas</option>'].concat(
-          labels.map((label) => (
-            '<option value="' + escapeHtml(label) + '"' +
-            (normalizeLabelKey(label) === normalizeLabelKey(state.screener.labelFilter) ? " selected" : "") +
-            ">" + escapeHtml(label) + "</option>"
-          ))
-        ).join("");
-        els.screenerLabelFilter.innerHTML = labelOptions;
-        els.screenerLabelFilter.value = state.screener.labelFilter || "";
-      }
+
+      facets.forEach((facet) => {
+        const options = datasetReadableFacetValues(facet.facetKey);
+        state.screener[facet.facetKey] = uniqueFacetValues(
+          state.screener[facet.facetKey],
+          facet.facetKey
+        ).filter((value) => options.includes(value));
+        renderFacetDropdown(facet.container, {
+          filterScope: "screener",
+          facetKey: facet.facetKey,
+          options,
+          selected: state.screener[facet.facetKey],
+          open: !!state.screener[facet.openKey],
+          emptyLabel: facet.emptyLabel,
+          optionMeta: facet.optionMeta
+        });
+      });
       state.screener.rangePreset = inferRangePreset(state.screener.startDate, state.screener.endDate);
       updatePresetButtons();
     }
@@ -3721,7 +5440,12 @@
           profitability: true,
           winRate: false,
           lowDrawdown: false,
-          labelFilter: "",
+          symbols: [],
+          symbolMenuOpen: false,
+          risks: [],
+          riskMenuOpen: false,
+          structures: [],
+          structureMenuOpen: false,
           results: [],
           totalCandidates: 0,
           criteriaLabels: []
@@ -3740,7 +5464,12 @@
         profitability: true,
         winRate: false,
         lowDrawdown: false,
-        labelFilter: "",
+        symbols: [],
+        symbolMenuOpen: false,
+        risks: [],
+        riskMenuOpen: false,
+        structures: [],
+        structureMenuOpen: false,
         results: [],
         totalCandidates: 0,
         criteriaLabels: []
@@ -3796,7 +5525,9 @@
       let endDate = els.screenerEndDate.value || state.screener.endDate || "";
       let startTime = els.screenerStartTime.value || state.screener.startTime || "";
       let endTime = els.screenerEndTime.value || state.screener.endTime || "";
-      const labelFilter = els.screenerLabelFilter ? els.screenerLabelFilter.value : (state.screener.labelFilter || "");
+      const symbols = uniqueFacetValues(state.screener.symbols, "symbols");
+      const risks = uniqueFacetValues(state.screener.risks, "risks");
+      const structures = uniqueFacetValues(state.screener.structures, "structures");
 
       if (startDate && endDate && startDate > endDate) {
         [startDate, endDate] = [endDate, startDate];
@@ -3809,7 +5540,9 @@
       state.screener.endDate = endDate;
       state.screener.startTime = startTime;
       state.screener.endTime = endTime;
-      state.screener.labelFilter = labelFilter;
+      state.screener.symbols = symbols;
+      state.screener.risks = risks;
+      state.screener.structures = structures;
       syncScreenerControls();
 
       return {
@@ -3817,7 +5550,9 @@
         endDate,
         startTime,
         endTime,
-        labelFilter
+        symbols,
+        risks,
+        structures
       };
     }
 
@@ -3856,7 +5591,6 @@
     function computeScreenerResults() {
       const criteria = activeScreenerCriteria();
       const filters = readScreenerFilters();
-      const labelFilter = filters.labelFilter || "";
 
       if (!state.datasets.length) {
         state.screener.results = [];
@@ -3867,7 +5601,7 @@
       const datasetCandidates = [];
 
       state.datasets.forEach((dataset) => {
-        if (!labelMatches(dataset, labelFilter)) return;
+        if (!datasetMatchesActiveFilters(dataset, filters)) return;
         const filteredRecords = filterRecordsForScreener(dataset.records, filters);
         if (!filteredRecords.length) return;
 
@@ -3987,7 +5721,7 @@
         els.topStrategiesWrap.innerHTML = [
           '<div class="empty-state">',
           "<strong>El screener aparecera aqui.</strong>",
-          "Carga varios CSV para comparar estrategias y encontrar rapidamente los cinco mejores setups bajo el filtro elegido.",
+          "Carga varios CSV para comparar estrategias y encontrar rapidamente los mejores setups bajo el filtro elegido.",
           "</div>"
         ].join("");
         return;
@@ -3997,7 +5731,7 @@
         els.topStrategiesWrap.innerHTML = [
           '<div class="empty-state">',
           "<strong>No hay resultados con ese filtro todavia.</strong>",
-          "Pulsa <span class=\"mono\">Calcular Top 5 estrategias</span> o amplia fechas y horas si el filtro quedo demasiado estrecho.",
+          "Pulsa <span class=\"mono\">Actualizar ranking</span> o amplia fechas y horas si el filtro quedo demasiado estrecho.",
           "</div>"
         ].join("");
         return;
@@ -4007,7 +5741,7 @@
         state.screener.startDate + " -> " + state.screener.endDate,
         state.screener.startTime + " -> " + state.screener.endTime
       ].join(" · ");
-      const labelText = state.screener.labelFilter ? " · etiqueta " + state.screener.labelFilter : "";
+      const facetText = activeFacetSummary(state.screener);
       const criteriaText = state.screener.criteriaLabels.join(" + ");
       const cards = state.screener.results.map((entry, index) => {
         const badge = screenerBadge(index);
@@ -4041,7 +5775,7 @@
         '<div class="screener-results-head">',
         '<div class="screener-summary">',
         '<h3 class="panel-title" style="margin-bottom: 6px;">Resultados del ranking</h3>',
-        '<p class="subtle">' + escapeHtml(state.screener.totalCandidates + " estrategias con datos en el filtro · " + filters + labelText + " · criterio " + criteriaText) + "</p>",
+        '<p class="subtle">' + escapeHtml(state.screener.totalCandidates + " estrategias con datos en el filtro · " + filters + facetText + " · criterio " + criteriaText) + "</p>",
         "</div>",
         '<div class="signal-row">',
         '<span class="signal-chip good">score mixto interpretable</span>',
@@ -4160,6 +5894,16 @@
 
     function renderDatasetMap() {
       if (!state.datasets.length) {
+        renderDatasetMapContext([], {
+          symbols: [],
+          risks: [],
+          structures: [],
+          minForecast: null,
+          minDatasetScore: null,
+          maxExhaustion: null,
+          minHealth: null,
+          sortBy: "dataset_desc"
+        });
         if (els.datasetMapFilterMeta) {
           els.datasetMapFilterMeta.textContent = "Sin datasets cargados.";
         }
@@ -4181,7 +5925,7 @@
           }))
           .filter((entry) => {
             const dataset = entry.dataset;
-            if (filters.label && normalizeLabelKey(dataset.meta.label) !== normalizeLabelKey(filters.label)) return false;
+            if (!datasetMatchesActiveFilters(dataset, filters)) return false;
             if (filters.minForecast !== null && dataset.leader.forecastScore < filters.minForecast) return false;
             if (filters.minDatasetScore !== null && dataset.datasetScore < filters.minDatasetScore) return false;
             if (filters.maxExhaustion !== null && dataset.leader.exhaustionScore > filters.maxExhaustion) return false;
@@ -4192,13 +5936,14 @@
       );
 
       if (!filtered.length) {
+        renderDatasetMapContext([], filters);
         if (els.datasetMapFilterMeta) {
           els.datasetMapFilterMeta.textContent = "Mostrando 0 de " + state.datasets.length + " datasets con los filtros actuales.";
         }
         els.datasetWrap.innerHTML = [
           '<div class="empty-state">',
           "<strong>No hay datasets con los filtros actuales.</strong>",
-          "Ajusta etiqueta, forecast, agotamiento o validation health para ampliar el universo.",
+          "Ajusta indice, perfil, tipo, forecast, agotamiento o validation health para ampliar el universo.",
           "</div>"
         ].join("");
         return;
@@ -4210,10 +5955,11 @@
       }
 
       if (els.datasetMapFilterMeta) {
-        const tagText = filters.label ? " · etiqueta " + filters.label : "";
+        const tagText = activeFacetSummary(filters);
         els.datasetMapFilterMeta.textContent =
           "Mostrando " + filtered.length + " de " + state.datasets.length + " datasets" + tagText + ".";
       }
+      renderDatasetMapContext(filtered, filters);
 
       const rows = filtered.map((entry) => {
         const dataset = entry.dataset;
@@ -4269,6 +6015,9 @@
 
     function renderStrategy() {
       const strategy = state.aggregate?.strategy;
+      if (els.strategyContext) {
+        els.strategyContext.innerHTML = '<div class="section-context-empty">Carga varios datasets para ver la mezcla sugerida, su dispersion por subyacente y un acceso directo a cada pierna del mix.</div>';
+      }
       if (!strategy) {
         els.strategyWrap.innerHTML = [
           '<div class="empty-state">',
@@ -4279,8 +6028,66 @@
         return;
       }
 
+      const core = strategy.legs[0];
+      const overlapText = strategy.concentrationFlags.length
+        ? strategy.concentrationFlags.join(" · ")
+        : "sin overlap clave entre simbolo, estructura y perfil";
+      const contextLine = core.meta.shortLabel + " lidera el mix · ventana " + strategy.executionWindow + " · confianza " + fmtNumber(strategy.confidence, 1);
+
+      if (els.strategyContext) {
+        const chips = [
+          sectionContextChip(fmtInt(strategy.legs.length) + " piernas", "primary"),
+          sectionContextChip("Ventana " + strategy.executionWindow),
+          sectionContextChip("Confianza " + fmtNumber(strategy.confidence, 1), scoreTone(strategy.confidence)),
+          sectionContextChip("Diversificacion " + fmtNumber(strategy.diversificationScore, 1), scoreTone(strategy.diversificationScore)),
+          strategy.concentrationFlags.length
+            ? sectionContextChip("Overlap " + fmtInt(strategy.concentrationFlags.length), "warn")
+            : sectionContextChip("Sin overlap critico", "good")
+        ];
+
+        const cards = [
+          sectionContextStat(
+            "Reparto",
+            strategy.weightText,
+            "ventana " + strategy.executionWindow + " · " + fmtInt(strategy.legs.length) + " piernas"
+          ),
+          sectionContextStat(
+            "Core",
+            core.meta.shortLabel,
+            core.executionSlot + " · " + core.weight + "% · ds " + fmtNumber(core.datasetScore, 1)
+          ),
+          sectionContextStat(
+            "Cobertura",
+            strategy.uniqueSymbols + " / " + strategy.uniqueStructures + " / " + strategy.uniqueRisks,
+            "simbolos / estructuras / perfiles cubiertos"
+          ),
+          sectionContextStat(
+            "Salud media",
+            fmtNumber(strategy.avgDatasetScore, 1),
+            "validation " + fmtNumber(strategy.avgValidationHealth, 1) + "% · agot. " + fmtNumber(strategy.avgLeaderExhaustion, 1)
+          )
+        ].join("");
+
+        els.strategyContext.innerHTML = [
+          '<div class="section-context-panel">',
+          '<div class="section-context-top">',
+          '<div class="section-context-copy">',
+          '<span class="section-context-kicker">Lectura rapida del mix</span>',
+          '<h3 class="section-context-title">Como esta repartida la propuesta combinada</h3>',
+          '<span class="section-context-file mono">' + escapeHtml(contextLine) + "</span>",
+          '<div class="section-context-chips">' + chips.join("") + "</div>",
+          "</div>",
+          "</div>",
+          '<div class="section-context-stats">' + cards + "</div>",
+          '<div class="signal-row">' + (strategy.concentrationFlags.length
+            ? strategy.concentrationFlags.map((flag) => '<span class="signal-chip warn">' + escapeHtml(flag) + "</span>").join("")
+            : '<span class="signal-chip good">mix diversificado</span><span class="signal-chip neutral">sin solape dominante</span>') + "</div>",
+          "</div>"
+        ].join("");
+      }
+
       const legCards = strategy.legs.map((leg) => [
-        '<article class="mix-card">',
+        '<article class="mix-card' + (leg.role === "Core" ? " is-core" : "") + '">',
         '<div class="mix-card-head">',
         "<div>",
         '<span class="mix-role">' + escapeHtml(leg.role) + "</span>",
@@ -4289,44 +6096,56 @@
         '<span class="mix-slot-pill">' + escapeHtml(leg.executionSlot) + "</span>",
         "</div>",
         '<div class="mix-identity">',
-        "<strong>" + escapeHtml(leg.meta.strategyName) + "</strong>",
+        "<strong>" + escapeHtml(leg.meta.shortLabel) + "</strong>",
+        '<span class="mono">' + escapeHtml(leg.meta.strategyName) + "</span>",
         "<span>" + escapeHtml(leg.meta.label) + "</span>",
         "</div>",
+        '<div class="section-context-chips mix-card-chips">' + [
+          sectionContextChip(leg.meta.symbol, "primary"),
+          sectionContextChip(leg.meta.riskLabel),
+          sectionContextChip(leg.meta.structureLabel),
+          sectionContextChip("Health " + fmtNumber(leg.validationHealth * 100, 1) + "%", scoreTone(leg.validationHealth * 100))
+        ].join("") + "</div>",
         '<div class="mix-metrics">',
         '<div class="mix-metric"><span>Dataset score</span><strong>' + fmtNumber(leg.datasetScore, 1) + "</strong></div>",
         '<div class="mix-metric"><span>Leader forecast</span><strong>' + fmtNumber(leg.leader.forecastScore, 1) + "</strong></div>",
         '<div class="mix-metric"><span>Agotamiento</span><strong>' + fmtNumber(leg.leader.exhaustionScore, 1) + "</strong></div>",
+        '<div class="mix-metric"><span>Validation</span><strong>' + fmtNumber(leg.validationHealth * 100, 1) + "%</strong></div>",
         '<div class="mix-metric"><span>Ventana top</span><strong>' + escapeHtml(leg.focusWindow) + "</strong></div>",
+        '<div class="mix-metric"><span>Leader label</span><strong>' + escapeHtml(leg.leader.label) + "</strong></div>",
         "</div>",
+        '<div class="signal-row">' + (leg.signals?.length
+          ? leg.signals.slice(0, 4).map((signal) => '<span class="signal-chip ' + escapeHtml(signal.tone) + '">' + escapeHtml(signal.text) + "</span>").join("")
+          : '<span class="signal-chip neutral">sin senales extra</span>') + "</div>",
+        '<div class="mix-card-actions"><button class="btn ghost" type="button" data-strategy-target="' + escapeHtml(leg.key + "__" + leg.executionSlot) + '">Abrir dataset</button></div>',
         "</article>"
       ].join("")).join("");
 
-      const flagSignals = strategy.concentrationFlags.length
-        ? strategy.concentrationFlags.map((flag) => '<span class="signal-chip warn">' + escapeHtml(flag) + "</span>").join("")
-        : '<span class="signal-chip good">mix diversificado</span>';
-
       els.strategyWrap.innerHTML = [
-        '<div class="detail-banner">',
-        '<div class="detail-banner-top">',
-        "<div>",
-        '<div class="eyebrow">Mix sugerido</div>',
-        "<h3>" + escapeHtml(strategy.weightText) + "</h3>",
-        "<p>Ventana operativa " + escapeHtml(strategy.executionWindow) + " · confianza " + fmtNumber(strategy.confidence, 1) + " · diversificacion " + fmtNumber(strategy.diversificationScore, 1) + ".</p>",
-        "</div>",
-        '<div class="signal-row">' + flagSignals + "</div>",
-        "</div>",
-        "</div>",
         '<div class="mix-grid">' + legCards + "</div>",
         '<div class="spark-shell">',
         '<div class="spark-head"><strong>Lectura operativa</strong><span class="mono">core / satellite / diversifier</span></div>',
         '<p class="subtle">' + escapeHtml(strategy.summaryText) + "</p>",
+        '<p class="subtle">Overlap: ' + escapeHtml(overlapText) + '. La confianza del mix resume score relativo, agotamiento, validacion y dispersion entre piernas.</p>',
         "</div>"
       ].join("");
+
+      els.strategyWrap.querySelectorAll("[data-strategy-target]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [datasetKey, slot] = button.getAttribute("data-strategy-target").split("__");
+          state.selectedDatasetKey = datasetKey;
+          state.selectedSlot = slot;
+          renderAll();
+          document.getElementById("analysisSection")?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+        });
+      });
     }
 
     function renderRanking() {
+      const filters = readRankingFilters();
       const dataset = selectedDataset();
       if (!dataset) {
+        renderRankingContext(null, [], filters);
         els.selectedDatasetMeta.textContent = "Selecciona un dataset para abrir su ranking intradia.";
         if (els.rankingFilterMeta) {
           els.rankingFilterMeta.textContent = "Sin dataset seleccionado.";
@@ -4339,8 +6158,6 @@
         ].join("");
         return;
       }
-
-      const filters = readRankingFilters();
       const rankedRows = sortRankingRows(
         dataset.analysis.ranking
           .map((entry) => ({
@@ -4358,6 +6175,7 @@
       );
 
       if (!rankedRows.length) {
+        renderRankingContext(dataset, [], filters);
         if (els.rankingFilterMeta) {
           els.rankingFilterMeta.textContent =
             "Mostrando 0 de " + dataset.analysis.ranking.length + " slots en " + dataset.meta.strategyName + ".";
@@ -4377,11 +6195,12 @@
 
       const labelText = filters.label ? " · etiqueta " + filters.label : "";
       els.selectedDatasetMeta.textContent =
-        dataset.meta.strategyName + " · " + dataset.meta.label + " · leader " + dataset.leader.slot + " · ds " + fmtNumber(dataset.datasetScore, 1) + labelText;
+        "Dataset activo · " + dataset.meta.label + " · " + rankedRows.length + " slots visibles" + labelText;
       if (els.rankingFilterMeta) {
         els.rankingFilterMeta.textContent =
           "Mostrando " + rankedRows.length + " de " + dataset.analysis.ranking.length + " slots del dataset seleccionado.";
       }
+      renderRankingContext(dataset, rankedRows, filters);
 
       const rows = rankedRows.map((entry) => {
         const selectedClass = state.selectedSlot === entry.slot ? "is-selected" : "";
@@ -4435,13 +6254,154 @@
       });
     }
 
+    function selectionLineChartSvg(series, options = {}) {
+      if (!series?.length) {
+        return '<div class="saved-data-empty">Sin puntos suficientes para dibujar la serie.</div>';
+      }
+
+      const width = 760;
+      const height = 240;
+      const paddingX = 18;
+      const paddingY = 20;
+      const values = series.map((item) => item.value);
+      const min = Math.min(...values, 0);
+      const max = Math.max(...values, 0);
+      const span = Math.max(max - min, 1);
+      const step = (width - (paddingX * 2)) / Math.max(series.length - 1, 1);
+      const yFor = (value) => height - paddingY - (((value - min) / span) * (height - (paddingY * 2)));
+      const points = series.map((item, index) => ({
+        ...item,
+        x: paddingX + (index * step),
+        y: yFor(item.value)
+      }));
+      const line = points.map((point) => point.x + "," + point.y).join(" ");
+      const area = points.length
+        ? [
+          paddingX + "," + yFor(0),
+          ...points.map((point) => point.x + "," + point.y),
+          points[points.length - 1].x + "," + yFor(0)
+        ].join(" ")
+        : "";
+      const zeroY = yFor(0);
+      const checkpoints = Array.from(new Set([
+        0,
+        Math.floor((points.length - 1) / 2),
+        points.length - 1
+      ])).map((index) => points[index]).filter(Boolean);
+      const markerLabels = checkpoints.map((point) => [
+        '<circle cx="' + point.x + '" cy="' + point.y + '" r="4" fill="#173142"></circle>',
+        '<text x="' + point.x + '" y="' + Math.max(point.y - 10, 14) + '" text-anchor="middle" font-size="10" fill="#173142" style="paint-order: stroke; stroke: rgba(255,255,255,0.92); stroke-width: 3px; stroke-linejoin: round;">' + escapeHtml(fmtCurrency(point.value, 0)) + "</text>"
+      ].join("")).join("");
+      const axisLabels = [
+        { x: points[0]?.x || paddingX, label: series[0]?.date ? fmtDateLabel(series[0].date) : "-" },
+        { x: points[Math.floor((points.length - 1) / 2)]?.x || (width / 2), label: series[Math.floor((series.length - 1) / 2)]?.date ? fmtDateLabel(series[Math.floor((series.length - 1) / 2)].date) : "-" },
+        { x: points[points.length - 1]?.x || (width - paddingX), label: series[series.length - 1]?.date ? fmtDateLabel(series[series.length - 1].date) : "-" }
+      ].map((axis) => '<text x="' + axis.x + '" y="' + (height - 4) + '" text-anchor="middle" font-size="10" fill="rgba(17,33,48,0.55)">' + escapeHtml(axis.label) + "</text>").join("");
+
+      return [
+        '<svg class="selection-line-chart" viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="' + escapeHtml(options.ariaLabel || "Serie de evolucion") + '">',
+        '<rect x="0" y="0" width="' + width + '" height="' + height + '" fill="rgba(255,255,255,0.88)"></rect>',
+        '<line x1="' + paddingX + '" y1="' + zeroY + '" x2="' + (width - paddingX) + '" y2="' + zeroY + '" stroke="rgba(17,33,48,0.14)" stroke-dasharray="5 5"></line>',
+        '<polyline fill="rgba(15,118,110,0.10)" points="' + area + '"></polyline>',
+        '<polyline fill="none" stroke="#11827a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="' + line + '"></polyline>',
+        markerLabels,
+        axisLabels,
+        "</svg>"
+      ].join("");
+    }
+
+    function selectionBarChart(rows, options = {}) {
+      if (!rows?.length) {
+        return '<div class="saved-data-empty">' + escapeHtml(options.emptyText || "Sin datos suficientes.") + "</div>";
+      }
+
+      const maxAbs = Math.max(...rows.map((row) => Math.abs(row.value)), 1);
+      return [
+        '<div class="selection-bar-chart">',
+        rows.map((row) => {
+          const width = Math.max((Math.abs(row.value) / maxAbs) * 100, 5);
+          const tone = options.tone ? options.tone(row) : (row.value >= 0 ? "positive" : "negative");
+          const formatted = options.formatter ? options.formatter(row.value, row) : fmtNumber(row.value, 1);
+          return [
+            '<div class="selection-bar-row">',
+            '<span class="selection-bar-label">' + escapeHtml(row.label) + "</span>",
+            '<div class="selection-bar-track"><span class="selection-bar-fill ' + escapeHtml(tone) + '" style="width:' + width + '%"></span></div>',
+            '<span class="selection-bar-value">' + escapeHtml(formatted) + "</span>",
+            "</div>"
+          ].join("");
+        }).join(""),
+        "</div>"
+      ].join("");
+    }
+
+    function selectionWindowMarkup(selected) {
+      return [
+        '<div class="selection-window-grid">',
+        WINDOW_SET.map((windowSize) => {
+          const windowMetrics = selected.metrics.windows[windowSize];
+          return [
+            '<div class="selection-window-card">',
+            "<strong>" + windowSize + "d</strong>",
+            '<span class="number">' + fmtSignedCurrency(windowMetrics.avg, 0) + "</span>",
+            '<small>win ' + fmtPercent(windowMetrics.winRate, 1) + "</small>",
+            '<small>PF ' + fmtNumber(windowMetrics.profitFactor, 2) + " · DD " + fmtCurrency(-windowMetrics.maxDrawdown, 0) + "</small>",
+            "</div>"
+          ].join("");
+        }).join(""),
+        "</div>"
+      ].join("");
+    }
+
+    function rollingRegimeText(selected) {
+      const avg10 = selected.metrics.avg10;
+      const avg21 = selected.metrics.avg21;
+      const avg63 = selected.metrics.avg63;
+
+      if (avg10 >= avg21 && avg21 >= avg63) return "corto confirma la base";
+      if (avg10 <= avg21 && avg21 <= avg63) return "corto va por debajo";
+      if (avg10 >= avg63) return "corto por encima del baseline";
+      return "lectura mixta";
+    }
+
+    function selectionExplainMarkup() {
+      const items = [
+        {
+          title: "Forecast",
+          body: "Score 0-100 que mezcla robustez larga, media y corta frente al resto de slots del mismo dataset. Mas alto = mejor posicion estructural."
+        },
+        {
+          title: "Exhaustion",
+          body: "Resume deterioro reciente. Mas bajo = slot mas sano. Sube cuando el corto plazo cae, pierde rango o empeora frente a 63d."
+        },
+        {
+          title: "Validation",
+          body: "Es una lectura del dataset, no solo del slot. Resume el walk-forward usando hit rate, beat average y cobertura top 3."
+        },
+        {
+          title: "Rolling",
+          body: "Las ventanas 10d, 21d, 63d, 126d y 252d muestran si el corto plazo acompana o contradice la base historica."
+        }
+      ];
+
+      return [
+        '<div class="selection-explain-grid">',
+        items.map((item) => [
+          '<article class="selection-explain-card">',
+          "<strong>" + escapeHtml(item.title) + "</strong>",
+          "<p>" + escapeHtml(item.body) + "</p>",
+          "</article>"
+        ].join("")).join(""),
+        "</div>"
+      ].join("");
+    }
+
     function renderDetail() {
       const dataset = selectedDataset();
       if (!dataset) {
         els.detailWrap.innerHTML = [
           '<div class="empty-state">',
-          "<strong>No hay horario seleccionado.</strong>",
-          "Selecciona un dataset y luego un horario para abrir su detalle estructural y reciente.",
+          "<strong>No hay seleccion activa.</strong>",
+          "Selecciona un dataset y luego un horario para abrir su ficha completa.",
           "</div>"
         ].join("");
         return;
@@ -4451,57 +6411,191 @@
       if (!selected) return;
       state.selectedSlot = selected.slot;
 
-      const windowCards = WINDOW_SET.map((windowSize) => {
-        const windowMetrics = selected.metrics.windows[windowSize];
-        return [
-          '<div class="window-card">',
-          "<strong>" + windowSize + "d</strong>",
-          '<span class="number mono">' + fmtNumber(windowMetrics.avg, 1) + "</span>",
-          '<small>win rate: ' + fmtPercent(windowMetrics.winRate, 1) + "</small>",
-          '<small>std dev: ' + fmtNumber(windowMetrics.stdDev, 1) + "</small>",
-          '<small>profit factor: ' + fmtNumber(windowMetrics.profitFactor, 2) + "</small>",
-          '<small>max drawdown: ' + fmtNumber(windowMetrics.maxDrawdown, 1) + "</small>",
+      const slotSeries = dataset.analysis.bySlot.get(selected.slot) || [];
+      if (!slotSeries.length) {
+        els.detailWrap.innerHTML = [
+          '<div class="empty-state">',
+          "<strong>Sin serie util para la seleccion.</strong>",
+          "El slot actual no tiene suficientes observaciones para construir la ficha detallada.",
           "</div>"
         ].join("");
-      }).join("");
+        return;
+      }
 
-      const explanation = [
-        "Dataset " + dataset.meta.strategyName,
+      const values = slotSeries.map((item) => item.pl);
+      const totalPnL = sum(values);
+      const tradeCount = values.length;
+      const winningDays = values.filter((value) => value > 0).length;
+      const losingDays = values.filter((value) => value < 0).length;
+      const avgWin = winningDays ? sum(values.filter((value) => value > 0)) / winningDays : 0;
+      const avgLoss = losingDays ? sum(values.filter((value) => value < 0)) / losingDays : 0;
+      const expectancy = tradeCount ? totalPnL / tradeCount : 0;
+      const pf = profitFactor(values);
+      const payoff = avgLoss < 0 ? avgWin / Math.abs(avgLoss) : 0;
+      const maxDd = maxDrawdown(values);
+      const ddProfile = drawdownProfile(slotSeries);
+      const longestWin = longestWinningStreak(values);
+      const longestLoss = longestLosingStreak(values);
+      const monthly = monthlyTotals(slotSeries);
+      const positiveMonths = monthly.filter((entry) => entry.value > 0).length;
+      const weekday = weekdayTotals(slotSeries);
+      const cumulative = cumulativeSeries(slotSeries);
+      const validationSummary = dataset.analysis.validation.summary;
+      const validationHealthPct = (dataset.validationHealth || 0) * 100;
+      const selectedRank = Math.max(dataset.analysis.ranking.findIndex((entry) => entry.slot === selected.slot) + 1, 1);
+      const dateStart = slotSeries[0]?.date || null;
+      const dateEnd = slotSeries[slotSeries.length - 1]?.date || null;
+      const rollingText = rollingRegimeText(selected);
+      const monthlyNote = monthly.length ? positiveMonths + "/" + monthly.length + " meses positivos" : "sin cobertura mensual";
+      const bannerText = [
+        "rank #" + selectedRank + " de " + dataset.analysis.ranking.length + " slots",
         "forecast " + fmtNumber(selected.forecastScore, 1),
         "agotamiento " + fmtNumber(selected.exhaustionScore, 1),
-        "ratio 10d/63d " + fmtNumber(selected.ratio10to63, 2),
-        "rank 63d #" + selected.rank63 + " -> rank 21d #" + selected.rank21
+        "validation " + fmtNumber(validationHealthPct, 1) + "%",
+        "rolling " + rollingText
       ].join(" · ");
 
+      const performanceCards = [
+        {
+          title: "Profit / Loss",
+          value: fmtCurrency(totalPnL, 0),
+          valueClass: totalPnL >= 0 ? "positive" : "negative",
+          note: tradeCount + " dias · " + winningDays + " win / " + losingDays + " loss · " + fmtDateLabel(dateStart) + " -> " + fmtDateLabel(dateEnd),
+          help: "Resultado bruto acumulado del slot seleccionado dentro del dataset cargado."
+        },
+        {
+          title: "Win Rate",
+          value: fmtPercent(winRate(values), 1),
+          note: "avg profit " + fmtCurrency(avgWin, 0) + " · avg loss " + fmtCurrency(avgLoss, 0),
+          help: "Proporcion de dias positivos sobre el total de observaciones del slot."
+        },
+        {
+          title: "Profit Factor",
+          value: fmtNumber(pf, 2),
+          note: "expectancy " + fmtSignedCurrency(expectancy, 2) + " / trade · payoff " + fmtNumber(payoff, 2) + "x",
+          help: "Relacion entre ganancias acumuladas y perdidas acumuladas. Mayor que 1 es mejor."
+        },
+        {
+          title: "Max Drawdown",
+          value: fmtCurrency(-maxDd, 0),
+          valueClass: "negative",
+          note: fmtDateLabel(ddProfile.startDate) + " -> " + fmtDateLabel(ddProfile.endDate) + " · streak win " + longestWin + " / loss " + longestLoss,
+          help: "Peor caida desde un pico de equity del slot seleccionado."
+        }
+      ];
+
+      const frameworkCards = [
+        {
+          title: "Forecast",
+          value: fmtNumber(selected.forecastScore, 1),
+          valueClass: selected.forecastScore >= 70 ? "positive" : "",
+          note: "largo " + fmtNumber(selected.longScore, 1) + " · medio " + fmtNumber(selected.mediumScore, 1) + " · corto " + fmtNumber(selected.shortScore, 1),
+          help: "Combina robustez larga, media y corta frente al resto de horarios del dataset."
+        },
+        {
+          title: "Exhaustion",
+          value: fmtNumber(selected.exhaustionScore, 1),
+          valueClass: selected.exhaustionScore <= 35 ? "positive" : selected.exhaustionScore >= 60 ? "negative" : "",
+          note: "ratio 10d/63d " + fmtNumber(selected.ratio10to63, 2) + "x · shift " + fmtSignedNumber(selected.rankShift, 0),
+          help: "Mide deterioro reciente. Mas bajo = estructura mas sana."
+        },
+        {
+          title: "Validation",
+          value: validationSummary ? fmtNumber(validationHealthPct, 1) + "%" : "-",
+          valueClass: validationHealthPct >= 70 ? "positive" : validationHealthPct < 55 ? "negative" : "",
+          note: validationSummary
+            ? "hit " + fmtNumber(validationSummary.positiveRate, 1) + "% · beat avg " + fmtNumber(validationSummary.beatAverageRate, 1) + "% · top3 " + fmtNumber(validationSummary.top3Coverage, 1) + "%"
+            : "sin suficiente historia walk-forward",
+          help: "Lectura del dataset completo; no es del slot aislado."
+        },
+        {
+          title: "Rolling",
+          value: fmtNumber(selected.ratio10to63, 2) + "x",
+          valueClass: selected.ratio10to63 >= 1 ? "positive" : "negative",
+          note: "10d " + fmtSignedCurrency(selected.metrics.avg10, 0) + " · 21d " + fmtSignedCurrency(selected.metrics.avg21, 0) + " · 63d " + fmtSignedCurrency(selected.metrics.avg63, 0),
+          help: "Resume si el corto plazo acompana o contradice el baseline del slot."
+        }
+      ];
+
+      const summaryCardsMarkup = (cards) => [
+        '<div class="selection-grid">',
+        cards.map((card) => [
+          '<article class="selection-card">',
+          "<strong>" + escapeHtml(card.title) + "</strong>",
+          '<span class="selection-value ' + escapeHtml(card.valueClass || "") + '">' + escapeHtml(card.value) + "</span>",
+          '<div class="selection-note">' + escapeHtml(card.note) + "</div>",
+          '<small class="selection-help">' + escapeHtml(card.help) + "</small>",
+          "</article>"
+        ].join("")).join(""),
+        "</div>"
+      ].join("");
+
+      const monthlyChart = selectionBarChart(monthly, {
+        formatter: (value) => fmtCurrency(value, 0),
+        emptyText: "Sin meses suficientes para construir el bloque mensual."
+      });
+
+      const weekdayChart = selectionBarChart(weekday.map((row) => ({
+        label: row.label,
+        value: row.total
+      })), {
+        formatter: (value) => fmtCurrency(value, 0),
+        emptyText: "Sin datos suficientes para el resumen semanal."
+      });
+
+      const metaPills = [
+        "dataset " + dataset.meta.shortLabel,
+        fmtDateLabel(dateStart) + " -> " + fmtDateLabel(dateEnd),
+        tradeCount + " dias",
+        dataset.focusWindow !== "-" ? ("ventana " + dataset.focusWindow) : null,
+        validationSummary ? (fmtInt(validationSummary.tests) + " tests WF") : null
+      ].filter(Boolean);
+
       els.detailWrap.innerHTML = [
+        '<div class="selection-shell">',
         '<div class="detail-banner">',
         '<div class="detail-banner-top">',
         "<div>",
-        '<div class="eyebrow">Slot seleccionado</div>',
+        '<div class="eyebrow">Seleccion activa</div>',
         '<div class="slot-title">',
-        "<h3>" + selected.slot + "</h3>",
+        "<h3>" + escapeHtml(selected.slot) + "</h3>",
         '<span class="slot-dataset-pill mono">' + escapeHtml(dataset.meta.strategyName) + "</span>",
         '<span class="slot-dataset-pill">' + escapeHtml(dataset.meta.label) + "</span>",
         "</div>",
-        "<p>" + explanation + ".</p>",
+        "<p>" + escapeHtml(bannerText) + ".</p>",
+        '<div class="selection-meta-line">' + metaPills.map((pill) => '<span class="selection-meta-pill">' + escapeHtml(pill) + "</span>").join("") + "</div>",
         "</div>",
         '<div class="signal-row">',
-        '<span class="badge ' + selected.label + '">' + selected.label + "</span>",
+        '<span class="badge ' + selected.label + '">' + escapeHtml(selected.label) + "</span>",
         ...selected.signals.map((signal) => '<span class="signal-chip ' + signal.tone + '">' + escapeHtml(signal.text) + "</span>"),
         "</div>",
         "</div>",
         "</div>",
-        '<div class="window-grid">',
-        windowCards,
+        summaryCardsMarkup(performanceCards),
+        summaryCardsMarkup(frameworkCards),
+        '<div class="selection-chart-grid">',
+        '<article class="selection-chart-card">',
+        '<div class="selection-chart-head"><strong>Evolucion acumulada</strong><span class="selection-chart-subtle">Curva de P/L del slot seleccionado</span></div>',
+        selectionLineChartSvg(cumulative, { ariaLabel: "Evolucion acumulada del slot" }),
+        '<div class="selection-help">Ayuda a ver velocidad de crecimiento, pausas y caidas de la curva sin perder el contexto del periodo completo.</div>',
+        "</article>",
+        '<article class="selection-chart-card">',
+        '<div class="selection-chart-head"><strong>Profit by Month</strong><span class="selection-chart-subtle">' + escapeHtml(monthlyNote) + '</span></div>',
+        monthlyChart,
+        '<div class="selection-help">Meses positivos y negativos del slot. Sirve para detectar si el resultado depende de uno o dos tramos puntuales.</div>',
+        "</article>",
+        '<article class="selection-chart-card">',
+        '<div class="selection-chart-head"><strong>P/L by Day of Week</strong><span class="selection-chart-subtle">Total agregado por dia en la seleccion activa</span></div>',
+        weekdayChart,
+        '<div class="selection-help">No define operativa por si solo; solo muestra que dias cargan mas o menos el resultado del slot.</div>',
+        "</article>",
+        '<article class="selection-chart-card">',
+        '<div class="selection-chart-head"><strong>Ventanas rolling</strong><span class="selection-chart-subtle">' + escapeHtml(rollingText) + '</span></div>',
+        selectionWindowMarkup(selected),
+        '<div class="selection-help">Cada ventana combina promedio, win rate, profit factor y drawdown para comparar el corto plazo contra el baseline.</div>',
+        "</article>",
         "</div>",
-        '<div class="spark-shell">',
-        '<div class="spark-head"><strong>Ultimas 24 observaciones</strong><span class="mono">ultimo dato: ' + escapeHtml(selected.metrics.latestDate || "-") + "</span></div>",
-        sparklineSvg(selected.metrics.recentSeries),
-        '<div class="legend-row">',
-        '<span class="positive">P/L positivo</span>',
-        '<span class="negative">P/L negativo</span>',
-        '<span class="mean">media reciente</span>',
-        "</div>",
+        selectionExplainMarkup(),
         "</div>"
       ].join("");
     }
@@ -4509,6 +6603,7 @@
     function renderExhaustion() {
       const dataset = selectedDataset();
       if (!dataset) {
+        renderExhaustionContext(null);
         els.exhaustionWrap.innerHTML = [
           '<div class="empty-state">',
           "<strong>Sin tabla de agotamiento todavia.</strong>",
@@ -4517,6 +6612,7 @@
         ].join("");
         return;
       }
+      renderExhaustionContext(dataset);
 
       const rows = dataset.analysis.ranking
         .slice()
@@ -4564,6 +6660,7 @@
       const summary = dataset?.analysis?.validation?.summary;
       const recent = dataset?.analysis?.validation?.recent || [];
 
+      renderValidationContext(dataset, summary, recent);
       if (!summary) {
         els.validationWrap.innerHTML = [
           '<div class="empty-state">',
@@ -4618,163 +6715,6 @@
       ].join("");
     }
 
-    function variantRuleText(variantName) {
-      const map = {
-        size_1: "1 contrato fijo",
-        size_2: "2 contratos fijos",
-        weekday_mix: "Lunes/Jueves/Viernes 2 contratos · Martes/Miercoles 1 contrato",
-        equity_ladder: "2c si equity >= 4000, 1c si equity < 3300"
-      };
-      return map[variantName] || variantName;
-    }
-
-    function researchDiagnosis(row) {
-      const ddRatio = row.dd_to_profit;
-      if (row.expectancy <= 0 || row.profit_factor < 1) return "Fragil: expectativa <= 0";
-      if (ddRatio >= 0.9) return "Rentable, pero drawdown muy alto";
-      if (ddRatio >= 0.6) return "Balanceado con riesgo medio";
-      if (row.win_rate >= 0.7 && row.profit_factor >= 1.35) return "Solido y consistente";
-      return "Aceptable con seguimiento";
-    }
-
-    function computeWeekdayMoney() {
-      const bucket = WEEKDAY_FULL_ES.map((day, idx) => ({
-        dayIndex: idx,
-        day,
-        total: 0,
-        count: 0,
-        avg: 0
-      }));
-
-      state.datasets.forEach((dataset) => {
-        const records = dataset.records || [];
-        records.forEach((record) => {
-          const dayIndex = new Date(record.date + "T00:00:00Z").getUTCDay();
-          const slot = bucket[dayIndex];
-          slot.total += record.pl;
-          slot.count += 1;
-        });
-      });
-
-      const withData = bucket
-        .filter((item) => item.count > 0)
-        .map((item) => ({
-          ...item,
-          avg: item.count ? item.total / item.count : 0
-        }));
-
-      const byTotal = withData.slice().sort((a, b) => b.total - a.total);
-
-      return {
-        all: withData,
-        byTotal,
-        best: byTotal[0] || null,
-        worst: byTotal[byTotal.length - 1] || null
-      };
-    }
-
-    function weekdayMoneyChart(weekdayMoney) {
-      if (!weekdayMoney.byTotal.length) {
-        return '<div class="weekday-money-chart"><div class="subtle">Sin datos suficientes para el chart semanal en este filtro.</div></div>';
-      }
-
-      const maxAbs = Math.max(...weekdayMoney.byTotal.map((row) => Math.abs(row.total)), 1);
-      const rows = weekdayMoney.byTotal.map((row) => {
-        const width = Math.max((Math.abs(row.total) / maxAbs) * 100, 6);
-        const tone = row.total >= 0 ? "positive" : "negative";
-        return [
-          '<div class="weekday-money-row">',
-          '<span class="day">' + escapeHtml(row.day) + "</span>",
-          '<div class="track"><span class="bar ' + tone + '" style="width:' + width + '%"></span></div>',
-          '<span class="amount">' + fmtCurrency(row.total, 0) + "</span>",
-          "</div>"
-        ].join("");
-      }).join("");
-
-      return [
-        '<div class="weekday-money-chart">',
-        rows,
-        "</div>"
-      ].join("");
-    }
-
-    function computeResearchRows() {
-      if (!state.datasets.length) return [];
-
-      const weekdaySize = (dateStr) => {
-        const dayIndex = new Date(dateStr + "T00:00:00Z").getUTCDay();
-        return (dayIndex === 1 || dayIndex === 4 || dayIndex === 5) ? 2 : 1;
-      };
-
-      const rows = [];
-
-      state.datasets.forEach((dataset) => {
-        const records = dataset.records || [];
-        const values = records.map((r) => r.pl);
-        if (!values.length) return;
-
-        const weekdayGroups = {};
-        records.forEach((r) => {
-          const day = new Date(r.date + "T00:00:00Z").getUTCDay();
-          if (!weekdayGroups[day]) weekdayGroups[day] = [];
-          weekdayGroups[day].push(r.pl);
-        });
-        const weekdayStats = Object.entries(weekdayGroups).map(([day, vals]) => ({
-          day: WEEKDAY_FULL_ES[Number(day)] || "-",
-          win_rate: winRate(vals),
-          expectancy: vals.length ? sum(vals) / vals.length : 0
-        }));
-        const bestWeekday = weekdayStats.sort((a, b) => b.expectancy - a.expectancy)[0];
-
-        const series1 = values.map((v) => v * 1);
-        const series2 = values.map((v) => v * 2);
-        const seriesMix = records.map((r) => r.pl * weekdaySize(r.date));
-
-        let eq = 0;
-        const seriesEquity = records.map((r) => {
-          const add = r.pl * (eq >= EQUITY_UP ? 2 : 1);
-          eq += add;
-          return add;
-        });
-
-        const variants = [
-          { name: "size_1", label: "Size 1", series: series1 },
-          { name: "size_2", label: "Size 2", series: series2 },
-          { name: "weekday_mix", label: "Weekday mix", series: seriesMix },
-          { name: "equity_ladder", label: "Equity ladder", series: seriesEquity }
-        ];
-
-        variants.forEach((variant) => {
-          const m = coreMetrics(variant.series);
-          const ddToProfit = m.total > 0 ? (m.max_dd / m.total) : Infinity;
-          const row = {
-            datasetKey: dataset.key,
-            dataset: dataset.meta.strategyName,
-            label: dataset.meta.label,
-            variant: variant.name,
-            variantLabel: variant.label,
-            variantRule: variantRuleText(variant.name),
-            total: m.total,
-            trades: m.count,
-            win_rate: m.win_rate,
-            avg_win: m.avg_win,
-            avg_loss: m.avg_loss,
-            expectancy: m.expectancy,
-            profit_factor: m.profit_factor,
-            max_dd: m.max_dd,
-            dd_to_profit: ddToProfit,
-            longest_losing_streak: m.longest_losing_streak,
-            best_weekday: bestWeekday ? bestWeekday.day : "-",
-            best_weekday_exp: bestWeekday ? bestWeekday.expectancy : 0
-          };
-          row.reading = researchDiagnosis(row);
-          rows.push(row);
-        });
-      });
-
-      return rows;
-    }
-
     function coreMetrics(values) {
       if (!values.length) {
         return {
@@ -4813,7 +6753,216 @@
       };
     }
 
-    function renderResearch() {
+    function fmtSignedNumber(value, digits = 1) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "-";
+      return (value > 0 ? "+" : "") + fmtNumber(value, digits);
+    }
+
+    function fmtSignedCurrency(value, digits = 2) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "-";
+      return (value > 0 ? "+" : "") + fmtCurrency(value, digits);
+    }
+
+    function weekdayOrder(dayIndex) {
+      const order = {
+        1: 1,
+        2: 2,
+        3: 3,
+        4: 4,
+        5: 5,
+        0: 6,
+        6: 7
+      };
+      return order[dayIndex] || 99;
+    }
+
+    function recentWindowLength(count) {
+      return Math.min(18, Math.max(6, Math.round(count * 0.15)));
+    }
+
+    function weekdayTrendText(row) {
+      const threshold = Math.max(Math.abs(row.expectancy) * 0.25, Math.abs(row.avg_loss) * 0.08, 5);
+      if (row.recent_delta >= threshold) return "mejora reciente";
+      if (row.recent_delta <= -threshold) return "degradacion reciente";
+      return "estable vs baseline";
+    }
+
+    function weekdayQualityTone(label) {
+      if (label === "GREEN") return "good";
+      if (label === "YELLOW") return "warn";
+      return "bad";
+    }
+
+    function weekdayQualityLabel(row, score) {
+      let label = score >= 68 ? "GREEN" : score >= 45 ? "YELLOW" : "RED";
+
+      if (row.expectancy <= 0 || row.profit_factor < 1) {
+        label = "RED";
+      } else {
+        if (row.trades < 20 || row.positive_month_rate < 0.55 || row.recent_trend === "degradacion reciente") {
+          if (label === "GREEN") label = "YELLOW";
+        }
+        if (row.dd_to_profit >= 1.1 && label === "GREEN") {
+          label = "YELLOW";
+        }
+      }
+
+      return label;
+    }
+
+    function weekdayFlags(row) {
+      const flags = [];
+
+      if (row.trades < 20) flags.push("muestra baja");
+      if (row.dataset_count < 2) flags.push("cobertura baja");
+      if (row.expectancy <= 0) flags.push("expectativa negativa");
+      if (row.profit_factor < 1) flags.push("profit factor < 1");
+      if (Number.isFinite(row.dd_to_profit) && row.dd_to_profit >= 0.9) flags.push("drawdown alto");
+      if (row.avg_win > 0 && Math.abs(row.avg_loss) > row.avg_win * 1.9) flags.push("perdidas grandes");
+      if (row.months >= 4 && row.positive_month_rate < 0.55) flags.push("meses inestables");
+      if (row.recent_trend === "degradacion reciente") flags.push("degradacion reciente");
+
+      return flags.slice(0, 4);
+    }
+
+    function weekdayFlagMarkup(flags) {
+      const entries = flags.length ? flags : ["sin alerta mayor"];
+      return [
+        '<div class="weekday-flag-list">',
+        entries.map((flag) => '<span class="weekday-flag">' + escapeHtml(flag) + "</span>").join(""),
+        "</div>"
+      ].join("");
+    }
+
+    function weekdayQualityChart(rows) {
+      if (!rows.length) {
+        return '<div class="weekday-money-chart"><div class="subtle">Sin datos suficientes para el mapa semanal.</div></div>';
+      }
+
+      const ordered = rows
+        .slice()
+        .sort((a, b) => (b.qualityScore - a.qualityScore) || (b.expectancy - a.expectancy));
+
+      return [
+        '<div class="weekday-money-chart">',
+        ordered.map((row) => [
+          '<div class="weekday-money-row">',
+          '<span class="day">' + escapeHtml(row.day) + "</span>",
+          '<div class="track"><span class="bar ' + weekdayQualityTone(row.qualityLabel) + '" style="width:' + Math.max(row.qualityScore, 6) + '%"></span></div>',
+          '<span class="amount">' + fmtNumber(row.qualityScore, 0) + " · " + fmtSignedNumber(row.expectancy, 1) + "</span>",
+          "</div>"
+        ].join("")).join(""),
+        "</div>"
+      ].join("");
+    }
+
+    function computeWeekdayQualityRows() {
+      if (!state.datasets.length) return [];
+
+      const grouped = new Map();
+
+      state.datasets.forEach((dataset) => {
+        (dataset.records || []).forEach((record) => {
+          const dayIndex = new Date(record.date + "T00:00:00Z").getUTCDay();
+          if (dayIndex === 0 || dayIndex === 6) return;
+          if (!grouped.has(dayIndex)) grouped.set(dayIndex, []);
+          grouped.get(dayIndex).push({
+            ...record,
+            datasetKey: dataset.key
+          });
+        });
+      });
+
+      const baseRows = Array.from(grouped.entries())
+        .map(([dayIndex, records]) => {
+          const orderedRecords = records
+            .slice()
+            .sort((a, b) => {
+              if (a.date !== b.date) return a.date.localeCompare(b.date);
+              if (a.slot !== b.slot) return a.slot.localeCompare(b.slot);
+              return a.datasetKey.localeCompare(b.datasetKey);
+            });
+          const values = orderedRecords.map((record) => record.pl);
+          const metrics = coreMetrics(values);
+          const datasetCount = new Set(orderedRecords.map((record) => record.datasetKey)).size;
+          const monthBuckets = new Map();
+
+          orderedRecords.forEach((record) => {
+            const monthKey = record.date.slice(0, 7);
+            monthBuckets.set(monthKey, (monthBuckets.get(monthKey) || 0) + record.pl);
+          });
+
+          const monthValues = Array.from(monthBuckets.values());
+          const positiveMonths = monthValues.filter((value) => value > 0).length;
+          const recentCount = recentWindowLength(values.length);
+          const recentValues = values.slice(-recentCount);
+          const recentExpectancy = recentValues.length ? sum(recentValues) / recentValues.length : 0;
+          const ddToProfit = metrics.total > 0 ? (metrics.max_dd / metrics.total) : Infinity;
+
+          return {
+            id: dayIndex,
+            dayIndex,
+            day: WEEKDAY_FULL_ES[dayIndex] || "-",
+            total: metrics.total,
+            trades: metrics.count,
+            dataset_count: datasetCount,
+            win_rate: metrics.win_rate,
+            avg_win: metrics.avg_win,
+            avg_loss: metrics.avg_loss,
+            expectancy: metrics.expectancy,
+            profit_factor: metrics.profit_factor,
+            max_dd: metrics.max_dd,
+            dd_to_profit: ddToProfit,
+            longest_losing_streak: metrics.longest_losing_streak,
+            months: monthValues.length,
+            positive_months: positiveMonths,
+            positive_month_rate: monthValues.length ? positiveMonths / monthValues.length : 0,
+            recent_window: recentCount,
+            recent_expectancy: recentExpectancy,
+            recent_delta: recentExpectancy - metrics.expectancy
+          };
+        })
+        .filter((row) => row.trades > 0)
+        .sort((a, b) => weekdayOrder(a.dayIndex) - weekdayOrder(b.dayIndex));
+
+      if (!baseRows.length) return [];
+
+      const percentileMaps = {
+        expectancy: percentileMap(baseRows, (row) => row.expectancy, false, (row) => row.id),
+        profitFactor: percentileMap(baseRows, (row) => row.profit_factor, false, (row) => row.id),
+        drawdown: percentileMap(baseRows, (row) => row.max_dd, true, (row) => row.id),
+        months: percentileMap(baseRows, (row) => row.positive_month_rate, false, (row) => row.id),
+        winRate: percentileMap(baseRows, (row) => row.win_rate, false, (row) => row.id),
+        avgLoss: percentileMap(baseRows, (row) => Math.abs(row.avg_loss), true, (row) => row.id),
+        recent: percentileMap(baseRows, (row) => row.recent_delta, false, (row) => row.id),
+        sample: percentileMap(baseRows, (row) => row.trades, false, (row) => row.id)
+      };
+
+      return baseRows
+        .map((row) => {
+          const qualityScore = 100 * (
+            (0.22 * (percentileMaps.expectancy.get(row.id) ?? 0)) +
+            (0.14 * (percentileMaps.profitFactor.get(row.id) ?? 0)) +
+            (0.16 * (percentileMaps.drawdown.get(row.id) ?? 0)) +
+            (0.16 * (percentileMaps.months.get(row.id) ?? 0)) +
+            (0.10 * (percentileMaps.winRate.get(row.id) ?? 0)) +
+            (0.10 * (percentileMaps.avgLoss.get(row.id) ?? 0)) +
+            (0.07 * (percentileMaps.recent.get(row.id) ?? 0)) +
+            (0.05 * (percentileMaps.sample.get(row.id) ?? 0))
+          );
+          const enriched = {
+            ...row,
+            qualityScore: round(qualityScore, 1)
+          };
+          enriched.recent_trend = weekdayTrendText(enriched);
+          enriched.qualityLabel = weekdayQualityLabel(enriched, enriched.qualityScore);
+          enriched.flags = weekdayFlags(enriched);
+          return enriched;
+        })
+        .sort((a, b) => weekdayOrder(a.dayIndex) - weekdayOrder(b.dayIndex));
+    }
+
+    function renderWeekdayQuality() {
       if (!els.researchWrap) {
         els.researchWrap = document.getElementById("researchWrap");
         if (!els.researchWrap) return;
@@ -4821,95 +6970,55 @@
       if (!els.researchSummary) {
         els.researchSummary = document.getElementById("researchSummary");
       }
-      const rows = computeResearchRows();
+      const rows = computeWeekdayQualityRows();
       if (!rows.length) {
         els.researchSummary.innerHTML = [
           '<div class="empty-state">',
-          "<strong>Sin datos del lab.</strong>",
-          "Carga uno o varios CSV para ver el analisis independiente de sizing y weekdays.",
+          "<strong>Sin diagnostico semanal todavia.</strong>",
+          "Carga uno o varios CSV para medir la calidad y fragilidad de cada dia de la semana.",
           "</div>"
         ].join("");
         els.researchWrap.innerHTML = [
           '<div class="empty-state">',
-          "<strong>Sube archivos para correr el lab.</strong>",
-          "Cuando cargues CSV en el dashboard, aqui veras las variantes de sizing: Size 1 (1 contrato), Size 2 (2 contratos), Weekday mix (Lunes/Jueves/Viernes 2c y Martes/Miercoles 1c) y Equity ladder (2c sobre 4000, 1c bajo 3300).",
+          "<strong>Sube archivos para abrir el perfil semanal.</strong>",
+          "La seccion mostrara metricas por dia, flags de fragilidad, comparacion reciente vs baseline y una etiqueta GREEN / YELLOW / RED de calidad diagnostica.",
           "</div>"
         ].join("");
         return;
       }
 
-      const rowsSorted = rows.slice().sort((a, b) => b.expectancy - a.expectancy);
-      const bestRow = rowsSorted[0];
+      const rowsByQuality = rows
+        .slice()
+        .sort((a, b) => (b.qualityScore - a.qualityScore) || (b.expectancy - a.expectancy));
+      const strongestRow = rowsByQuality[0];
+      const fragileRow = rowsByQuality[rowsByQuality.length - 1];
+      const expectancyLeader = rows
+        .slice()
+        .sort((a, b) => (b.expectancy - a.expectancy) || (b.qualityScore - a.qualityScore))[0];
+      const stableRow = rows
+        .slice()
+        .sort((a, b) => (b.positive_month_rate - a.positive_month_rate) || (b.qualityScore - a.qualityScore))[0];
+      const alertRows = rows.filter((row) => row.flags.length);
+      const alertText = alertRows.length
+        ? alertRows
+          .slice(0, 3)
+          .map((row) => row.day + ": " + row.flags.join(", "))
+          .join(" · ") + (alertRows.length > 3 ? " · +" + (alertRows.length - 3) + " mas" : "")
+        : "Sin alertas mayores en el corte actual.";
 
-      const variantAgg = new Map();
-      rows.forEach((row) => {
-        if (!variantAgg.has(row.variant)) {
-          variantAgg.set(row.variant, {
-            key: row.variant,
-            label: row.variantLabel,
-            rule: row.variantRule,
-            rows: 0,
-            expectancy: 0,
-            win_rate: 0,
-            profit_factor: 0,
-            max_dd: 0
-          });
-        }
-        const agg = variantAgg.get(row.variant);
-        agg.rows += 1;
-        agg.expectancy += row.expectancy;
-        agg.win_rate += row.win_rate;
-        agg.profit_factor += row.profit_factor;
-        agg.max_dd += row.max_dd;
-      });
-      const variantStats = Array.from(variantAgg.values()).map((agg) => {
-        const n = Math.max(agg.rows, 1);
-        const avgExpectancy = agg.expectancy / n;
-        const avgWinRate = agg.win_rate / n;
-        const avgPf = agg.profit_factor / n;
-        const avgDd = agg.max_dd / n;
-        return {
-          ...agg,
-          avgExpectancy,
-          avgWinRate,
-          avgPf,
-          avgDd,
-          score: avgExpectancy + ((avgPf - 1) * 25) + (avgWinRate * 35) - (avgDd * 0.035)
-        };
-      }).sort((a, b) => b.score - a.score);
-      const recommendedVariant = variantStats[0];
-      const bestVariantRow = rows
-        .filter((row) => row.variant === recommendedVariant.key)
-        .sort((a, b) => b.expectancy - a.expectancy)[0];
-      const weekdayMoney = computeWeekdayMoney();
-
-      const datasetWeekdayMap = new Map();
-      rows.forEach((row) => {
-        if (row.variant !== "size_1") return;
-        datasetWeekdayMap.set(row.datasetKey, { day: row.best_weekday, exp: row.best_weekday_exp });
-      });
-      const weekdayAgg = new Map();
-      Array.from(datasetWeekdayMap.values()).forEach((entry) => {
-        if (!weekdayAgg.has(entry.day)) weekdayAgg.set(entry.day, { day: entry.day, count: 0, exp: 0 });
-        const agg = weekdayAgg.get(entry.day);
-        agg.count += 1;
-        agg.exp += entry.exp;
-      });
-      const weekdayTop = Array.from(weekdayAgg.values())
-        .map((entry) => ({ ...entry, avgExp: entry.count ? entry.exp / entry.count : 0 }))
-        .sort((a, b) => (b.count - a.count) || (b.avgExp - a.avgExp));
-      const weekdayText = weekdayTop.slice(0, 3).map((w) => w.day + " (exp " + fmtNumber(w.avgExp, 1) + ")").join(" · ") || "-";
-      const weekdayBestText = weekdayMoney.best ? weekdayMoney.best.day + " " + fmtCurrency(weekdayMoney.best.total, 0) : "-";
-      const weekdayWorstText = weekdayMoney.worst ? weekdayMoney.worst.day + " " + fmtCurrency(weekdayMoney.worst.total, 0) : "-";
-
-      const allRecords = state.datasets.flatMap((dataset) => dataset.records || []);
+      const allRecords = state.datasets
+        .flatMap((dataset) => dataset.records || [])
+        .filter((record) => {
+          const dayIndex = new Date(record.date + "T00:00:00Z").getUTCDay();
+          return dayIndex !== 0 && dayIndex !== 6;
+        });
       const dates = Array.from(new Set(allRecords.map((record) => record.date))).sort();
       const scopeLine = [
         '<div class="research-filter-line">',
-        "<strong>Scope independiente:</strong>",
+        "<strong>Scope diagnostico:</strong>",
         fmtInt(state.datasets.length) + " datasets",
         "·",
-        fmtInt(allRecords.length) + " registros",
+        fmtInt(allRecords.length) + " registros weekday",
         "·",
         escapeHtml(dates[0] || "-") + " -> " + escapeHtml(dates[dates.length - 1] || "-"),
         "</div>"
@@ -4920,26 +7029,31 @@
         scopeLine,
         '<div class="research-summary">',
         '<div class="research-card">',
-        "<strong>Variante recomendada</strong>",
-        '<div class="value">' + escapeHtml(recommendedVariant.label) + "</div>",
-        '<div class="note">' + escapeHtml(recommendedVariant.rule) + " · score " + fmtNumber(recommendedVariant.score, 1) + "</div>",
+        "<strong>Dia mas robusto</strong>",
+        '<div class="value">' + escapeHtml(strongestRow.day) + "</div>",
+        '<div class="note">' + escapeHtml(strongestRow.qualityLabel) + " · score " + fmtNumber(strongestRow.qualityScore, 1) + " · DD/PnL " + (Number.isFinite(strongestRow.dd_to_profit) ? fmtNumber(strongestRow.dd_to_profit * 100, 1) + "%" : "-") + "</div>",
         "</div>",
         '<div class="research-card">',
-        "<strong>Mejor setup del filtro</strong>",
-        '<div class="value is-dataset">' + escapeHtml(bestVariantRow.dataset) + "</div>",
-        '<div class="note">Exp ' + fmtNumber(bestVariantRow.expectancy, 2) + " · PF " + fmtNumber(bestVariantRow.profit_factor, 2) + " · DD/PnL " + fmtNumber(bestVariantRow.dd_to_profit * 100, 1) + "%</div>",
+        "<strong>Mejor expectativa</strong>",
+        '<div class="value">' + escapeHtml(expectancyLeader.day) + "</div>",
+        '<div class="note">Exp ' + fmtSignedCurrency(expectancyLeader.expectancy, 2) + " · PF " + fmtNumber(expectancyLeader.profit_factor, 2) + " · win " + fmtPercent(expectancyLeader.win_rate, 1) + "</div>",
         "</div>",
         '<div class="research-card">',
-        "<strong>Dias fuertes</strong>",
-        '<div class="value">' + escapeHtml(weekdayTop[0]?.day || "-") + "</div>",
-        '<div class="note">' + escapeHtml(weekdayText) + "</div>",
+        "<strong>Mayor estabilidad mensual</strong>",
+        '<div class="value">' + escapeHtml(stableRow.day) + "</div>",
+        '<div class="note">' + fmtInt(stableRow.positive_months) + "/" + fmtInt(stableRow.months) + " meses positivos · " + escapeHtml(stableRow.recent_trend) + "</div>",
+        "</div>",
+        '<div class="research-card">',
+        "<strong>Dia mas fragil</strong>",
+        '<div class="value">' + escapeHtml(fragileRow.day) + "</div>",
+        '<div class="note">' + escapeHtml(fragileRow.qualityLabel) + " · " + escapeHtml(fragileRow.flags.join(" · ") || "sin alerta mayor") + "</div>",
         "</div>",
         "</div>",
         '<div class="research-insights">',
-        '<div class="research-insight"><strong>Lectura operativa</strong><span>' + escapeHtml(bestVariantRow.reading) + ". Variante sugerida " + recommendedVariant.label + " sobre " + fmtInt(datasetWeekdayMap.size) + " datasets en filtro.</span></div>",
-        '<div class="research-insight"><strong>Riesgo visible</strong><span>Drawdown medio de ' + fmtNumber(recommendedVariant.avgDd, 1) + " y expectativa media " + fmtNumber(recommendedVariant.avgExpectancy, 2) + " por trade en la variante recomendada.</span></div>",
-        '<div class="research-insight"><strong>Que significa cada variante</strong><span>Size 1: operas siempre con 1 contrato. Size 2: siempre con 2 contratos. Weekday mix: Lunes/Jueves/Viernes usa 2 contratos y Martes/Miercoles usa 1 contrato. Equity ladder: usa 2 contratos cuando la curva esta por encima de 4000 y vuelve a 1 contrato si cae por debajo de 3300.</span></div>',
-        '<div class="research-insight"><strong>Dinero por dia de semana</strong><span>Mejor dia: ' + escapeHtml(weekdayBestText) + " · Peor dia: " + escapeHtml(weekdayWorstText) + ".</span>" + weekdayMoneyChart(weekdayMoney) + "</div>",
+        '<div class="research-insight"><strong>Lectura actual</strong><span>' + escapeHtml(strongestRow.day + " lidera por robustez con score " + fmtNumber(strongestRow.qualityScore, 1) + " y etiqueta " + strongestRow.qualityLabel + ". " + fragileRow.day + " es el dia mas fragil del corte actual con score " + fmtNumber(fragileRow.qualityScore, 1) + ".") + "</span></div>",
+        '<div class="research-insight"><strong>Que mide el score</strong><span>Combina expectativa, profit factor, win rate, drawdown invertido, meses positivos, muestra, severidad de perdida y delta reciente. Es diagnostico; no decide operativa.</span></div>',
+        '<div class="research-insight"><strong>Alertas visibles</strong><span>' + escapeHtml(alertText) + "</span></div>",
+        '<div class="research-insight"><strong>Mapa rapido por dia</strong><span>Score relativo por dia y expectativa media por trade.</span>' + weekdayQualityChart(rows) + "</div>",
         "</div>",
         "</div>"
       ].join("");
@@ -4947,36 +7061,38 @@
       const table = [
         '<table class="research-table">',
         "<thead><tr>",
-        "<th>Dataset</th>",
-        "<th>Perfil</th>",
-        "<th>Variante</th>",
-        "<th>Regla</th>",
-        "<th>P/L total</th>",
+        "<th>Dia</th>",
+        "<th>Calidad</th>",
+        "<th>Score</th>",
         "<th>Trades</th>",
+        "<th>Datasets</th>",
+        "<th>P/L total</th>",
+        "<th>Expectativa</th>",
         "<th>Win rate</th>",
-        "<th>Expectativa/trade</th>",
+        "<th>Avg win / loss</th>",
         "<th>Profit factor</th>",
         "<th>Max DD</th>",
-        "<th>DD/PnL</th>",
-        "<th>Dia mas fuerte</th>",
-        "<th>Lectura</th>",
+        "<th>Meses +</th>",
+        "<th>Reciente vs base</th>",
+        "<th>Flags</th>",
         "</tr></thead>",
         "<tbody>",
-        rowsSorted.map((row) => [
+        rows.map((row) => [
           "<tr>",
-          "<td>" + escapeHtml(row.dataset) + "</td>",
-          "<td>" + escapeHtml(row.label) + "</td>",
-          "<td class=\"mono\">" + escapeHtml(row.variantLabel) + "</td>",
-          "<td>" + escapeHtml(row.variantRule) + "</td>",
-          "<td class=\"mono\">" + fmtNumber(row.total, 1) + "</td>",
+          "<td>" + escapeHtml(row.day) + "</td>",
+          '<td><span class="signal-chip ' + weekdayQualityTone(row.qualityLabel) + '">' + escapeHtml(row.qualityLabel) + "</span></td>",
+          "<td class=\"mono\">" + fmtNumber(row.qualityScore, 1) + "</td>",
           "<td class=\"mono\">" + fmtInt(row.trades) + "</td>",
+          "<td class=\"mono\">" + fmtInt(row.dataset_count) + "</td>",
+          "<td class=\"mono\">" + fmtCurrency(row.total, 0) + "</td>",
+          "<td class=\"mono\">" + fmtSignedCurrency(row.expectancy, 2) + "</td>",
           "<td class=\"mono\">" + fmtPercent(row.win_rate, 1) + "</td>",
-          "<td class=\"mono\">" + fmtNumber(row.expectancy, 2) + "</td>",
+          "<td>" + escapeHtml(fmtCurrency(row.avg_win, 0) + " / " + fmtCurrency(row.avg_loss, 0)) + "</td>",
           "<td class=\"mono\">" + fmtNumber(row.profit_factor, 2) + "</td>",
-          "<td class=\"mono\">" + fmtNumber(row.max_dd, 1) + "</td>",
-          "<td class=\"mono\">" + (Number.isFinite(row.dd_to_profit) ? fmtNumber(row.dd_to_profit * 100, 1) + "%" : "-") + "</td>",
-          "<td class=\"mono\">" + escapeHtml(row.best_weekday || "-") + "</td>",
-          "<td>" + escapeHtml(row.reading) + "</td>",
+          "<td class=\"mono\">" + fmtCurrency(-row.max_dd, 0) + "</td>",
+          "<td class=\"mono\">" + fmtInt(row.positive_months) + "/" + fmtInt(row.months) + " (" + fmtNumber(row.positive_month_rate * 100, 1) + "%)</td>",
+          "<td>" + escapeHtml(row.recent_trend + " · " + fmtSignedCurrency(row.recent_delta, 2)) + "</td>",
+          "<td>" + weekdayFlagMarkup(row.flags) + "</td>",
           "</tr>"
         ].join("")).join(""),
         "</tbody></table>"
@@ -4984,6 +7100,269 @@
 
       els.researchSummary.innerHTML = summary;
       els.researchWrap.innerHTML = table;
+    }
+
+    function currentSelectionContext() {
+      const dataset = selectedDataset();
+      if (!dataset) return null;
+      const selected = dataset.analysis.ranking.find((entry) => entry.slot === state.selectedSlot) || dataset.analysis.ranking[0];
+      if (!selected) return null;
+      const validationSummary = dataset.analysis.validation.summary;
+      const slotSeries = dataset.analysis.bySlot.get(selected.slot) || [];
+      const values = slotSeries.map((item) => item.pl);
+      const wins = values.filter((value) => value > 0);
+      const losses = values.filter((value) => value < 0);
+      return {
+        dataset,
+        selected,
+        slotSeries,
+        values,
+        validationSummary,
+        validationHealthPct: round((dataset.validationHealth || 0) * 100, 1),
+        rollingText: rollingRegimeText(selected),
+        tradeCount: values.length,
+        totalPnL: sum(values),
+        winRateValue: winRate(values),
+        avgWin: wins.length ? sum(wins) / wins.length : 0,
+        avgLoss: losses.length ? sum(losses) / losses.length : 0,
+        expectancy: values.length ? sum(values) / values.length : 0,
+        profitFactorValue: profitFactor(values),
+        maxDrawdownValue: maxDrawdown(values)
+      };
+    }
+
+    function normalizeAgentQuery(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+    }
+
+    function agentHas(query, terms) {
+      return terms.some((term) => query.includes(term));
+    }
+
+    function logicAgentReply(rawQuestion) {
+      const question = normalizeAgentQuery(rawQuestion);
+      const context = currentSelectionContext();
+
+      if (!question) {
+        return "Pregunta por forecast, exhaustion, validation, rolling o por la seleccion actual.";
+      }
+
+      if (agentHas(question, [
+        "prompt",
+        "system prompt",
+        "instruccion interna",
+        "guardrail",
+        "codigo fuente",
+        "source code",
+        "source",
+        "copiar",
+        "replicar exacto",
+        "peso exacto",
+        "coeficiente exacto",
+        "formula exacta",
+        "secreto",
+        "secret",
+        "api key",
+        "token",
+        "ruta interna",
+        "file path"
+      ])) {
+        return "Puedo explicar la metodologia aprobada y la lectura funcional del dashboard, pero no divulgar prompts internos, pesos exactos, codigo fuente completo ni detalles pensados para replicar o desactivar la proteccion.";
+      }
+
+      if (agentHas(question, ["seguridad", "security", "proteger", "protection", "copien", "copiar"])) {
+        return "Este agente es local: no usa APIs externas, no envía preguntas fuera de la página y responde solo con conocimiento curado. Aun así, cualquier lógica servida al navegador puede inspeccionarse; si quieres proteger IP real, lo sensible debe salir del HTML cliente y moverse a servidor.";
+      }
+
+      if (
+        agentHas(question, ["formula", "calculo", "calcula", "metrica", "metricas"]) &&
+        !agentHas(question, ["forecast", "exhaust", "agot", "deterioro", "validation", "walk", "rolling", "dataset"])
+      ) {
+        return "Puedo explicar formulas aprobadas como win rate, expectativa, profit factor, avg win, avg loss y max drawdown. No expongo la composicion exacta de forecast, dataset score ni ranking interno.";
+      }
+
+      if (agentHas(question, ["seleccion actual", "seleccion", "slot actual", "actual"])) {
+        if (!context) {
+          return "Ahora mismo no hay una seleccion activa. Elige un dataset o un slot y te explico su lectura actual.";
+        }
+        return [
+          "Seleccion actual: " + context.selected.slot + " en " + context.dataset.meta.shortLabel + ".",
+          "Forecast " + fmtNumber(context.selected.forecastScore, 1) + ", exhaustion " + fmtNumber(context.selected.exhaustionScore, 1) + ", validation " + fmtNumber(context.validationHealthPct, 1) + "% y rolling " + context.rollingText + ".",
+          "La etiqueta actual es " + context.selected.label + " y sus senales visibles son: " + (context.selected.signals.map((signal) => signal.text).join(", ") || "sin senales destacadas") + "."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["forecast"])) {
+        if (!context) {
+          return "Forecast resume la fortaleza relativa del slot combinando robustez larga, media y corta frente al resto del dataset. Mas alto significa mejor posicion estructural.";
+        }
+        return [
+          "Forecast mide la fuerza relativa del slot dentro de su dataset sin exponer la formula replicable completa.",
+          "En la seleccion actual vale " + fmtNumber(context.selected.forecastScore, 1) + ", con lectura larga " + fmtNumber(context.selected.longScore, 1) + ", media " + fmtNumber(context.selected.mediumScore, 1) + " y corta " + fmtNumber(context.selected.shortScore, 1) + ".",
+          "Interpretacion rapida: " + (context.selected.forecastScore >= 70 ? "slot fuerte" : context.selected.forecastScore >= 55 ? "slot util pero no dominante" : "slot flojo frente al resto") + "."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["win rate", "winrate", "tasa de acierto", "acierto"])) {
+        if (!context) {
+          return "Win rate es la proporcion de resultados positivos sobre el total de observaciones: dias ganadores divididos entre dias totales, por 100.";
+        }
+        return [
+          "Win rate = dias positivos / dias totales * 100.",
+          "En la seleccion actual son " + fmtInt(context.tradeCount) + " observaciones con win rate de " + fmtPercent(context.winRateValue, 1) + ".",
+          "Es util, pero no basta por si solo: debe leerse junto con avg loss, profit factor y drawdown."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["expectancy", "expectativa"])) {
+        if (!context) {
+          return "Expectativa = P/L total dividido entre numero de trades. Resume cuanto gana o pierde de media cada observacion.";
+        }
+        return [
+          "Expectativa = P/L total / numero de trades.",
+          "En la seleccion actual vale " + fmtSignedCurrency(context.expectancy, 2) + " por trade, sobre un total de " + fmtCurrency(context.totalPnL, 0) + " en " + fmtInt(context.tradeCount) + " observaciones.",
+          "Se usa para medir calidad media, no solo frecuencia de acierto."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["profit factor", "pf"])) {
+        if (!context) {
+          return "Profit factor = ganancias brutas / perdidas brutas absolutas. Mayor que 1 indica que las ganancias acumuladas superan a las perdidas acumuladas.";
+        }
+        return [
+          "Profit factor = suma de ganancias positivas / valor absoluto de la suma de perdidas.",
+          "En la seleccion actual el PF es " + fmtNumber(context.profitFactorValue, 2) + ".",
+          "Sirve para medir eficiencia bruta, pero no sustituye el analisis de drawdown."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["max dd", "drawdown", "max drawdown", "dd"])) {
+        if (!context) {
+          return "Max drawdown es la peor caida desde un pico previo de equity dentro de la serie acumulada.";
+        }
+        return [
+          "Max drawdown = peor caida desde un maximo historico previo en la curva acumulada.",
+          "En la seleccion actual el max DD es " + fmtCurrency(-context.maxDrawdownValue, 0) + ".",
+          "Es una metrica de supervivencia; por eso se lee junto con profit factor y expectativa."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["avg win", "average win", "avg loss", "average loss", "payoff"])) {
+        if (!context) {
+          return "Avg win es la media de los dias positivos y avg loss la media de los dias negativos. Su relacion ayuda a entender el payoff del sistema.";
+        }
+        const payoff = context.avgLoss < 0 ? context.avgWin / Math.abs(context.avgLoss) : 0;
+        return [
+          "Avg win es la media de observaciones positivas y avg loss la media de observaciones negativas.",
+          "En la seleccion actual avg win = " + fmtCurrency(context.avgWin, 0) + " y avg loss = " + fmtCurrency(context.avgLoss, 0) + ".",
+          "El payoff aproximado es " + fmtNumber(payoff, 2) + "x."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["exhaust", "agot", "deterioro"])) {
+        if (!context) {
+          return "Exhaustion mide desgaste reciente del slot. Mas bajo es mejor; sube cuando el corto plazo pierde fuerza o se deteriora contra la base.";
+        }
+        return [
+          "Exhaustion resume deterioro reciente. Mas bajo = slot mas sano.",
+          "En la seleccion actual marca " + fmtNumber(context.selected.exhaustionScore, 1) + ", con ratio 10d/63d de " + fmtNumber(context.selected.ratio10to63, 2) + "x y shift de " + fmtSignedNumber(context.selected.rankShift, 0) + ".",
+          "Lectura actual: " + (context.selected.exhaustionScore <= 35 ? "fatiga baja" : context.selected.exhaustionScore <= 60 ? "fatiga media" : "fatiga alta") + "."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["validation", "walk", "walk-forward", "beat average", "top3", "validacion"])) {
+        if (!context?.validationSummary) {
+          return "Validation es una lectura del dataset completo basada en walk-forward. En la seleccion actual no hay historia suficiente para resumirla.";
+        }
+        return [
+          "Validation es del dataset, no del slot aislado. Evalua si la logica se sostiene usando solo historia previa.",
+          "En el dataset activo la salud de validacion es " + fmtNumber(context.validationHealthPct, 1) + "%, con hit " + fmtNumber(context.validationSummary.positiveRate, 1) + "%, beat average " + fmtNumber(context.validationSummary.beatAverageRate, 1) + "% y top3 coverage " + fmtNumber(context.validationSummary.top3Coverage, 1) + "%."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["rolling", "10d", "21d", "63d", "126d", "252d", "ventanas"])) {
+        if (!context) {
+          return "Rolling compara ventanas 10d, 21d, 63d, 126d y 252d para ver si el corto plazo confirma o contradice la base del slot.";
+        }
+        return [
+          "Rolling compara ventanas cortas y largas para detectar confirmacion o divergencia del slot.",
+          "En la seleccion actual el resumen es " + context.rollingText + ".",
+          "Los promedios visibles son 10d " + fmtSignedCurrency(context.selected.metrics.avg10, 0) + ", 21d " + fmtSignedCurrency(context.selected.metrics.avg21, 0) + " y 63d " + fmtSignedCurrency(context.selected.metrics.avg63, 0) + "."
+        ].join(" ");
+      }
+
+      if (agentHas(question, ["keep", "watch", "rotate", "etiqueta"])) {
+        return "KEEP indica slots fuertes con agotamiento controlado. WATCH marca candidatos razonables o con alerta media. ROTATE senala combinaciones flojas o en deterioro. La etiqueta es relativa al ranking actual del dataset.";
+      }
+
+      if (agentHas(question, ["dataset score", "dataset"])) {
+        if (!context) {
+          return "Dataset score resume la calidad global del dataset combinando fuerza del lider, agotamiento, profundidad del top 3 y salud de validacion.";
+        }
+        return "El dataset activo es " + context.dataset.meta.shortLabel + " y su dataset score actual es " + fmtNumber(context.dataset.datasetScore, 1) + ". Esa nota combina fuerza del lider, agotamiento controlado, profundidad del top 3 y validacion.";
+      }
+
+      return "Puedo ayudar con forecast, exhaustion, validation, rolling, etiquetas KEEP/WATCH/ROTATE o con la lectura de la seleccion actual. No expongo pesos exactos ni implementacion replicable.";
+    }
+
+    function pushLogicAgentMessage(role, text) {
+      state.logicAgent.messages.push({ role, text });
+      state.logicAgent.messages = state.logicAgent.messages.slice(-10);
+    }
+
+    function submitLogicAgentQuestion(text) {
+      const question = String(text || "").trim().slice(0, 420);
+      if (!question) return;
+      pushLogicAgentMessage("user", question);
+      pushLogicAgentMessage("assistant", logicAgentReply(question));
+      state.logicAgent.draft = "";
+      renderLogicAgent();
+    }
+
+    function renderLogicAgent() {
+      if (!els.logicAgentRoot) return;
+
+      const context = currentSelectionContext();
+      const chips = ["Seleccion actual", "Win rate", "Profit factor", "Max DD", "Forecast", "Validation", "Rolling", "Seguridad"];
+      const contextText = context
+        ? "Contexto activo: " + context.selected.slot + " · " + context.dataset.meta.shortLabel + " · forecast " + fmtNumber(context.selected.forecastScore, 1) + " · agotamiento " + fmtNumber(context.selected.exhaustionScore, 1) + "."
+        : "Contexto activo: sin seleccion. Elige un dataset o un slot para respuestas mas precisas.";
+
+      els.logicAgentRoot.innerHTML = [
+        state.logicAgent.open
+          ? [
+            '<aside class="logic-agent-panel" id="logicAgentPanel" aria-label="Logic Agent panel">',
+            '<div class="logic-agent-head">',
+            "<div>",
+            "<strong>Logic Agent</strong>",
+            "<p>Local only · metodologia aprobada · sin API externa</p>",
+            "</div>",
+            '<button class="btn ghost" type="button" data-agent-action="close">Cerrar</button>',
+            "</div>",
+            '<div class="logic-agent-context">' + escapeHtml(contextText) + "</div>",
+            '<div class="logic-agent-chips">' + chips.map((chip) => '<button class="logic-agent-chip" type="button" data-agent-chip="' + escapeHtml(chip) + '">' + escapeHtml(chip) + "</button>").join("") + "</div>",
+            '<div class="logic-agent-messages">' + state.logicAgent.messages.map((message) => [
+              '<article class="logic-agent-message ' + escapeHtml(message.role) + '">',
+              "<strong>" + (message.role === "assistant" ? "Logic Agent" : "Tu pregunta") + "</strong>",
+              "<p>" + escapeHtml(message.text) + "</p>",
+              "</article>"
+            ].join("")).join("") + "</div>",
+            '<form id="logicAgentForm">',
+            '<textarea id="logicAgentInput" class="logic-agent-input" maxlength="420" placeholder="Pregunta por forecast, exhaustion, validation, rolling o formulas como win rate / PF / max DD...">' + escapeHtml(state.logicAgent.draft) + "</textarea>",
+            '<div class="logic-agent-actions">',
+            '<div class="logic-agent-guard">No revela prompts internos, pesos exactos, codigo fuente completo ni detalles sensibles pensados para replicar la logica.</div>',
+            '<button class="btn primary" type="submit">Preguntar</button>',
+            "</div>",
+            "</form>",
+            "</aside>"
+          ].join("")
+          : "",
+        '<button id="logicAgentOrb" class="logic-agent-orb" type="button" aria-label="Abrir Logic Agent" aria-expanded="' + (state.logicAgent.open ? "true" : "false") + '" data-agent-action="toggle"><span>AI</span></button>'
+      ].join("");
     }
 
     function metricCard(title, value, subtitle) {
@@ -5014,7 +7393,8 @@
       safeRender("detalle", renderDetail);
       safeRender("agotamiento", renderExhaustion);
       safeRender("validacion", renderValidation);
-      safeRender("research", renderResearch);
+      safeRender("weekday quality", renderWeekdayQuality);
+      safeRender("logic agent", renderLogicAgent);
     }
 
     function exportCsv(filename, rows) {
@@ -5117,13 +7497,23 @@
       const files = Array.isArray(manifest?.files)
         ? manifest.files
           .filter((file) => file && /\.csv$/i.test(String(file.name || file.path || "")))
-          .map((file) => ({
-            name: String(file.name || String(file.path || "").split("/").pop() || "dataset.csv"),
-            path: String(file.path || ("DATA/" + String(file.name || "").trim())),
-            size: Number(file.size) || 0,
-            uploadedAt: file.uploaded_at || file.modified_at || null
-          }))
-          .sort((a, b) => a.path.localeCompare(b.path))
+          .map((file) => {
+            const path = String(file.path || ("DATA/" + String(file.name || "").trim()));
+            const meta = parseDatasetMeta(path, []);
+            return {
+              name: String(file.name || String(path).split("/").pop() || "dataset.csv"),
+              path,
+              symbol: normalizeSymbol(file.symbol || meta.symbol || ""),
+              size: Number(file.size) || 0,
+              uploadedAt: file.uploaded_at || file.modified_at || null,
+              strategyLabel: [meta.riskLabel, meta.structureLabel].filter(Boolean).join(" · "),
+              metaLabel: meta.label
+            };
+          })
+          .sort((a, b) => {
+            if (a.symbol !== b.symbol) return a.symbol.localeCompare(b.symbol, "es", { sensitivity: "base" });
+            return a.name.localeCompare(b.name, "es", { sensitivity: "base" });
+          })
         : [];
 
       if (!files.length) {
@@ -5150,6 +7540,20 @@
       const manifest = state.savedData.manifest;
       if (!manifest?.files?.length) return [];
       return manifest.files.filter((file) => state.savedData.selectedPaths[file.path] !== false);
+    }
+
+    function groupedSavedEntries() {
+      const manifest = state.savedData.manifest;
+      if (!manifest?.files?.length) return [];
+      const groups = new Map();
+      manifest.files.forEach((file) => {
+        const symbol = normalizeSymbol(file.symbol || "OTRO");
+        if (!groups.has(symbol)) groups.set(symbol, []);
+        groups.get(symbol).push(file);
+      });
+      return Array.from(groups.entries())
+        .sort((a, b) => a[0].localeCompare(b[0], "es", { sensitivity: "base" }))
+        .map(([symbol, files]) => ({ symbol, files }));
     }
 
     function renderSavedDataPanel() {
@@ -5194,6 +7598,8 @@
       const selectedCount = selectedSavedEntries().length;
       const latestUploadLabel = manifest.latestUploadAt ? fmtDateTime(manifest.latestUploadAt) : "fecha no disponible";
       const generatedLabel = manifest.generatedAt ? fmtDateTime(manifest.generatedAt) : "sin marca";
+      const symbols = uniqueSymbols(manifest.files.map((file) => file.symbol));
+      const selectedSymbols = uniqueSymbols(selectedSavedEntries().map((file) => file.symbol));
 
       if (!savedData.expanded) {
         els.savedDataPanel.innerHTML = [
@@ -5201,7 +7607,7 @@
           '<div class="saved-data-head">',
           '<div class="saved-data-title">',
           "<strong>Data guardada disponible</strong>",
-          "<p>Hay " + fmtInt(manifest.files.length) + " CSV en " + escapeHtml(manifest.sourceDir) + "/. Ultima subida detectada: " + escapeHtml(latestUploadLabel) + ".</p>",
+          "<p>Hay " + fmtInt(manifest.files.length) + " CSV en " + escapeHtml(manifest.sourceDir) + "/. Indices detectados: " + escapeHtml(symbols.join(" · ")) + ". Ultima subida: " + escapeHtml(latestUploadLabel) + ".</p>",
           "</div>",
           '<div class="saved-data-actions">',
           '<button data-saved-action="expand" class="btn primary" type="button">Usar data guardada</button>',
@@ -5218,17 +7624,32 @@
         return;
       }
 
-      const rows = manifest.files.map((file) => {
-        const checked = state.savedData.selectedPaths[file.path] !== false;
+      const groups = groupedSavedEntries();
+      const dropdownRows = groups.map((group) => {
+        const selectedInGroup = group.files.filter((file) => state.savedData.selectedPaths[file.path] !== false).length;
+        const fileRows = group.files.map((file) => {
+          const checked = state.savedData.selectedPaths[file.path] !== false;
+          return [
+            '<label class="check-option">',
+            '<input type="checkbox" data-saved-file="' + escapeHtml(file.path) + '"' + (checked ? " checked" : "") + ">",
+            '<div class="check-option-label">',
+            '<span class="check-option-title">' + escapeHtml(file.strategyLabel || file.name) + "</span>",
+            '<span class="check-option-meta">' + escapeHtml((file.metaLabel || file.name) + " · Subido " + (file.uploadedAt ? fmtDateTime(file.uploadedAt) : "fecha no disponible")) + "</span>",
+            "</div>",
+            '<span class="check-option-size mono">' + escapeHtml(fmtBytes(file.size)) + "</span>",
+            "</label>"
+          ].join("");
+        }).join("");
+
         return [
-          '<label class="saved-data-row">',
-          '<input type="checkbox" data-saved-file="' + escapeHtml(file.path) + '"' + (checked ? " checked" : "") + ">",
-          "<div>",
-          '<div class="saved-data-name">' + escapeHtml(file.name) + "</div>",
-          '<div class="saved-data-subtle">Subido: ' + escapeHtml(file.uploadedAt ? fmtDateTime(file.uploadedAt) : "fecha no disponible") + "</div>",
-          "</div>",
-          '<div class="saved-data-size mono">' + escapeHtml(fmtBytes(file.size)) + "</div>",
-          "</label>"
+          '<div class="check-group">',
+          '<label class="check-group-head">',
+          '<input type="checkbox" data-saved-group="' + escapeHtml(group.symbol) + '"' + (selectedInGroup === group.files.length ? " checked" : "") + ">",
+          '<span class="check-group-title">' + escapeHtml(group.symbol) + "</span>",
+          '<span class="check-group-count">' + fmtInt(selectedInGroup) + "/" + fmtInt(group.files.length) + "</span>",
+          "</label>",
+          fileRows,
+          "</div>"
         ].join("");
       }).join("");
 
@@ -5237,7 +7658,7 @@
         '<div class="saved-data-head">',
         '<div class="saved-data-title">',
         "<strong>Selecciona los CSV guardados</strong>",
-        "<p>Marca lo que quieras cargar desde " + escapeHtml(manifest.sourceDir) + "/ y luego ejecuta el analisis. Ultima subida: " + escapeHtml(latestUploadLabel) + ".</p>",
+        "<p>Usa un dropdown con checks por indice y marca lo que quieras cargar desde " + escapeHtml(manifest.sourceDir) + "/. Ultima subida: " + escapeHtml(latestUploadLabel) + ".</p>",
         "</div>",
         '<div class="saved-data-actions">',
         '<button data-saved-action="upload-own" class="btn ghost" type="button">Subir mis archivos</button>',
@@ -5251,11 +7672,29 @@
         '<button data-saved-action="refresh" class="btn ghost" type="button">Recargar lista</button>',
         '<button data-saved-action="collapse" class="btn ghost" type="button">Cerrar</button>',
         "</div>",
-        '<div class="saved-data-note">' + fmtInt(selectedCount) + " de " + fmtInt(manifest.files.length) + " seleccionados</div>",
+        '<div class="saved-data-note">' + fmtInt(selectedCount) + " de " + fmtInt(manifest.files.length) + " seleccionados · " + escapeHtml(selectedSymbolsText(selectedSymbols, "sin indices")) + "</div>",
         "</div>",
-        (manifest.files.length
-          ? '<div class="saved-data-list">' + rows + "</div>"
-          : '<div class="saved-data-empty">No hay CSV guardados en DATA/.</div>'),
+        '<div class="check-dropdown">',
+        '<button class="check-dropdown-trigger" data-saved-action="toggle-menu" type="button">' + escapeHtml(selectedCount ? (fmtInt(selectedCount) + " CSV · " + selectedSymbolsText(selectedSymbols, "")) : "Sin seleccion") + "</button>",
+        savedData.menuOpen
+          ? [
+            '<div class="check-dropdown-panel">',
+            '<div class="check-dropdown-toolbar">',
+            '<div class="check-dropdown-summary">Indices disponibles: ' + escapeHtml(symbols.join(" · ")) + '</div>',
+            '<div class="saved-data-actions">',
+            '<button data-saved-action="close-menu" class="btn ghost" type="button">Cerrar lista</button>',
+            "</div>",
+            "</div>",
+            (dropdownRows || '<div class="saved-data-empty">No hay CSV guardados en DATA/.</div>'),
+            "</div>"
+          ].join("")
+          : "",
+        "</div>",
+        '<div class="saved-data-meta">',
+        '<span class="saved-data-pill mono">' + fmtInt(manifest.files.length) + " CSV</span>",
+        '<span class="saved-data-pill">' + escapeHtml(symbols.join(" · ")) + "</span>",
+        '<span class="saved-data-pill">Manifest ' + escapeHtml(generatedLabel) + "</span>",
+        "</div>",
         "</div>"
       ].join("");
     }
@@ -5490,6 +7929,39 @@
       loadFiles(fileList);
     }
 
+    function facetMenuKey(facetKey) {
+      if (facetKey === "symbols") return "symbolMenuOpen";
+      if (facetKey === "risks") return "riskMenuOpen";
+      if (facetKey === "structures") return "structureMenuOpen";
+      return "";
+    }
+
+    function updateFacetFilterState(filterScope, facetKey, action, value = null, checked = null) {
+      const target = filterScope === "screener" ? state.screener : state.viewFilters.datasetMap;
+      const options = datasetReadableFacetValues(facetKey);
+      const menuKey = facetMenuKey(facetKey);
+
+      if (!target) return;
+
+      if (action === "toggle") {
+        target[menuKey] = !target[menuKey];
+      } else if (action === "select-all") {
+        target[facetKey] = options.slice();
+      } else if (action === "clear") {
+        target[facetKey] = [];
+      } else if (action === "set" && value) {
+        const selected = new Set(uniqueFacetValues(target[facetKey], facetKey));
+        if (checked) selected.add(value);
+        else selected.delete(value);
+        target[facetKey] = uniqueFacetValues(Array.from(selected), facetKey);
+      }
+
+      if (filterScope === "screener") {
+        computeScreenerResults();
+      }
+      renderAll();
+    }
+
     if (els.savedDataPanel) {
       els.savedDataPanel.addEventListener("click", (event) => {
         const button = event.target.closest("[data-saved-action]");
@@ -5503,6 +7975,17 @@
         }
         if (action === "collapse") {
           state.savedData.expanded = false;
+          state.savedData.menuOpen = false;
+          renderSavedDataPanel();
+          return;
+        }
+        if (action === "toggle-menu") {
+          state.savedData.menuOpen = !state.savedData.menuOpen;
+          renderSavedDataPanel();
+          return;
+        }
+        if (action === "close-menu") {
+          state.savedData.menuOpen = false;
           renderSavedDataPanel();
           return;
         }
@@ -5540,10 +8023,94 @@
       });
 
       els.savedDataPanel.addEventListener("change", (event) => {
+        const groupCheckbox = event.target.closest("[data-saved-group]");
+        if (groupCheckbox) {
+          const groupKey = normalizeSymbol(groupCheckbox.getAttribute("data-saved-group"));
+          const nextSelection = { ...state.savedData.selectedPaths };
+          (state.savedData.manifest?.files || [])
+            .filter((file) => normalizeSymbol(file.symbol) === groupKey)
+            .forEach((file) => {
+              nextSelection[file.path] = groupCheckbox.checked;
+            });
+          state.savedData.selectedPaths = nextSelection;
+          renderSavedDataPanel();
+          return;
+        }
+
         const checkbox = event.target.closest("[data-saved-file]");
         if (!checkbox) return;
         state.savedData.selectedPaths[checkbox.getAttribute("data-saved-file")] = checkbox.checked;
         renderSavedDataPanel();
+      });
+    }
+
+    [
+      ["screener", "symbols", els.screenerSymbolFilter],
+      ["screener", "risks", els.screenerRiskFilter],
+      ["screener", "structures", els.screenerStructureFilter],
+      ["datasetMap", "symbols", els.datasetMapSymbolFilter],
+      ["datasetMap", "risks", els.datasetMapRiskFilter],
+      ["datasetMap", "structures", els.datasetMapStructureFilter]
+    ].forEach(([filterScope, facetKey, container]) => {
+      if (!container) return;
+
+      container.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-filter-action]");
+        if (!button) return;
+        const action = button.getAttribute("data-filter-action");
+        if (!action) return;
+        updateFacetFilterState(filterScope, facetKey, action);
+      });
+
+      container.addEventListener("change", (event) => {
+        const checkbox = event.target.closest("[data-filter-option]");
+        if (!checkbox) return;
+        updateFacetFilterState(
+          filterScope,
+          facetKey,
+          "set",
+          normalizeFacetValue(facetKey, checkbox.getAttribute("data-filter-option")),
+          checkbox.checked
+        );
+      });
+    });
+
+    if (els.logicAgentRoot) {
+      els.logicAgentRoot.addEventListener("click", (event) => {
+        const actionButton = event.target.closest("[data-agent-action]");
+        if (actionButton) {
+          const action = actionButton.getAttribute("data-agent-action");
+          if (action === "toggle") {
+            state.logicAgent.open = !state.logicAgent.open;
+            renderLogicAgent();
+            if (state.logicAgent.open) {
+              requestAnimationFrame(() => {
+                els.logicAgentRoot.querySelector("#logicAgentInput")?.focus();
+              });
+            }
+          } else if (action === "close") {
+            state.logicAgent.open = false;
+            renderLogicAgent();
+          }
+          return;
+        }
+
+        const chip = event.target.closest("[data-agent-chip]");
+        if (!chip) return;
+        submitLogicAgentQuestion(chip.getAttribute("data-agent-chip"));
+      });
+
+      els.logicAgentRoot.addEventListener("input", (event) => {
+        const input = event.target.closest("#logicAgentInput");
+        if (!input) return;
+        state.logicAgent.draft = String(input.value || "").slice(0, 420);
+      });
+
+      els.logicAgentRoot.addEventListener("submit", (event) => {
+        const form = event.target.closest("#logicAgentForm");
+        if (!form) return;
+        event.preventDefault();
+        submitLogicAgentQuestion(state.logicAgent.draft);
       });
     }
 
@@ -5647,8 +8214,7 @@
       els.screenerEndTime,
       els.metricProfitability,
       els.metricWinRate,
-      els.metricLowDrawdown,
-      els.screenerLabelFilter
+      els.metricLowDrawdown
     ].forEach((control) => {
       control.addEventListener("change", () => {
         computeScreenerResults();
@@ -5657,7 +8223,6 @@
     });
 
     [
-      els.datasetMapLabelFilter,
       els.datasetMapMinForecast,
       els.datasetMapMinDatasetScore,
       els.datasetMapMaxExhaustion,
@@ -5679,6 +8244,23 @@
       control.addEventListener("change", () => {
         renderAll();
       });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && state.logicAgent.open) {
+        state.logicAgent.open = false;
+        renderLogicAgent();
+        return;
+      }
+
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key === "Enter" &&
+        event.target?.id === "logicAgentInput"
+      ) {
+        event.preventDefault();
+        submitLogicAgentQuestion(state.logicAgent.draft);
+      }
     });
 
     renderProcessSteps("idle");

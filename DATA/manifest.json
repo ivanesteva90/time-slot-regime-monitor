@@ -1,148 +1,168 @@
 {
-  "generated_at": "2026-03-23T10:13:13.203745-04:00",
+  "generated_at": "2026-03-29T20:56:31.929154-04:00",
   "source_dir": "DATA",
   "file_count": 20,
-  "latest_upload_at": "2026-03-21T16:10:39-04:00",
+  "latest_upload_at": "2026-03-28T10:13:33-04:00",
   "files": [
     {
-      "name": "agresivo_iron_condor_spx_data.csv",
-      "path": "DATA/agresivo_iron_condor_spx_data.csv",
-      "size": 3927987,
-      "uploaded_at": "2026-03-21T16:02:15-04:00",
-      "modified_at": "2026-03-21T16:02:15-04:00"
-    },
-    {
-      "name": "agresivo_iron_condor_xsp_data.csv",
-      "path": "DATA/agresivo_iron_condor_xsp_data.csv",
-      "size": 3423802,
-      "uploaded_at": "2026-03-21T16:10:02-04:00",
-      "modified_at": "2026-03-21T16:10:02-04:00"
-    },
-    {
-      "name": "agresivo_vertical_spx_data.csv",
-      "path": "DATA/agresivo_vertical_spx_data.csv",
-      "size": 3515188,
-      "uploaded_at": "2026-03-21T16:00:57-04:00",
-      "modified_at": "2026-03-21T16:00:57-04:00"
-    },
-    {
-      "name": "agresivo_vertical_xsp_data.csv",
-      "path": "DATA/agresivo_vertical_xsp_data.csv",
-      "size": 2817365,
-      "uploaded_at": "2026-03-21T16:08:36-04:00",
-      "modified_at": "2026-03-21T16:08:36-04:00"
-    },
-    {
       "name": "conservador_iron_condor_rut_data.csv",
-      "path": "DATA/conservador_iron_condor_rut_data.csv",
-      "size": 3903845,
-      "uploaded_at": "2026-03-21T16:07:44-04:00",
-      "modified_at": "2026-03-21T16:07:44-04:00"
-    },
-    {
-      "name": "conservador_iron_condor_spx_data.csv",
-      "path": "DATA/conservador_iron_condor_spx_data.csv",
-      "size": 3574632,
-      "uploaded_at": "2026-03-21T16:02:51-04:00",
-      "modified_at": "2026-03-21T16:02:51-04:00"
-    },
-    {
-      "name": "conservador_iron_condor_xsp_data.csv",
-      "path": "DATA/conservador_iron_condor_xsp_data.csv",
-      "size": 3428337,
-      "uploaded_at": "2026-03-21T16:10:39-04:00",
-      "modified_at": "2026-03-21T16:10:39-04:00"
+      "path": "DATA/RUT/conservador_iron_condor_rut_data.csv",
+      "symbol": "RUT",
+      "size": 3974022,
+      "uploaded_at": "2026-03-28T10:10:47-04:00",
+      "modified_at": "2026-03-28T10:10:47-04:00"
     },
     {
       "name": "conservador_vertical_rut_data.csv",
-      "path": "DATA/conservador_vertical_rut_data.csv",
-      "size": 3443612,
-      "uploaded_at": "2026-03-21T16:07:04-04:00",
-      "modified_at": "2026-03-21T16:07:04-04:00"
-    },
-    {
-      "name": "conservador_vertical_spx_data.csv",
-      "path": "DATA/conservador_vertical_spx_data.csv",
-      "size": 3487513,
-      "uploaded_at": "2026-03-21T16:01:38-04:00",
-      "modified_at": "2026-03-21T16:01:38-04:00"
-    },
-    {
-      "name": "conservador_vertical_xsp_data.csv",
-      "path": "DATA/conservador_vertical_xsp_data.csv",
-      "size": 3048767,
-      "uploaded_at": "2026-03-21T16:09:15-04:00",
-      "modified_at": "2026-03-21T16:09:15-04:00"
+      "path": "DATA/RUT/conservador_vertical_rut_data.csv",
+      "symbol": "RUT",
+      "size": 3505889,
+      "uploaded_at": "2026-03-28T10:10:09-04:00",
+      "modified_at": "2026-03-28T10:10:09-04:00"
     },
     {
       "name": "intermedio_iron_condor_rut_data.csv",
-      "path": "DATA/intermedio_iron_condor_rut_data.csv",
-      "size": 3921387,
-      "uploaded_at": "2026-03-21T16:07:27-04:00",
-      "modified_at": "2026-03-21T16:07:27-04:00"
-    },
-    {
-      "name": "intermedio_iron_condor_spx_data.csv",
-      "path": "DATA/intermedio_iron_condor_spx_data.csv",
-      "size": 3920366,
-      "uploaded_at": "2026-03-21T16:02:34-04:00",
-      "modified_at": "2026-03-21T16:02:34-04:00"
-    },
-    {
-      "name": "intermedio_iron_condor_xsp_data.csv",
-      "path": "DATA/intermedio_iron_condor_xsp_data.csv",
-      "size": 3182960,
-      "uploaded_at": "2026-03-21T16:10:22-04:00",
-      "modified_at": "2026-03-21T16:10:22-04:00"
+      "path": "DATA/RUT/intermedio_iron_condor_rut_data.csv",
+      "symbol": "RUT",
+      "size": 3992160,
+      "uploaded_at": "2026-03-28T10:10:28-04:00",
+      "modified_at": "2026-03-28T10:10:28-04:00"
     },
     {
       "name": "intermedio_vertical_rut_data.csv",
-      "path": "DATA/intermedio_vertical_rut_data.csv",
-      "size": 3495655,
-      "uploaded_at": "2026-03-21T16:06:46-04:00",
-      "modified_at": "2026-03-21T16:06:46-04:00"
+      "path": "DATA/RUT/intermedio_vertical_rut_data.csv",
+      "symbol": "RUT",
+      "size": 3558216,
+      "uploaded_at": "2026-03-28T10:09:48-04:00",
+      "modified_at": "2026-03-28T10:09:48-04:00"
+    },
+    {
+      "name": "agresivo_iron_condor_spx_data.csv",
+      "path": "DATA/SPX/agresivo_iron_condor_spx_data.csv",
+      "symbol": "SPX",
+      "size": 3999350,
+      "uploaded_at": "2026-03-28T10:08:19-04:00",
+      "modified_at": "2026-03-28T10:08:19-04:00"
+    },
+    {
+      "name": "agresivo_vertical_spx_data.csv",
+      "path": "DATA/SPX/agresivo_vertical_spx_data.csv",
+      "symbol": "SPX",
+      "size": 3578248,
+      "uploaded_at": "2026-03-28T10:07:00-04:00",
+      "modified_at": "2026-03-28T10:07:00-04:00"
+    },
+    {
+      "name": "conservador_iron_condor_spx_data.csv",
+      "path": "DATA/SPX/conservador_iron_condor_spx_data.csv",
+      "symbol": "SPX",
+      "size": 3645305,
+      "uploaded_at": "2026-03-28T10:09:12-04:00",
+      "modified_at": "2026-03-28T10:09:12-04:00"
+    },
+    {
+      "name": "conservador_vertical_spx_data.csv",
+      "path": "DATA/SPX/conservador_vertical_spx_data.csv",
+      "symbol": "SPX",
+      "size": 3550072,
+      "uploaded_at": "2026-03-28T10:07:38-04:00",
+      "modified_at": "2026-03-28T10:07:38-04:00"
+    },
+    {
+      "name": "intermedio_iron_condor_spx_data.csv",
+      "path": "DATA/SPX/intermedio_iron_condor_spx_data.csv",
+      "symbol": "SPX",
+      "size": 3991382,
+      "uploaded_at": "2026-03-28T10:08:50-04:00",
+      "modified_at": "2026-03-28T10:08:50-04:00"
     },
     {
       "name": "intermedio_vertical_spx_data.csv",
-      "path": "DATA/intermedio_vertical_spx_data.csv",
-      "size": 3503094,
-      "uploaded_at": "2026-03-21T16:01:19-04:00",
-      "modified_at": "2026-03-21T16:01:19-04:00"
-    },
-    {
-      "name": "intermedio_vertical_xsp_data.csv",
-      "path": "DATA/intermedio_vertical_xsp_data.csv",
-      "size": 2815210,
-      "uploaded_at": "2026-03-21T16:08:55-04:00",
-      "modified_at": "2026-03-21T16:08:55-04:00"
+      "path": "DATA/SPX/intermedio_vertical_spx_data.csv",
+      "symbol": "SPX",
+      "size": 3565977,
+      "uploaded_at": "2026-03-28T10:07:21-04:00",
+      "modified_at": "2026-03-28T10:07:21-04:00"
     },
     {
       "name": "ultra_agresivo_iron_condor_spx_data.csv",
-      "path": "DATA/ultra_agresivo_iron_condor_spx_data.csv",
-      "size": 3642397,
-      "uploaded_at": "2026-03-21T16:00:26-04:00",
-      "modified_at": "2026-03-21T16:00:26-04:00"
-    },
-    {
-      "name": "ultra_agresivo_iron_condor_xsp_data.csv",
-      "path": "DATA/ultra_agresivo_iron_condor_xsp_data.csv",
-      "size": 3433805,
-      "uploaded_at": "2026-03-21T16:09:45-04:00",
-      "modified_at": "2026-03-21T16:09:45-04:00"
+      "path": "DATA/SPX/ultra_agresivo_iron_condor_spx_data.csv",
+      "symbol": "SPX",
+      "size": 3713813,
+      "uploaded_at": "2026-03-28T10:07:56-04:00",
+      "modified_at": "2026-03-28T10:07:56-04:00"
     },
     {
       "name": "ultra_agresivo_vertical_spx_data.csv",
-      "path": "DATA/ultra_agresivo_vertical_spx_data.csv",
-      "size": 3518392,
-      "uploaded_at": "2026-03-21T15:59:23-04:00",
-      "modified_at": "2026-03-21T15:59:23-04:00"
+      "path": "DATA/SPX/ultra_agresivo_vertical_spx_data.csv",
+      "symbol": "SPX",
+      "size": 3581499,
+      "uploaded_at": "2026-03-28T10:06:42-04:00",
+      "modified_at": "2026-03-28T10:06:42-04:00"
+    },
+    {
+      "name": "agresivo_iron_condor_xsp_data.csv",
+      "path": "DATA/XSP/agresivo_iron_condor_xsp_data.csv",
+      "symbol": "XSP",
+      "size": 3486021,
+      "uploaded_at": "2026-03-28T10:12:50-04:00",
+      "modified_at": "2026-03-28T10:12:50-04:00"
+    },
+    {
+      "name": "agresivo_vertical_xsp_data.csv",
+      "path": "DATA/XSP/agresivo_vertical_xsp_data.csv",
+      "symbol": "XSP",
+      "size": 2872099,
+      "uploaded_at": "2026-03-28T10:11:37-04:00",
+      "modified_at": "2026-03-28T10:11:37-04:00"
+    },
+    {
+      "name": "conservador_iron_condor_xsp_data.csv",
+      "path": "DATA/XSP/conservador_iron_condor_xsp_data.csv",
+      "symbol": "XSP",
+      "size": 3490248,
+      "uploaded_at": "2026-03-28T10:13:33-04:00",
+      "modified_at": "2026-03-28T10:13:33-04:00"
+    },
+    {
+      "name": "conservador_vertical_xsp_data.csv",
+      "path": "DATA/XSP/conservador_vertical_xsp_data.csv",
+      "symbol": "XSP",
+      "size": 3103483,
+      "uploaded_at": "2026-03-28T10:12:15-04:00",
+      "modified_at": "2026-03-28T10:12:15-04:00"
+    },
+    {
+      "name": "intermedio_iron_condor_xsp_data.csv",
+      "path": "DATA/XSP/intermedio_iron_condor_xsp_data.csv",
+      "symbol": "XSP",
+      "size": 3245072,
+      "uploaded_at": "2026-03-28T10:13:16-04:00",
+      "modified_at": "2026-03-28T10:13:16-04:00"
+    },
+    {
+      "name": "intermedio_vertical_xsp_data.csv",
+      "path": "DATA/XSP/intermedio_vertical_xsp_data.csv",
+      "symbol": "XSP",
+      "size": 2869954,
+      "uploaded_at": "2026-03-28T10:11:53-04:00",
+      "modified_at": "2026-03-28T10:11:53-04:00"
+    },
+    {
+      "name": "ultra_agresivo_iron_condor_xsp_data.csv",
+      "path": "DATA/XSP/ultra_agresivo_iron_condor_xsp_data.csv",
+      "symbol": "XSP",
+      "size": 3496222,
+      "uploaded_at": "2026-03-28T10:12:33-04:00",
+      "modified_at": "2026-03-28T10:12:33-04:00"
     },
     {
       "name": "ultra_agresivo_vertical_xsp_data.csv",
-      "path": "DATA/ultra_agresivo_vertical_xsp_data.csv",
-      "size": 2815648,
-      "uploaded_at": "2026-03-21T16:08:11-04:00",
-      "modified_at": "2026-03-21T16:08:11-04:00"
+      "path": "DATA/XSP/ultra_agresivo_vertical_xsp_data.csv",
+      "symbol": "XSP",
+      "size": 2870507,
+      "uploaded_at": "2026-03-28T10:11:20-04:00",
+      "modified_at": "2026-03-28T10:11:20-04:00"
     }
   ]
 }

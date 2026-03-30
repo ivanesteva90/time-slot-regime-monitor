@@ -29,14 +29,14 @@ Abre el archivo en el navegador y sube uno o varios CSV, o la carpeta `data` com
 
 ## Data guardada por defecto
 
-La carpeta `DATA/` actua como fuente guardada para el cliente.
+La carpeta `DATA/` actua como fuente guardada para el cliente. Puede estar plana o separada por indice, por ejemplo `DATA/SPX`, `DATA/XSP`, `DATA/RUT`.
 
 Flujo:
 
 * el dashboard intenta leer `DATA/manifest.json`
 * si existe, muestra una tarjeta con la fecha de la ultima subida detectada
 * el cliente puede elegir si quiere usar esa data guardada
-* si marca que si, puede seleccionar que ficheros cargar
+* si marca que si, puede seleccionar que ficheros cargar desde un dropdown con checks agrupado por indice
 * si no, sigue disponible la carga manual de CSV o carpeta
 
 Para regenerar el manifiesto despues de subir o cambiar CSV en `DATA/`:
