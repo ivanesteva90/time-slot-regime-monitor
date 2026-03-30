@@ -2067,6 +2067,45 @@
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(244, 248, 253, 0.95));
     }
 
+    .page-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 6px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(17, 33, 48, 0.08);
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 10px 24px rgba(17, 33, 48, 0.05);
+    }
+
+    .page-footer-label {
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .page-footer-copy {
+      display: grid;
+      gap: 2px;
+    }
+
+    .page-footer-copy strong {
+      color: var(--navy);
+      font-size: 0.98rem;
+      line-height: 1.2;
+    }
+
+    .page-footer-copy span {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
     details {
       border-top: 1px solid rgba(17, 33, 48, 0.08);
       padding: 14px 0;
@@ -3333,6 +3372,13 @@
         </div>
       </div>
     </section>
+    <footer class="page-footer" aria-label="Version de la aplicacion">
+      <span class="page-footer-label">Update version</span>
+      <div class="page-footer-copy">
+        <strong>v2026.03.30.1</strong>
+        <span>Updated 30 Mar 2026 · Dashboard UX refresh, saved data por indice y mejoras de lectura en mix, agotamiento, validacion y weekday quality.</span>
+      </div>
+    </footer>
     </main>
   </div>
 
