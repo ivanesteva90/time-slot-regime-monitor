@@ -1,12 +1,4 @@
- id="targetPctShow">21.4%</div></div>
-    </div>
-
-    <div id="notice" class="notice"></div>
-
-    <div class="livegrid">
-      <div class="livebox"><div class="l">NETO ahora</div><div class="v mono" id="currentNet">$22.52</div><div class="s" id="currentStatus">Target todavía no alcanzado</div></div>
-      <div class="livebox"><div class="l">Distancia al target</div><div class="v mono" id="distanceMoney">$7.48</div><div class="s" id="distanceTicks">1 tick de $0.05</div></div>
-      <div class="livebox"><div class="l">Precio actual</div><div class="v mono" id="currentPriceShow">$0.55</div><div class="s" id="priceVsTarget">$0.05 sobre el exit</div></div>
+et">$0.05 sobre el exit</div></div>
     </div>
 
     <div class="stopbox">
@@ -70,7 +62,7 @@
   </table></div><div class="mobileSwipeHint">Desliza la tabla ← →</div>
 </section>
 
-<div class="foot" id="feeFooter">Modelo de fees del broker seleccionado. <b>Observed history</b> usa solo fills guardados para ese broker. Verifica siempre el preview final antes de enviar una orden.</div>
+<div class="foot" id="feeFooter">Modelo de fees del broker seleccionado. <b>Observed history</b> usa solo fills guardados para ese broker/perfil. Verifica siempre el preview final antes de enviar una orden.</div>
 </div>
 
 <div class="mobileDock" id="mobileDock" aria-label="Resumen móvil">
@@ -96,4 +88,20 @@ let stopMultiple=1.50;
 
 const TS_TIERS={
   ts_tier1:{label:'Tier 1 · 0–500 contracts/mo',multiLeg:.40,indexFee:1.00,occ:.025},
-  ts_tier2:{label:'
+  ts_tier2:{label:'Tier 2 · 501–1,000 contracts/mo',multiLeg:.30,indexFee:.80,occ:.025},
+  ts_tier3:{label:'Tier 3 · 1,001–10,000 contracts/mo',multiLeg:.25,indexFee:.70,occ:.025},
+  ts_tier4:{label:'Tier 4 · >10,000 contracts/mo',multiLeg:0,indexFee:.60,occ:.025}
+};
+const RH_PROFILES={
+  rh_gold:{label:'Gold · $0.35 contract fee',shortLabel:'Gold',contractFee:.35},
+  rh_standard:{label:'Standard · sin Gold · $0.50 contract fee',shortLabel:'Standard',contractFee:.50}
+};
+const TRADIER_PROFILES={
+  tradier_lite:{label:'Lite · $0/mo · index $0.35',shortLabel:'Lite',commission:.35},
+  tradier_pro:{label:'Pro · $10/mo · index $0.35',shortLabel:'Pro',commission:.35},
+  tradier_pro_plus:{label:'Pro Plus · $35/mo · index $0.10',shortLabel:'Pro Plus',commission:.10}
+};
+const TASTY_PROFILES={
+  tasty_standard:{label:'Standard · broad-based index',shortLabel:'Standard',openCommission:1.00,closeCommission:0,spxFee:.65}
+};
+const SCHWAB_PROFILES=
