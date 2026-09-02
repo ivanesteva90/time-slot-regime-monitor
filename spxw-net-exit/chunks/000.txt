@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#06101c" />
+<meta name="color-scheme" content="dark" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="SPXW Exit" />
+<meta name="format-detection" content="telephone=no" />
+<title>SPXW Net Exit Trade Manager v4.5 · Mobile · Public</title>
+<style>
+:root{
+  --bg:#06101c; --panel:#0d1929; --panel2:#101f33; --line:#263a56;
+  --text:#f4f7fb; --muted:#9fb0c8; --accent:#6ee7b7; --accent2:#60a5fa;
+  --warn:#fbbf24; --danger:#fb7185; --good:#34d399; --shadow:0 18px 50px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 18% -10%,#193a62 0,transparent 31%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+.wrap{max-width:1240px;margin:auto;padding:24px 16px 56px}
+header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+h1{font-size:clamp(24px,4vw,38px);margin:0;letter-spacing:-.04em}.sub{color:var(--muted);margin-top:7px;line-height:1.45;max-width:790px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.badge{border:1px solid #2a4d47;background:#0e2725;color:#8df1cd;border-radius:999px;padding:8px 11px;font-size:12px;white-space:nowrap;font-weight:750}.badge.secondary{background:#0d2037;border-color:#294867;color:#a9d0ff}
+.layout{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr);gap:18px}@media(max-width:920px){.layout{grid-template-columns:1fr}header{display:block}.badges{justify-content:flex-start;margin-top:12px}}
+.card{background:linear-gradient(180deg,rgba(17,31,52,.97),rgba(13,24,41,.97));border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.card h2{font-size:15px;margin:0 0 14px;color:#dce6f4;letter-spacing:.01em}.card h3{font-size:13px;margin:0 0 10px;color:#dce6f4}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}@media(max-width:560px){.formgrid{grid-template-columns:1fr}}
+label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin:0 0 6px}
+input,select{width:100%;background:#081322;color:var(--text);border:1px solid #2a3c57;border-radius:12px;padding:12px 12px;font-size:16px;outline:none}
+input:focus,select:focus{border-color:#5aa8ff;box-shadow:0 0 0 3px rgba(96,165,250,.14)}
+.field small{display:block;color:#71839b;font-size:11px;margin-top:6px;line-height:1.35}
+.section{margin-top:18px}.divider{height:1px;background:#1e3048;margin:18px 0}
+.switchrow,.actions,.quick{display:flex;gap:8px;flex-wrap:wrap}.switchrow{margin-top:10px}.quick{margin-top:10px}
+.seg,.btn,.qbtn{border:1px solid #314865;background:#0a1728;color:#d3dfef;border-radius:11px;padding:9px 12px;font-weight:750;font-size:12px;cursor:pointer;transition:.15s ease}.qbtn{border-radius:999px;position:relative}.seg:hover,.btn:hover,.qbtn:hover{border-color:#5895d2}.seg.active{background:#153553;color:#dff2ff;border-color:#3477ae}.qbtn.selected{border-color:#6ee7b7;background:linear-gradient(180deg,#164638,#10352d);color:#effff9;box-shadow:0 0 0 2px rgba(110,231,183,.22),0 6px 18px rgba(0,0,0,.22);transform:translateY(-1px)}.qbtn.selected::after{content:' ✓';color:#8df1cd;font-weight:900}.qbtn.fast.selected{border-color:#fbbf24;background:linear-gradient(180deg,#493911,#30260d);color:#fff2bd;box-shadow:0 0 0 2px rgba(251,191,36,.20),0 6px 18px rgba(0,0,0,.22)}.qbtn.fast.selected::after{color:#fbbf24}.btn.primary{background:#113a31;border-color:#2b705c;color:#c9f9e8}.btn.danger{background:#32131b;border-color:#6d2b3a;color:#ffd2dc}.btn.small{padding:7px 10px}
+.manual,.icOnly{display:none}.manual.show,.icOnly.show{display:grid}
+.livegrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}@media(max-width:660px){.livegrid{grid-template-columns:1fr}}
+.livebox{background:#081322;border:1px solid #22354f;border-radius:14px;padding:12px}.livebox .l{font-size:11px;color:var(--muted)}.livebox .v{font-size:21px;font-weight:820;margin-top:4px}.livebox .s{font-size:11px;color:#7f91aa;margin-top:3px}
+.result{display:flex;flex-direction:column;min-height:100%}.eyebrow{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}.closePrice{font-size:clamp(52px,9vw,84px);font-weight:900;letter-spacing:-.06em;margin:8px 0 1px;color:var(--accent)}
+.orderline{font-size:13px;color:#a9bbd3;margin-bottom:6px}.netline{font-size:20px;font-weight:800;margin-bottom:13px}.netline span{color:var(--good)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:7px}.kpi{background:#081322;border:1px solid #22354f;border-radius:13px;padding:12px}.kpi .v{font-size:19px;font-weight:820;margin-top:3px}.kpi .l{font-size:11px;color:var(--muted)}
+.notice{margin-top:14px;border-radius:13px;padding:12px 13px;font-size:13px;line-height:1.45;border:1px solid #235245;background:#0c2521;color:#bff7df}.notice.warn{border-color:#66521f;background:#2a220c;color:#ffe3a1}.notice.bad{border-color:#66303b;background:#2a1017;color:#fecdd3}.notice.info{border-color:#244d75;background:#0d2037;color:#bfddff}
+.rowline{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #23354e;font-size:13px}.rowline:last-child{border-bottom:0}.rowline span:first-child{color:var(--muted)}
+.timerbox{margin-top:14px;background:#081322;border:1px solid #22354f;border-radius:14px;padding:12px}.timerHead{display:flex;align-items:center;justify-content:space-between;gap:10px}.timerValue{font-size:26px;font-weight:850;letter-spacing:-.03em}.progress{height:8px;background:#14243a;border-radius:999px;overflow:hidden;margin-top:10px}.bar{height:100%;width:0;background:linear-gradient(90deg,#60a5fa,#6ee7b7);transition:width .5s linear}.timerbox.expired .bar{background:#fb7185}.timerbox.expired .timerValue{color:#fb9aaa}
+.stopbox{margin-top:14px;border:1px solid #5e2b39;background:#24111a;border-radius:14px;padding:13px}.stopPrice{font-size:30px;font-weight:850;color:#ffb3c2}.stopmeta{font-size:12px;color:#d5a4af;margin-top:3px}
+.tablewrap{overflow-x:auto;border-radius:14px;border:1
