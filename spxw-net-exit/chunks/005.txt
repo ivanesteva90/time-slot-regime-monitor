@@ -1,0 +1,122 @@
+):tsPerContractSide();
+    const side=perContract*contracts;
+    return {open:side,close:side,source:feeMode,perContract};
+  }
+
+  // Robinhood SPXW current retail model.
+  // Gold: $0.35 contract fee; Standard: $0.50 contract fee.
+  // SPXW exchange: $0.50 when leg premium < $1; $0.59 when >= $1.
+  // Combined ORF/OCC collected by Robinhood: $0.04/contract.
+  const low=rhPerContractSide(brokerProfile(),'low'), high=rhPerContractSide(brokerProfile(),'high');
+  let perStrategySide;
+  if(feeMode==='conservative') perStrategySide=legs()*high;
+  else {
+    const hi=Math.floor(legs()/2), lo=legs()-hi;
+    perStrategySide=hi*high+lo*low;
+  }
+  const side=perStrategySide*qty();
+  return {open:side,close:side,source:feeMode,low,high};
+}
+
+function solveProfit(target){
+  const credit=num('credit'), q=qty(), f=calcFees(), fees=f.open+f.close;
+  const raw=credit-(target+fees)/(100*q);
+  if(raw<.05-1e-9) return {possible:false,raw,fees,f,maxNet:credit*100*q-fees};
+  const close=round2(Math.max(.05,tickFloor(raw,.05)));
+  const gross=(credit-close)*100*q;
+  const net=gross-fees;
+  const pct=credit>0?(credit-close)/credit*100:0;
+  return {possible:true,close,gross,net,pct,fees,f,raw,maxNet:credit*100*q-fees};
+}
+
+function solveStop(maxLoss){
+  const credit=num('credit'), q=qty(), f=calcFees(), fees=f.open+f.close;
+  const raw=credit+(maxLoss-fees)/(100*q);
+  // Use the highest valid tick that does not exceed the selected net loss.
+  const close=round2(Math.max(.05,tickFloor(raw,.05)));
+  const gross=(credit-close)*100*q;
+  const net=gross-fees;
+  return {close,net,gross,raw,fees};
+}
+
+function solveStopMultiple(mult=1.50){
+  const credit=num('credit'), q=qty(), f=calcFees(), fees=f.open+f.close;
+  const raw=credit*mult;
+  // Round down so the executable tick does not exceed the selected gross multiple.
+  const close=round2(Math.max(.05,tickFloor(raw,.05)));
+  const gross=(credit-close)*100*q;
+  const net=gross-fees;
+  const grossLossPct=credit>0?Math.max(0,(close-credit)/credit*100):0;
+  return {close,net,gross,raw,fees,mult,grossLossPct};
+}
+
+function activeStop(){
+  return stopRuleMode==='multiple' ? solveStopMultiple(stopMultiple) : solveStop(num('maxLoss'));
+}
+
+function currentMetrics(){
+  const credit=num('credit'), current=num('current'), q=qty(), f=calcFees(), fees=f.open+f.close;
+  const gross=(credit-current)*100*q;
+  const net=gross-fees;
+  const pct=credit>0?(credit-current)/credit*100:0;
+  return {current,gross,net,pct,fees};
+}
+
+function renderQuick(){
+  $('quickBtns').innerHTML=quickTargets.map(t=>`<button type="button" class="qbtn" data-dollar-target="${t}">$${t}</button>`).join('');
+  $('quickPctBtns').innerHTML=quickPctTargets.map(t=>`<button type="button" class="qbtn ${t===30?'recommended':t===25?'fast':''}" data-pct-target="${t}">${t}%${t===30?' · BASE':t===25?' · FAST':''}</button>`).join('');
+  $('quickLossPctBtns').innerHTML=quickLossPctTargets.map(t=>`<button type="button" class="qbtn ${t===50?'recommended':''}" data-loss-pct="${t}">${t}%${t===50?' · BASE':''}</button>`).join('');
+  document.querySelectorAll('[data-dollar-target]').forEach(b=>b.onclick=()=>{ $('target').value=b.dataset.dollarTarget; syncTargetFields('dollars'); update(); });
+  document.querySelectorAll('[data-pct-target]').forEach(b=>b.onclick=()=>{ $('targetPct').value=b.dataset.pctTarget; syncTargetFields('percent'); update(); });
+  document.querySelectorAll('[data-loss-pct]').forEach(b=>b.onclick=()=>{ stopRuleMode='net'; $('maxLossPct').value=b.dataset.lossPct; syncLossFields('percent'); update(); });
+  updateSelectionVisuals();
+}
+function setSelected(id,on){
+  const el=$(id); if(!el) return;
+  el.classList.toggle('selected',!!on);
+  el.setAttribute('aria-pressed',on?'true':'false');
+}
+function updateSelectionVisuals(){
+  const tpPct=num('targetPct'), tpDollar=num('target'), slPct=num('maxLossPct');
+  const isNet=stopRuleMode==='net';
+  const is15=stopRuleMode==='multiple' && Math.abs(stopMultiple-1.5)<.001;
+  setSelected('apply3050',isNet && Math.abs(tpPct-30)<.05 && Math.abs(slPct-50)<.05);
+  setSelected('apply2550',isNet && Math.abs(tpPct-25)<.05 && Math.abs(slPct-50)<.05);
+  setSelected('apply3015',is15 && Math.abs(tpPct-30)<.05);
+  setSelected('apply15stop',is15);
+  document.querySelectorAll('[data-dollar-target]').forEach(b=>{
+    const on=Math.abs(Number(b.dataset.dollarTarget)-tpDollar)<.01;
+    b.classList.toggle('selected',on); b.setAttribute('aria-pressed',on?'true':'false');
+  });
+  document.querySelectorAll('[data-pct-target]').forEach(b=>{
+    const on=Math.abs(Number(b.dataset.pctTarget)-tpPct)<.05;
+    b.classList.toggle('selected',on); b.setAttribute('aria-pressed',on?'true':'false');
+  });
+  document.querySelectorAll('[data-loss-pct]').forEach(b=>{
+    const on=isNet && Math.abs(Number(b.dataset.lossPct)-slPct)<.05;
+    b.classList.toggle('selected',on); b.setAttribute('aria-pressed',on?'true':'false');
+  });
+}
+
+function applyRiskPlan(tpPct,slPct){
+  stopRuleMode='net';
+  $('targetPct').value=Number(tpPct).toFixed(1);
+  $('maxLossPct').value=Number(slPct).toFixed(1);
+  syncTargetFields('percent'); syncLossFields('percent'); update();
+}
+function applyMultipleStop(mult=1.50,tpPct=null){
+  stopRuleMode='multiple'; stopMultiple=Number(mult)||1.50;
+  if(tpPct!==null){ $('targetPct').value=Number(tpPct).toFixed(1); syncTargetFields('percent'); }
+  update();
+}
+
+function updateBrokerUI(){
+  if($('brokerBadge')) $('brokerBadge').textContent=`${brokerDisplayLabel()} · SPXW`;
+  if($('feeLearningDesc')) $('feeLearningDesc').textContent=`Guarda cargos reales de ${brokerDisplayLabel()} para estimar futuros trades con ese mismo perfil.`;
+  if($('obsFeeHint')) $('obsFeeHint').textContent=`Ej.: fees de un lado mostrados por ${brokerLabel()} en el fill/confirmation.`;
+  if($('feeFooter')){
+    $('feeFooter').innerHTML=broker()==='tradestation'
+      ? `TradeStation usa el tier seleccionado. Auto incluye comisión multi-leg + index option fee + OCC $0.025/contract. ORF y cargos regulatorios variables pueden añadirse al fill; usa <b>Observed history</b> o <b>Manual / fill real</b> para máxima precisión. Verifica el preview/confirmation final.`
+      : `Robinhood usa el perfil seleccionado: <b>Gold $0.35</b> o <b>Standard $0.50</b> por contrato de index options, más SPXW exchange fee ($0.50 si premium &lt; $1; $0.59 si ≥ $1) y $0.04 combinado ORF/OCC por contrato. <b>Observed history</b> se separa por perfil. Verifica siempre el preview final.`;
+  }
+  if($('autoBtn')) $('autoBtn').textContent=broker()==='tra
