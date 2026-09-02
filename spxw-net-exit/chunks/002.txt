@@ -1,0 +1,78 @@
+fileHint">Perfil de fees usado para apertura y cierre.</small></div>
+      <div class="field"><label>Estrategia</label><select id="strategy"><option value="2">Credit Spread · 2 legs</option><option value="4">Iron Condor · 4 legs</option></select></div>
+      <div class="field"><label>Posición / strikes (opcional)</label><input id="position" type="text" placeholder="Ej. 7720/7710 PCS"></div>
+      <div class="field"><label>Cantidad</label><input id="qty" type="number" min="1" step="1" value="2"><small>Número de spreads o Iron Condors.</small></div>
+      <div class="field"><label>Crédito de apertura</label><input id="credit" type="number" min="0.05" step="0.05" value="0.70"><small>Ej.: 0.70 = $70 por spread/IC.</small></div>
+      <div class="field"><label>Precio actual</label><input id="current" type="number" min="0" step="0.01" value="0.55"><small>Puede ser mid/mark. La orden sugerida seguirá usando $0.05.</small></div>
+      <div class="field"><label>Objetivo NETO ($)</label><input id="target" type="number" min="0" step="0.01" value="42.00"><small>Se sincroniza con el objetivo NET %. Default: 30%.</small></div>
+      <div class="field"><label>Objetivo NETO (% del crédito inicial)</label><input id="targetPct" type="number" min="0" step="0.1" value="30.0"><small>NETO ÷ crédito bruto inicial. Preset base sugerido: 30%.</small></div>
+      <div class="field"><label>Máx. pérdida NETO ($)</label><input id="maxLoss" type="number" min="0" step="0.01" value="70.00"><small>Pérdida operativa máxima después de fees. Se sincroniza con el %.</small></div>
+      <div class="field"><label>Máx. pérdida NETO (% del crédito inicial)</label><input id="maxLossPct" type="number" min="0" step="0.1" value="50.0"><small>Preset base sugerido: 50% NET del crédito inicial.</small></div>
+      <div class="field"><label>Max Hold (min)</label><input id="maxHold" type="number" min="1" step="1" value="15"><small>Time stop. El temporizador se inicia manualmente.</small></div>
+      <div class="field"><label>Ancho del spread</label><input id="width1" type="number" min="1" step="1" value="10"><small>Credit Spread: ancho total. IC: wing 1.</small></div>
+      <div class="field icOnly" id="icWidthWrap"><label>Ancho wing 2 (IC)</label><input id="width2" type="number" min="1" step="1" value="10"><small>Para IC asimétrico; el riesgo usa el wing más ancho.</small></div>
+    </div>
+
+    <div class="section">
+      <h2>Fees</h2>
+      <div class="switchrow">
+        <button class="seg" id="observedBtn" type="button">Observed history</button>
+        <button class="seg active" id="autoBtn" type="button">Auto · mixto</button>
+        <button class="seg" id="conBtn" type="button">Auto · conservador</button>
+        <button class="seg" id="manualBtn" type="button">Manual / fill real</button>
+      </div>
+      <div id="feeDesc" class="foot"></div>
+      <div id="manualFees" class="formgrid manual">
+        <div class="field"><label>Fees apertura reales ($)</label><input id="openFees" type="number" min="0" step="0.01" value="3.74"></div>
+        <div class="field"><label>Fees cierre estimados/reales ($)</label><input id="closeFees" type="number" min="0" step="0.01" value="3.74"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="inlineTools"><h2 style="margin:0">Risk Plan</h2><span class="statusPill good">Base sugerida · +30% / −50% NET</span></div>
+      <div class="quick">
+        <button type="button" class="qbtn recommended" id="apply3050">Aplicar 30% / 50% NET</button>
+        <button type="button" class="qbtn" id="apply3015">Aplicar 30% / 1.5× crédito</button>
+        <button type="button" class="qbtn fast" id="apply2550">Fast Exit 25% / 50% NET</button>
+      </div>
+      <div class="foot" style="margin-top:12px">Take Profit · % NETO</div>
+      <div class="quick" id="quickPctBtns"></div>
+      <div class="foot" style="margin-top:10px">Stop Loss · % NETO</div>
+      <div class="quick" id="quickLossPctBtns"></div>
+      <div class="foot" style="margin-top:10px">Stop por múltiplo del crédito · bruto</div>
+      <div class="quick"><button type="button" class="qbtn" id="apply15stop">1.5× crédito</button></div>
+      <div class="riskNote" id="stopRuleHint">1.5× significa cerrar cuando el débito del spread/IC llegue a 1.50 veces el crédito de entrada. Es −50% bruto antes de fees; la pérdida NET real será algo mayor por los fees.</div>
+      <div class="foot" style="margin-top:10px">Objetivos rápidos en $ NETO</div>
+      <div class="quick" id="quickBtns"></div>
+      <div class="riskNote">30/50 NET sigue siendo el preset base. El stop 1.5× se añade como alternativa bruta: 1.5× del crédito equivale a −50% bruto antes de fees, por lo que su pérdida NET real será mayor que 50%. La calculadora muestra ambas para compararlas con ticks de $0.05 y fees.</div>
+    </div>
+
+    <div class="section">
+      <h2>Trade activo</h2>
+      <div class="actions">
+        <button class="btn primary" id="saveTrade" type="button">Guardar trade</button>
+        <button class="btn" id="loadTrade" type="button">Cargar guardado</button>
+        <button class="btn" id="startTimer" type="button">Iniciar / reiniciar timer</button>
+        <button class="btn danger" id="clearTrade" type="button">Limpiar guardado</button>
+      </div>
+      <div class="savedNote" id="savedNote"></div>
+    </div>
+  </section>
+
+  <aside class="card result">
+    <div class="eyebrow">Profit exit sugerido</div>
+    <div class="closePrice mono" id="closePrice">$0.50</div>
+    <div class="orderline" id="orderLine">BTC 2 Credit Spreads @ $0.50 LIMIT</div>
+    <div class="netline">NETO estimado: <span id="netProfit">$32.52</span></div>
+
+    <div class="actions" style="margin-bottom:8px">
+      <button class="btn primary" id="copyOrder" type="button">Copiar orden</button>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="l">Crédito bruto capturado</div><div class="v mono" id="capturePct">28.6%</div></div>
+      <div class="kpi"><div class="l">NET % sobre crédito inicial</div><div class="v mono" id="netPct">23.2%</div></div>
+      <div class="kpi"><div class="l">Profit bruto</div><div class="v mono" id="grossProfit">$40.00</div></div>
+      <div class="kpi"><div class="l">Fees round trip</div><div class="v mono" id="feesRT">$7.48</div></div>
+      <div class="kpi"><div class="l">Margen sobre objetivo</div><div class="v mono" id="targetMargin">+$2.52</div></div>
+      <div class="kpi"><div class="l">Objetivo NET %</div><div class="v mono"
