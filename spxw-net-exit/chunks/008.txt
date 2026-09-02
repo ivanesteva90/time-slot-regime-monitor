@@ -1,4 +1,75 @@
-t='Trade guardado localmente en este navegador.';
+stopMultiple.toFixed(2)}× crédito · real +${netPct(r.net).toFixed(1)}% / −${stopNetPct.toFixed(1)}% NET`
+      : `TP +${targetPct.toFixed(1)}% / SL −${maxLossPct.toFixed(1)}% NET · real +${netPct(r.net).toFixed(1)}% / −${stopNetPct.toFixed(1)}%`;
+    const isBase=stopRuleMode==='net' && Math.abs(targetPct-30)<.05 && Math.abs(maxLossPct-50)<.05;
+    const isFast=stopRuleMode==='net' && Math.abs(targetPct-25)<.05 && Math.abs(maxLossPct-50)<.05;
+    const is15=stopRuleMode==='multiple' && Math.abs(stopMultiple-1.5)<.001;
+    $('planPill').className='statusPill '+(isBase?'good':isFast||is15?'warn':'');
+    $('planPill').textContent=isBase?'BASE 30/50':isFast?'FAST 25/50':is15?'1.5× SL':'CUSTOM';
+    $('planNote').textContent=`Con los ticks y fees actuales, necesitas ~${beWR.toFixed(1)}% de winners para break-even si cada winner/loss terminara exactamente en estos exits. El modelo no asume que ese win rate vaya a ocurrir.`;
+  } else {
+    $('rewardRisk').textContent='—'; $('winsPerLoss').textContent='—'; $('breakEvenWR').textContent='—'; $('planLabel').textContent='Target de profit no alcanzable con cierre activo ≥ $0.05'; $('planPill').className='statusPill bad'; $('planPill').textContent='REVISAR';
+  }
+
+  const width=isIC?Math.max(num('width1'),num('width2')):num('width1');
+  const maxGross=credit*100*q;
+  const maxNetAtZero=maxGross-totalFees;
+  const maxLossTheory=width>0?(width-credit)*100*q+totalFees:null;
+  const rr=maxLossTheory&&target>0?maxLossTheory/target:null;
+  $('detail').innerHTML=`
+    <div class="rowline"><span>Broker / pricing</span><b>${brokerLabel()} · ${profileLabel()}</b></div>
+    <div class="rowline"><span>Crédito bruto inicial</span><b>${money(maxGross)}</b></div>
+    <div class="rowline"><span>Objetivo NETO</span><b>${money(target)} · ${targetPct.toFixed(1)}%</b></div>
+    <div class="rowline"><span>Stop seleccionado</span><b>${stopRuleMode==='multiple'?`${stopMultiple.toFixed(2)}× crédito · ${signedMoney(stop.net)} (${netPct(stop.net).toFixed(1)}% NET)`:`−${money(maxLoss).replace('$','')} · −${maxLossPct.toFixed(1)}% NET`}</b></div>
+    <div class="rowline"><span>Fees apertura</span><b>${money(f.open)}</b></div>
+    <div class="rowline"><span>Fees cierre</span><b>${money(f.close)}</b></div>
+    <div class="rowline"><span>Máx. neto teórico a $0.00*</span><b>${money(maxNetAtZero)}</b></div>
+    ${maxLossTheory!==null?`<div class="rowline"><span>Máx. pérdida teórica aprox.</span><b>${money(maxLossTheory)}</b></div>`:''}
+    ${rr?`<div class="rowline"><span>Máx. riesgo / target neto</span><b>${rr.toFixed(1)}×</b></div>`:''}
+  `;
+
+  updateSelectionVisuals();
+
+  $('targetTable').innerHTML=quickTargets.map(t=>{
+    const x=solveProfit(t), tPct=targetPctFromDollars(t);
+    if(!x.possible) return `<tr><td><b>$${t}</b></td><td>${tPct.toFixed(1)}%</td><td colspan="6">Requiere cierre &lt; $0.05</td></tr>`;
+    const cls=(Math.abs(t-target)<.001)?' class="hit"':'';
+    return `<tr${cls}><td><b>$${t}</b></td><td>${tPct.toFixed(1)}%</td><td><b>$${x.close.toFixed(2)}</b></td><td>${x.pct.toFixed(1)}%</td><td>${money(x.gross)}</td><td>${money(x.fees)}</td><td>${money(x.net)}</td><td><b>${netPct(x.net).toFixed(1)}%</b></td></tr>`;
+  }).join('');
+
+  const planRows=[
+    {tp:25,sl:50,type:'net'},
+    {tp:30,sl:50,type:'net'},
+    {tp:30,mult:1.5,type:'multiple'},
+    {tp:35,sl:50,type:'net'},
+    {tp:30,sl:40,type:'net'},
+    {tp:30,sl:60,type:'net'}
+  ];
+  $('riskPlanTable').innerHTML=planRows.map(p=>{
+    const tpD=targetDollarsFromPct(p.tp), px=solveProfit(tpD);
+    const sx=p.type==='multiple'?solveStopMultiple(p.mult):solveStop(lossDollarsFromPct(p.sl));
+    const label=p.type==='multiple'?`${p.tp}% / ${p.mult.toFixed(1)}×`:`${p.tp}% / ${p.sl}%`;
+    if(!px.possible) return `<tr><td><b>${label}</b></td><td colspan="6">TP no alcanzable con cierre ≥ $0.05</td></tr>`;
+    const reward=Math.max(0,px.net), risk=Math.max(0,-sx.net);
+    const rr=risk>0?reward/risk:Infinity, be=(reward+risk)>0?risk/(reward+risk)*100:0;
+    const cls=(p.type==='net'&&p.tp===30&&p.sl===50)?' class="hit"':'';
+    const suffix=p.type==='net'&&p.tp===30&&p.sl===50?' · BASE':p.type==='multiple'?' · GROSS':'';
+    return `<tr${cls}><td><b>${label}${suffix}</b></td><td>$${px.close.toFixed(2)}</td><td>+${netPct(px.net).toFixed(1)}%</td><td>$${sx.close.toFixed(2)}</td><td>−${Math.abs(netPct(sx.net)).toFixed(1)}%</td><td>${Number.isFinite(rr)?rr.toFixed(2):'∞'}</td><td><b>${be.toFixed(1)}%</b></td></tr>`;
+  }).join('');
+
+  updateFeeDesc();
+}
+
+function tradePayload(){
+  return {
+    broker:broker(),brokerProfile:brokerProfile(),strategy:$('strategy').value, position:$('position').value, qty:$('qty').value, credit:$('credit').value,
+    current:$('current').value,target:$('target').value,targetPct:$('targetPct').value,targetInputMode,maxLoss:$('maxLoss').value,maxLossPct:$('maxLossPct').value,lossInputMode,stopRuleMode,stopMultiple,maxHold:$('maxHold').value,
+    width1:$('width1').value,width2:$('width2').value,feeMode,openFees:$('openFees').value,closeFees:$('closeFees').value,
+    savedAt:Date.now()
+  };
+}
+function saveTrade(){
+  localStorage.setItem(STORAGE_TRADE,JSON.stringify(tradePayload()));
+  $('savedNote').textContent='Trade guardado localmente en este navegador.';
 }
 function loadTrade(){
   const p=JSON.parse(localStorage.getItem(STORAGE_TRADE)||'null');
@@ -29,68 +100,4 @@ function renderTimer(){
   const p=JSON.parse(localStorage.getItem(STORAGE_TIMER)||'null');
   const maxHold=Math.max(1,num('maxHold'));
   if(!p){
-    $('timerValue').textContent=`${String(maxHold).padStart(2,'0')}:00`;
-    $('timerPill').className='statusPill'; $('timerPill').textContent='No iniciado'; $('timerBar').style.width='0%'; $('timerBox').classList.remove('expired'); return;
-  }
-  const elapsed=Date.now()-p.start, remain=p.durationMs-elapsed, pct=clamp(elapsed/p.durationMs*100,0,100);
-  $('timerBar').style.width=pct.toFixed(1)+'%';
-  if(remain<=0){
-    $('timerValue').textContent='00:00'; $('timerPill').className='statusPill bad'; $('timerPill').textContent='TIME STOP'; $('timerBox').classList.add('expired'); stopTimerLoop();
-  } else {
-    const sec=Math.ceil(remain/1000), m=Math.floor(sec/60), s=sec%60;
-    $('timerValue').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    $('timerPill').className='statusPill good'; $('timerPill').textContent='Activo'; $('timerBox').classList.remove('expired');
-  }
-}
-
-async function copyOrder(){
-  const r=solveProfit(num('target')); if(!r.possible) return;
-  const pos=$('position').value.trim();
-  const st=activeStop(); const stopLabel=stopRuleMode==='multiple'?`${stopMultiple.toFixed(2)}× credit`:`${Math.abs(netPct(st.net)).toFixed(1)}% NET`; const txt=`${brokerDisplayLabel()} | BTC ${qty()} ${strategyName()}${qty()>1?'s':''}${pos?' '+pos:''} @ $${r.close.toFixed(2)} LIMIT | TP est. ${money(r.net)} (${netPct(r.net).toFixed(1)}% NET) | Manual SL ${stopLabel} @ $${st.close.toFixed(2)} (${signedMoney(st.net)}, ${netPct(st.net).toFixed(1)}% NET)`;
-  try{ await navigator.clipboard.writeText(txt); $('copyOrder').textContent='Copiado ✓'; setTimeout(()=>$('copyOrder').textContent='Copiar orden',1200); }
-  catch{ prompt('Copia la orden:',txt); }
-}
-
-function renderObservations(){
-  const obs=currentBrokerObservations();
-  const avg=observedPerContract();
-  $('feeAvgPill').textContent=avg!==null?`Avg ${brokerDisplayLabel()}: ${money(avg)}/contract/side`:`${brokerDisplayLabel()}: sin fills observados`;
-  $('obsTable').innerHTML=obs.length?obs.slice().reverse().map(o=>`<tr><td>${o.date||'—'}</td><td>${escapeHtml(o.desc||'Fill')}</td><td>${o.contracts}</td><td>${money(Number(o.fee))}</td><td>${money(Number(o.fee)/Number(o.contracts))}</td><td><button class="btn small danger" data-del="${o.id}" type="button">Eliminar</button></td></tr>`).join(''):`<tr><td colspan="6" class="muted">Sin fills guardados para ${brokerDisplayLabel()}.</td></tr>`;
-  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ const id=Number(b.dataset.del); localStorage.setItem(STORAGE_OBS,JSON.stringify(getObservations().filter(o=>o.id!==id))); renderObservations(); update(); });
-}
-function escapeHtml(s){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-function addObservation(){
-  const contracts=Math.max(1,Math.floor(num('obsContracts'))), fee=num('obsFee');
-  if(!(fee>=0)){return;}
-  const obs=getObservations();
-  obs.push({id:Date.now(),date:$('obsDate').value||todayISO(),desc:$('obsDesc').value.trim()||'SPXW fill',contracts,fee,broker:broker(),profile:brokerProfile()});
-  localStorage.setItem(STORAGE_OBS,JSON.stringify(obs)); renderObservations(); update();
-}
-function clearObservations(){
-  const keep=getObservations().filter(o=>!((o.broker||'robinhood')===broker() && (o.profile||(o.broker==='tradestation'?'ts_tier1':'rh_gold'))===brokerProfile()));
-  localStorage.setItem(STORAGE_OBS,JSON.stringify(keep)); renderObservations(); update();
-}
-
-function onBrokerChange(){
-  configureBrokerProfile();
-  // Preserve geometry and risk plan; only the fee source changes.
-  updateBrokerUI(); renderObservations(); setMode(feeMode);
-}
-
-$('broker').addEventListener('change',onBrokerChange);
-$('brokerProfile').addEventListener('change',()=>{ updateBrokerUI(); renderObservations(); update(); });
-$('observedBtn').onclick=()=>setMode('observed');
-$('autoBtn').onclick=()=>setMode('mixed');
-$('conBtn').onclick=()=>setMode('conservative');
-$('manualBtn').onclick=()=>setMode('manual');
-$('saveTrade').onclick=saveTrade; $('loadTrade').onclick=loadTrade; $('clearTrade').onclick=clearTrade; $('startTimer').onclick=startTimer; $('copyOrder').onclick=copyOrder;
-$('addObs').onclick=addObservation; $('clearObs').onclick=clearObservations;
-$('target').addEventListener('input',()=>{ syncTargetFields('dollars'); update(); });
-$('targetPct').addEventListener('input',()=>{ syncTargetFields('percent'); update(); });
-$('maxLoss').addEventListener('input',()=>{ stopRuleMode='net'; syncLossFields('dollars'); update(); });
-$('maxLossPct').addEventListener('input',()=>{ stopRuleMode='net'; syncLossFields('percent'); update(); });
-$('apply3050').onclick=()=>applyRiskPlan(30,50);
-$('apply3015').onclick=()=>applyMultipleStop(1.50,30);
-$('apply15stop').onclick=()=>applyMultipleStop(1.50,null);
-$('apply2550').onclick=()=>applyRiskPlan(25,50);
-['strategy','qty','credit','current',
+   
