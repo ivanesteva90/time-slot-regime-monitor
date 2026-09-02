@@ -1,6 +1,67 @@
-):tsPerContractSide();
+alue=lossPctFromDollars(num('maxLoss')).toFixed(1);
+  }
+}
+function netPct(net){ const base=initialGrossCredit(); return base>0?net/base*100:0; }
+function strategyName(){ return legs()===4?'Iron Condor':'Credit Spread'; }
+function tickFloor(x,t=.05){ return Math.floor((x+1e-9)/t)*t; }
+function tickCeil(x,t=.05){ return Math.ceil((x-1e-9)/t)*t; }
+function round2(x){ return Math.round(x*100)/100; }
+function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+function todayISO(){ const d=new Date(); const z=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`; }
+
+function seedObservations(){
+  let obs=JSON.parse(localStorage.getItem(STORAGE_OBS)||'null');
+  if(!Array.isArray(obs)){
+    obs=[{id:Date.now(),date:'2026-08-28',desc:'2 SPXW credit spreads · closing fill',contracts:4,fee:3.74,broker:'robinhood',profile:'rh_gold'}];
+  }
+  // Migration: historical observations without broker/profile belong to Robinhood Gold.
+  obs=obs.map(o=>({...o,broker:o.broker||'robinhood',profile:o.profile||defaultBrokerProfile(o.broker||'robinhood')}));
+  localStorage.setItem(STORAGE_OBS,JSON.stringify(obs));
+  return obs;
+}
+function getObservations(){ return seedObservations(); }
+function currentBrokerObservations(){ return getObservations().filter(o=>(o.broker||'robinhood')===broker() && (o.profile||defaultBrokerProfile(o.broker||'robinhood'))===brokerProfile()); }
+function observedPerContract(){
+  const obs=currentBrokerObservations().filter(o=>o.contracts>0 && o.fee>=0);
+  const totalContracts=obs.reduce((s,o)=>s+Number(o.contracts),0);
+  const totalFees=obs.reduce((s,o)=>s+Number(o.fee),0);
+  return totalContracts>0?totalFees/totalContracts:null;
+}
+
+function calcFees(){
+  const contracts=totalContractsSide();
+  if(feeMode==='manual') return {open:num('openFees'),close:num('closeFees'),source:'manual'};
+  if(feeMode==='observed'){
+    const avg=observedPerContract();
+    const perContract=avg!==null?avg:brokerAutoPerContractSide();
+    const side=perContract*contracts;
+    return {open:side,close:side,source:avg!==null?'observed':'observed-fallback'};
+  }
+
+  if(broker()==='tradestation'){
+    const perContract=feeMode==='conservative'?tsPerContractSide('ts_tier1'):tsPerContractSide();
     const side=perContract*contracts;
     return {open:side,close:side,source:feeMode,perContract};
+  }
+  if(broker()==='tradier'){
+    const base=tradierPerContractSide();
+    // Conservative adds a small 5-cent/contract allowance because pass-through regulatory rates can change.
+    const perContract=feeMode==='conservative'?base+.05:base;
+    return {open:perContract*contracts,close:perContract*contracts,source:feeMode,perContract};
+  }
+  if(broker()==='tastytrade'){
+    const pc=tastyFeesPerContract();
+    // Published base includes broad-index commission + SPX proprietary index fee.
+    // Clearing/regulatory fees are broker/execution dependent; conservative adds a transparent $0.15/contract/side allowance.
+    const buffer=feeMode==='conservative'?.15:0;
+    return {open:(pc.open+buffer)*contracts,close:(pc.close+buffer)*contracts,source:feeMode,openPerContract:pc.open+buffer,closePerContract:pc.close+buffer};
+  }
+  if(broker()==='schwab'){
+    const base=schwabPerContractSide();
+    // Schwab publishes $0.65/contract and separately passes an Industry Fee that can include ORF and proprietary SPX fees.
+    // Conservative uses a $0.65/contract allowance for those variable index/industry charges; use fill real for exact costs.
+    const perContract=feeMode==='conservative'?base+.65:base;
+    return {open:perContract*contracts,close:perContract*contracts,source:feeMode,perContract};
   }
 
   // Robinhood SPXW current retail model.
@@ -67,56 +128,4 @@ function renderQuick(){
   $('quickPctBtns').innerHTML=quickPctTargets.map(t=>`<button type="button" class="qbtn ${t===30?'recommended':t===25?'fast':''}" data-pct-target="${t}">${t}%${t===30?' · BASE':t===25?' · FAST':''}</button>`).join('');
   $('quickLossPctBtns').innerHTML=quickLossPctTargets.map(t=>`<button type="button" class="qbtn ${t===50?'recommended':''}" data-loss-pct="${t}">${t}%${t===50?' · BASE':''}</button>`).join('');
   document.querySelectorAll('[data-dollar-target]').forEach(b=>b.onclick=()=>{ $('target').value=b.dataset.dollarTarget; syncTargetFields('dollars'); update(); });
-  document.querySelectorAll('[data-pct-target]').forEach(b=>b.onclick=()=>{ $('targetPct').value=b.dataset.pctTarget; syncTargetFields('percent'); update(); });
-  document.querySelectorAll('[data-loss-pct]').forEach(b=>b.onclick=()=>{ stopRuleMode='net'; $('maxLossPct').value=b.dataset.lossPct; syncLossFields('percent'); update(); });
-  updateSelectionVisuals();
-}
-function setSelected(id,on){
-  const el=$(id); if(!el) return;
-  el.classList.toggle('selected',!!on);
-  el.setAttribute('aria-pressed',on?'true':'false');
-}
-function updateSelectionVisuals(){
-  const tpPct=num('targetPct'), tpDollar=num('target'), slPct=num('maxLossPct');
-  const isNet=stopRuleMode==='net';
-  const is15=stopRuleMode==='multiple' && Math.abs(stopMultiple-1.5)<.001;
-  setSelected('apply3050',isNet && Math.abs(tpPct-30)<.05 && Math.abs(slPct-50)<.05);
-  setSelected('apply2550',isNet && Math.abs(tpPct-25)<.05 && Math.abs(slPct-50)<.05);
-  setSelected('apply3015',is15 && Math.abs(tpPct-30)<.05);
-  setSelected('apply15stop',is15);
-  document.querySelectorAll('[data-dollar-target]').forEach(b=>{
-    const on=Math.abs(Number(b.dataset.dollarTarget)-tpDollar)<.01;
-    b.classList.toggle('selected',on); b.setAttribute('aria-pressed',on?'true':'false');
-  });
-  document.querySelectorAll('[data-pct-target]').forEach(b=>{
-    const on=Math.abs(Number(b.dataset.pctTarget)-tpPct)<.05;
-    b.classList.toggle('selected',on); b.setAttribute('aria-pressed',on?'true':'false');
-  });
-  document.querySelectorAll('[data-loss-pct]').forEach(b=>{
-    const on=isNet && Math.abs(Number(b.dataset.lossPct)-slPct)<.05;
-    b.classList.toggle('selected',on); b.setAttribute('aria-pressed',on?'true':'false');
-  });
-}
-
-function applyRiskPlan(tpPct,slPct){
-  stopRuleMode='net';
-  $('targetPct').value=Number(tpPct).toFixed(1);
-  $('maxLossPct').value=Number(slPct).toFixed(1);
-  syncTargetFields('percent'); syncLossFields('percent'); update();
-}
-function applyMultipleStop(mult=1.50,tpPct=null){
-  stopRuleMode='multiple'; stopMultiple=Number(mult)||1.50;
-  if(tpPct!==null){ $('targetPct').value=Number(tpPct).toFixed(1); syncTargetFields('percent'); }
-  update();
-}
-
-function updateBrokerUI(){
-  if($('brokerBadge')) $('brokerBadge').textContent=`${brokerDisplayLabel()} · SPXW`;
-  if($('feeLearningDesc')) $('feeLearningDesc').textContent=`Guarda cargos reales de ${brokerDisplayLabel()} para estimar futuros trades con ese mismo perfil.`;
-  if($('obsFeeHint')) $('obsFeeHint').textContent=`Ej.: fees de un lado mostrados por ${brokerLabel()} en el fill/confirmation.`;
-  if($('feeFooter')){
-    $('feeFooter').innerHTML=broker()==='tradestation'
-      ? `TradeStation usa el tier seleccionado. Auto incluye comisión multi-leg + index option fee + OCC $0.025/contract. ORF y cargos regulatorios variables pueden añadirse al fill; usa <b>Observed history</b> o <b>Manual / fill real</b> para máxima precisión. Verifica el preview/confirmation final.`
-      : `Robinhood usa el perfil seleccionado: <b>Gold $0.35</b> o <b>Standard $0.50</b> por contrato de index options, más SPXW exchange fee ($0.50 si premium &lt; $1; $0.59 si ≥ $1) y $0.04 combinado ORF/OCC por contrato. <b>Observed history</b> se separa por perfil. Verifica siempre el preview final.`;
-  }
-  if($('autoBtn')) $('autoBtn').textContent=broker()==='tra
+  document.querySelectorAll('[data-pct-target]').forEach(b=>b.oncl
