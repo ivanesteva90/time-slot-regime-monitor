@@ -1,20 +1,26 @@
-Tier 2 · 501–1,000 contracts/mo',multiLeg:.30,indexFee:.80,occ:.025},
-  ts_tier3:{label:'Tier 3 · 1,001–10,000 contracts/mo',multiLeg:.25,indexFee:.70,occ:.025},
-  ts_tier4:{label:'Tier 4 · >10,000 contracts/mo',multiLeg:0,indexFee:.60,occ:.025}
-};
-const RH_PROFILES={
-  rh_gold:{label:'Gold · $0.35 contract fee',shortLabel:'Gold',contractFee:.35},
-  rh_standard:{label:'Standard · sin Gold · $0.50 contract fee',shortLabel:'Standard',contractFee:.50}
+{
+  schwab_online:{label:'Online / thinkorswim · $0.65/contract',shortLabel:'Online / thinkorswim',commission:.65}
 };
 function broker(){ return $('broker')?$('broker').value:'robinhood'; }
-function brokerProfile(){ return $('brokerProfile')?$('brokerProfile').value:(broker()==='tradestation'?'ts_tier1':'rh_gold'); }
-function brokerLabel(){ return broker()==='tradestation'?'TradeStation':'Robinhood'; }
+function defaultBrokerProfile(b=broker()){
+  return b==='tradestation'?'ts_tier1':b==='tradier'?'tradier_pro':b==='tastytrade'?'tasty_standard':b==='schwab'?'schwab_online':'rh_gold';
+}
+function brokerProfile(){ return $('brokerProfile')?$('brokerProfile').value:defaultBrokerProfile(); }
+function brokerLabel(){
+  return broker()==='tradestation'?'TradeStation':broker()==='tradier'?'Tradier':broker()==='tastytrade'?'tastytrade':broker()==='schwab'?'Charles Schwab / thinkorswim':'Robinhood';
+}
 function profileLabel(){
   if(broker()==='tradestation') return (TS_TIERS[brokerProfile()]||TS_TIERS.ts_tier1).label;
+  if(broker()==='tradier') return (TRADIER_PROFILES[brokerProfile()]||TRADIER_PROFILES.tradier_pro).label;
+  if(broker()==='tastytrade') return (TASTY_PROFILES[brokerProfile()]||TASTY_PROFILES.tasty_standard).label;
+  if(broker()==='schwab') return (SCHWAB_PROFILES[brokerProfile()]||SCHWAB_PROFILES.schwab_online).label;
   return (RH_PROFILES[brokerProfile()]||RH_PROFILES.rh_gold).label;
 }
 function brokerDisplayLabel(){
   if(broker()==='tradestation') return `TradeStation · ${(TS_TIERS[brokerProfile()]||TS_TIERS.ts_tier1).label}`;
+  if(broker()==='tradier') return `Tradier · ${(TRADIER_PROFILES[brokerProfile()]||TRADIER_PROFILES.tradier_pro).shortLabel}`;
+  if(broker()==='tastytrade') return `tastytrade · ${(TASTY_PROFILES[brokerProfile()]||TASTY_PROFILES.tasty_standard).shortLabel}`;
+  if(broker()==='schwab') return `Schwab / thinkorswim · ${(SCHWAB_PROFILES[brokerProfile()]||SCHWAB_PROFILES.schwab_online).shortLabel}`;
   return `Robinhood · ${(RH_PROFILES[brokerProfile()]||RH_PROFILES.rh_gold).shortLabel}`;
 }
 function tsPerContractSide(profile=brokerProfile()){ const t=TS_TIERS[profile]||TS_TIERS.ts_tier1; return t.multiLeg+t.indexFee+t.occ; }
@@ -23,6 +29,17 @@ function rhPerContractSide(profile=brokerProfile(),premiumBand='mixed'){
   const exchange=premiumBand==='high'?.59:premiumBand==='low'?.50:.545;
   return p.contractFee+exchange+.04;
 }
+function tradierPerContractSide(profile=brokerProfile()){
+  const p=TRADIER_PROFILES[profile]||TRADIER_PROFILES.tradier_pro;
+  // Published fee-schedule estimate for balanced multi-leg SPXW:
+  // commission + SPX index fee + clearing + ORF + CAT + half-weighted sell-side TAF.
+  return p.commission + .60 + .0775 + .0187 + .0072 + (.00279/2);
+}
+function tastyFeesPerContract(){
+  const p=TASTY_PROFILES[brokerProfile()]||TASTY_PROFILES.tasty_standard;
+  return {open:p.openCommission+p.spxFee,close:p.closeCommission+p.spxFee};
+}
+function schwabPerContractSide(){ return (SCHWAB_PROFILES[brokerProfile()]||SCHWAB_PROFILES.schwab_online).commission; }
 function configureBrokerProfile(){
   const sel=$('brokerProfile'); if(!sel) return;
   const prev=sel.value;
@@ -30,16 +47,32 @@ function configureBrokerProfile(){
     sel.innerHTML=Object.entries(TS_TIERS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
     sel.value=TS_TIERS[prev]?prev:'ts_tier1';
     $('brokerProfileHint').textContent='TradeStation: pricing por volumen mensual de options. Tier 1 es el estándar para 0–500 contratos/mes.';
+  } else if(broker()==='tradier'){
+    sel.innerHTML=Object.entries(TRADIER_PROFILES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+    sel.value=TRADIER_PROFILES[prev]?prev:'tradier_pro';
+    $('brokerProfileHint').textContent='Tradier: Lite/Pro usan $0.35 por contrato de single-listed index; Pro Plus $0.10. La suscripción mensual no se carga al trade.';
+  } else if(broker()==='tastytrade'){
+    sel.innerHTML=Object.entries(TASTY_PROFILES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+    sel.value=TASTY_PROFILES[prev]?prev:'tasty_standard';
+    $('brokerProfileHint').textContent='tastytrade: $1/contract para abrir broad-based index options y $0 para cerrar; SPX tiene fee de índice publicado de $0.65/contract. Otros fees aplican.';
+  } else if(broker()==='schwab'){
+    sel.innerHTML=Object.entries(SCHWAB_PROFILES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+    sel.value=SCHWAB_PROFILES[prev]?prev:'schwab_online';
+    $('brokerProfileHint').textContent='Charles Schwab / thinkorswim: $0.65 por contrato online. Industry fees (ORF/index fee) pueden agregarse y varían; usa fill real para precisión.';
   } else {
     sel.innerHTML=Object.entries(RH_PROFILES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
     sel.value=RH_PROFILES[prev]?prev:'rh_gold';
     $('brokerProfileHint').textContent='Robinhood: Gold cobra $0.35/contrato de index options; Standard sin Gold cobra $0.50. SPXW exchange + ORF/OCC se calculan aparte.';
   }
 }
-function brokerAutoPerContractSide(){
-  if(broker()==='tradestation') return tsPerContractSide();
-  return rhPerContractSide(brokerProfile(),'mixed');
+function brokerAutoFeesPerContract(){
+  if(broker()==='tradestation'){ const p=tsPerContractSide(); return {open:p,close:p}; }
+  if(broker()==='tradier'){ const p=tradierPerContractSide(); return {open:p,close:p}; }
+  if(broker()==='tastytrade') return tastyFeesPerContract();
+  if(broker()==='schwab'){ const p=schwabPerContractSide(); return {open:p,close:p}; }
+  const p=rhPerContractSide(brokerProfile(),'mixed'); return {open:p,close:p};
 }
+function brokerAutoPerContractSide(){ const f=brokerAutoFeesPerContract(); return (f.open+f.close)/2; }
 
 
 function money(n){ if(!Number.isFinite(n)) return '—'; return (n<0?'-$':'$')+Math.abs(n).toFixed(2); }
@@ -70,49 +103,4 @@ function syncLossFields(from='dollars'){
     $('maxLoss').value=lossDollarsFromPct(num('maxLossPct')).toFixed(2);
   } else {
     lossInputMode='dollars';
-    $('maxLossPct').value=lossPctFromDollars(num('maxLoss')).toFixed(1);
-  }
-}
-function netPct(net){ const base=initialGrossCredit(); return base>0?net/base*100:0; }
-function strategyName(){ return legs()===4?'Iron Condor':'Credit Spread'; }
-function tickFloor(x,t=.05){ return Math.floor((x+1e-9)/t)*t; }
-function tickCeil(x,t=.05){ return Math.ceil((x-1e-9)/t)*t; }
-function round2(x){ return Math.round(x*100)/100; }
-function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
-function todayISO(){ const d=new Date(); const z=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`; }
-
-function seedObservations(){
-  let obs=JSON.parse(localStorage.getItem(STORAGE_OBS)||'null');
-  if(!Array.isArray(obs)){
-    obs=[{id:Date.now(),date:'2026-08-28',desc:'2 SPXW credit spreads · closing fill',contracts:4,fee:3.74,broker:'robinhood',profile:'rh_gold'}];
-  }
-  // Migration: historical v4.2 observations were Robinhood fills and had no broker field.
-  obs=obs.map(o=>({...o,broker:o.broker||'robinhood',profile:o.profile||(o.broker==='tradestation'?'ts_tier1':'rh_gold')}));
-  localStorage.setItem(STORAGE_OBS,JSON.stringify(obs));
-  return obs;
-}
-function getObservations(){ return seedObservations(); }
-function currentBrokerObservations(){ return getObservations().filter(o=>(o.broker||'robinhood')===broker() && (o.profile||(o.broker==='tradestation'?'ts_tier1':'rh_gold'))===brokerProfile()); }
-function observedPerContract(){
-  const obs=currentBrokerObservations().filter(o=>o.contracts>0 && o.fee>=0);
-  const totalContracts=obs.reduce((s,o)=>s+Number(o.contracts),0);
-  const totalFees=obs.reduce((s,o)=>s+Number(o.fee),0);
-  return totalContracts>0?totalFees/totalContracts:null;
-}
-
-function calcFees(){
-  const contracts=totalContractsSide();
-  if(feeMode==='manual') return {open:num('openFees'),close:num('closeFees'),source:'manual'};
-  if(feeMode==='observed'){
-    const avg=observedPerContract();
-    const perContract=avg!==null?avg:brokerAutoPerContractSide();
-    const side=perContract*contracts;
-    return {open:side,close:side,source:avg!==null?'observed':'observed-fallback'};
-  }
-
-  if(broker()==='tradestation'){
-    // Published standard U.S. retail multi-leg SPXW/index base:
-    // multi-leg commission + index-option fee + OCC clearing fee, per contract/side.
-    // Variable ORF and sale-side regulatory charges are not deterministically knowable
-    // without execution venue and leg-level sale premiums; use Observed/Manual for exact fills.
-    const perContract=feeMode==='conservative'?tsPerContractSide('ts_tier1'
+    $('maxLossPct').v
