@@ -1,0 +1,96 @@
+t='Trade guardado localmente en este navegador.';
+}
+function loadTrade(){
+  const p=JSON.parse(localStorage.getItem(STORAGE_TRADE)||'null');
+  if(!p){ $('savedNote').textContent='No hay un trade guardado todavía.'; return; }
+  $('broker').value=p.broker||'robinhood'; configureBrokerProfile(); if(p.brokerProfile) $('brokerProfile').value=p.brokerProfile;
+  ['strategy','position','qty','credit','current','target','targetPct','maxLoss','maxLossPct','maxHold','width1','width2','openFees','closeFees'].forEach(id=>{ if(p[id]!==undefined) $(id).value=p[id]; });
+  targetInputMode=p.targetInputMode||'percent';
+  lossInputMode=p.lossInputMode||'percent';
+  stopRuleMode=p.stopRuleMode||'net';
+  stopMultiple=Number(p.stopMultiple)||1.50;
+  setMode(p.feeMode||'mixed');
+  $('savedNote').textContent=`Trade cargado. Guardado: ${new Date(p.savedAt).toLocaleString()}.`;
+  update();
+}
+function clearTrade(){
+  localStorage.removeItem(STORAGE_TRADE); localStorage.removeItem(STORAGE_TIMER); stopTimerLoop();
+  $('savedNote').textContent='Trade guardado y timer eliminados.'; renderTimer();
+}
+
+function startTimer(){
+  const mins=Math.max(1,num('maxHold'));
+  localStorage.setItem(STORAGE_TIMER,JSON.stringify({start:Date.now(),durationMs:mins*60000}));
+  startTimerLoop(); renderTimer();
+}
+function stopTimerLoop(){ if(timerInterval){clearInterval(timerInterval);timerInterval=null;} }
+function startTimerLoop(){ stopTimerLoop(); timerInterval=setInterval(renderTimer,500); }
+function renderTimer(){
+  const p=JSON.parse(localStorage.getItem(STORAGE_TIMER)||'null');
+  const maxHold=Math.max(1,num('maxHold'));
+  if(!p){
+    $('timerValue').textContent=`${String(maxHold).padStart(2,'0')}:00`;
+    $('timerPill').className='statusPill'; $('timerPill').textContent='No iniciado'; $('timerBar').style.width='0%'; $('timerBox').classList.remove('expired'); return;
+  }
+  const elapsed=Date.now()-p.start, remain=p.durationMs-elapsed, pct=clamp(elapsed/p.durationMs*100,0,100);
+  $('timerBar').style.width=pct.toFixed(1)+'%';
+  if(remain<=0){
+    $('timerValue').textContent='00:00'; $('timerPill').className='statusPill bad'; $('timerPill').textContent='TIME STOP'; $('timerBox').classList.add('expired'); stopTimerLoop();
+  } else {
+    const sec=Math.ceil(remain/1000), m=Math.floor(sec/60), s=sec%60;
+    $('timerValue').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    $('timerPill').className='statusPill good'; $('timerPill').textContent='Activo'; $('timerBox').classList.remove('expired');
+  }
+}
+
+async function copyOrder(){
+  const r=solveProfit(num('target')); if(!r.possible) return;
+  const pos=$('position').value.trim();
+  const st=activeStop(); const stopLabel=stopRuleMode==='multiple'?`${stopMultiple.toFixed(2)}× credit`:`${Math.abs(netPct(st.net)).toFixed(1)}% NET`; const txt=`${brokerDisplayLabel()} | BTC ${qty()} ${strategyName()}${qty()>1?'s':''}${pos?' '+pos:''} @ $${r.close.toFixed(2)} LIMIT | TP est. ${money(r.net)} (${netPct(r.net).toFixed(1)}% NET) | Manual SL ${stopLabel} @ $${st.close.toFixed(2)} (${signedMoney(st.net)}, ${netPct(st.net).toFixed(1)}% NET)`;
+  try{ await navigator.clipboard.writeText(txt); $('copyOrder').textContent='Copiado ✓'; setTimeout(()=>$('copyOrder').textContent='Copiar orden',1200); }
+  catch{ prompt('Copia la orden:',txt); }
+}
+
+function renderObservations(){
+  const obs=currentBrokerObservations();
+  const avg=observedPerContract();
+  $('feeAvgPill').textContent=avg!==null?`Avg ${brokerDisplayLabel()}: ${money(avg)}/contract/side`:`${brokerDisplayLabel()}: sin fills observados`;
+  $('obsTable').innerHTML=obs.length?obs.slice().reverse().map(o=>`<tr><td>${o.date||'—'}</td><td>${escapeHtml(o.desc||'Fill')}</td><td>${o.contracts}</td><td>${money(Number(o.fee))}</td><td>${money(Number(o.fee)/Number(o.contracts))}</td><td><button class="btn small danger" data-del="${o.id}" type="button">Eliminar</button></td></tr>`).join(''):`<tr><td colspan="6" class="muted">Sin fills guardados para ${brokerDisplayLabel()}.</td></tr>`;
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ const id=Number(b.dataset.del); localStorage.setItem(STORAGE_OBS,JSON.stringify(getObservations().filter(o=>o.id!==id))); renderObservations(); update(); });
+}
+function escapeHtml(s){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function addObservation(){
+  const contracts=Math.max(1,Math.floor(num('obsContracts'))), fee=num('obsFee');
+  if(!(fee>=0)){return;}
+  const obs=getObservations();
+  obs.push({id:Date.now(),date:$('obsDate').value||todayISO(),desc:$('obsDesc').value.trim()||'SPXW fill',contracts,fee,broker:broker(),profile:brokerProfile()});
+  localStorage.setItem(STORAGE_OBS,JSON.stringify(obs)); renderObservations(); update();
+}
+function clearObservations(){
+  const keep=getObservations().filter(o=>!((o.broker||'robinhood')===broker() && (o.profile||(o.broker==='tradestation'?'ts_tier1':'rh_gold'))===brokerProfile()));
+  localStorage.setItem(STORAGE_OBS,JSON.stringify(keep)); renderObservations(); update();
+}
+
+function onBrokerChange(){
+  configureBrokerProfile();
+  // Preserve geometry and risk plan; only the fee source changes.
+  updateBrokerUI(); renderObservations(); setMode(feeMode);
+}
+
+$('broker').addEventListener('change',onBrokerChange);
+$('brokerProfile').addEventListener('change',()=>{ updateBrokerUI(); renderObservations(); update(); });
+$('observedBtn').onclick=()=>setMode('observed');
+$('autoBtn').onclick=()=>setMode('mixed');
+$('conBtn').onclick=()=>setMode('conservative');
+$('manualBtn').onclick=()=>setMode('manual');
+$('saveTrade').onclick=saveTrade; $('loadTrade').onclick=loadTrade; $('clearTrade').onclick=clearTrade; $('startTimer').onclick=startTimer; $('copyOrder').onclick=copyOrder;
+$('addObs').onclick=addObservation; $('clearObs').onclick=clearObservations;
+$('target').addEventListener('input',()=>{ syncTargetFields('dollars'); update(); });
+$('targetPct').addEventListener('input',()=>{ syncTargetFields('percent'); update(); });
+$('maxLoss').addEventListener('input',()=>{ stopRuleMode='net'; syncLossFields('dollars'); update(); });
+$('maxLossPct').addEventListener('input',()=>{ stopRuleMode='net'; syncLossFields('percent'); update(); });
+$('apply3050').onclick=()=>applyRiskPlan(30,50);
+$('apply3015').onclick=()=>applyMultipleStop(1.50,30);
+$('apply15stop').onclick=()=>applyMultipleStop(1.50,null);
+$('apply2550').onclick=()=>applyRiskPlan(25,50);
+['strategy','qty','credit','current',
