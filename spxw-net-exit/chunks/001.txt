@@ -1,0 +1,81 @@
+px solid var(--line)}table{border-collapse:collapse;width:100%;min-width:680px;background:#0b1626}th,td{padding:11px 12px;border-bottom:1px solid #1d2d44;text-align:right;font-size:13px}th:first-child,td:first-child{text-align:left}th{background:#101e31;color:#9fb0c7;font-size:11px;text-transform:uppercase;letter-spacing:.04em}tr:last-child td{border-bottom:0}.hit{background:#0d2a25}.hit td:last-child{color:#74edc4;font-weight:800}
+.historyTable{min-width:760px}.foot{color:#74869e;font-size:11px;line-height:1.5;margin-top:14px}.mono{font-variant-numeric:tabular-nums}.right{text-align:right}.muted{color:var(--muted)}
+.statusPill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800;border:1px solid #304763;background:#0b192a;color:#bed0e7}.statusPill.good{border-color:#2f6f5b;background:#0f2c25;color:#a8f0d3}.statusPill.bad{border-color:#723344;background:#32131c;color:#ffc4d0}.statusPill.warn{border-color:#6d5a25;background:#2d240d;color:#ffe19b}
+.savedNote{margin-top:10px;font-size:11px;color:#8fa5c0;min-height:16px}
+.inlineTools{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.planbox{margin-top:14px;border:1px solid #315b78;background:#0c2031;border-radius:14px;padding:13px}.planhead{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.plangrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px}@media(max-width:560px){.plangrid{grid-template-columns:1fr}}.planmetric{background:#081522;border:1px solid #294158;border-radius:11px;padding:10px}.planmetric .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.planmetric .v{font-size:18px;font-weight:820;margin-top:3px}.qbtn.recommended{border-color:#3f8c73;background:#10352d;color:#c9f9e8}.qbtn.fast{border-color:#5a6375;background:#151d2a}.riskNote{font-size:11px;color:#8ea6be;margin-top:9px;line-height:1.45}
+
+/* v4.5 mobile/public UX */
+body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+button,.btn,.seg,.qbtn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:42px}
+input,select{min-height:46px}
+.headerActions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-top:10px}
+.shareBtn{border:1px solid #315b78;background:#0c2031;color:#dbeeff;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:800;cursor:pointer;min-height:42px}
+.shareBtn:active{transform:scale(.98)}
+.mobileDock{display:none}
+.mobileSwipeHint{display:none}
+@media (hover:hover) and (pointer:fine){.shareBtn:hover{border-color:#60a5fa}.qbtn:hover,.btn:hover,.seg:hover{transform:translateY(-1px)}}
+@media(max-width:720px){
+  .wrap{padding:14px 10px calc(96px + env(safe-area-inset-bottom))}
+  header{margin-bottom:12px}
+  h1{font-size:26px;line-height:1.05}
+  .sub{font-size:13px;line-height:1.4}
+  .badges{gap:6px}.badge{font-size:10px;padding:6px 8px}
+  .card{border-radius:16px;padding:14px;box-shadow:0 12px 32px rgba(0,0,0,.22)}
+  .section{margin-top:14px}
+  .formgrid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:10px}.kpi .v{font-size:17px}
+  .closePrice{font-size:64px;line-height:.95}
+  .netline{font-size:18px}
+  .switchrow,.actions{gap:7px}
+  .actions>.btn,.switchrow>.seg{flex:1 1 calc(50% - 7px);min-width:0}
+  .quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+  .quick .qbtn{width:100%;padding:10px 8px;white-space:normal;line-height:1.2}
+  .livegrid{grid-template-columns:1fr}
+  .planhead{align-items:flex-start}
+  .plangrid{grid-template-columns:1fr}
+  .rowline{align-items:flex-start}.rowline b{text-align:right;max-width:55%;overflow-wrap:anywhere}
+  .tablewrap{margin-left:-2px;margin-right:-2px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+  .tablewrap table{min-width:720px}
+  .historyTable{min-width:760px}
+  .mobileSwipeHint{display:block;color:#71839b;font-size:10px;margin:6px 2px 0;text-align:right}
+  .mobileDock{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:9999;background:rgba(6,16,28,.95);border:1px solid #2c4564;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden}
+  .mobileDockItem{padding:10px 6px;text-align:center;border-right:1px solid #20344e;min-width:0}
+  .mobileDockItem:last-child{border-right:0}
+  .mobileDockItem .l{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:#8398b4;font-weight:800}
+  .mobileDockItem .v{display:block;margin-top:2px;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mobileDockItem.exit .v{color:#7ff0c7}.mobileDockItem.stop .v{color:#ffafc0}
+}
+@media(max-width:390px){
+  .wrap{padding-left:8px;padding-right:8px}
+  .card{padding:12px}
+  h1{font-size:23px}
+  .quick{grid-template-columns:1fr 1fr}
+  .kpis{grid-template-columns:1fr}
+  .actions>.btn,.switchrow>.seg{flex-basis:100%}
+  .mobileDockItem .v{font-size:15px}
+}
+
+@media print{body{background:#fff;color:#000}.card{box-shadow:none}.actions,.switchrow,.quick,.foot{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>SPXW Net Exit Trade Manager</h1>
+    <div class="sub">Busca el <b>primer cierre válido</b> que alcanza tu objetivo <b>NETO</b>, descuenta fees, respeta ticks de <b>$0.05</b> y te muestra qué tan cerca estás del target, el stop neto y el time stop.</div>
+  </div>
+  <div>
+    <div class="badges"><div class="badge" id="brokerBadge">Robinhood Gold · SPXW</div><div class="badge secondary">v4.5 · Mobile · Multi-Broker</div></div>
+    <div class="headerActions"><button class="shareBtn" id="shareApp" type="button">Compartir link</button></div>
+  </div>
+</header>
+
+<div class="layout">
+  <section class="card">
+    <h2>Datos de la operación</h2>
+    <div class="formgrid">
+      <div class="field"><label>Broker</label><select id="broker"><option value="robinhood">Robinhood</option><option value="tradestation">TradeStation</option></select><small>Solo cambia el modelo de fees; la geometría y la lógica NET-first permanecen iguales.</small></div>
+      <div class="field"><label>Pricing profile</label><select id="brokerProfile"><option value="rh_gold">Gold</option><option value="rh_standard">Standard · sin Gold</option></select><small id="brokerPro
