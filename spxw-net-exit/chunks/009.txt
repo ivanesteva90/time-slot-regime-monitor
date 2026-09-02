@@ -1,0 +1,39 @@
+'maxHold','width1','width2','openFees','closeFees','position'].forEach(id=>$(id).addEventListener('input',()=>{ update(); if(id==='maxHold') renderTimer(); }));
+$('obsDate').value=todayISO();
+configureBrokerProfile(); updateBrokerUI();
+syncTargetFields('percent'); syncLossFields('percent'); renderQuick(); seedObservations(); renderObservations(); setMode('mixed'); renderTimer();
+if(JSON.parse(localStorage.getItem(STORAGE_TIMER)||'null')) startTimerLoop();
+
+
+// v4.5 mobile/public helpers
+function syncMobileDock(){
+  const exitEl=$('closePrice'), netEl=$('netProfit'), stopEl=$('stopPrice');
+  if($('dockExit')&&exitEl) $('dockExit').textContent=exitEl.textContent;
+  if($('dockNet')&&netEl) $('dockNet').textContent=netEl.textContent;
+  if($('dockStop')&&stopEl) $('dockStop').textContent=stopEl.textContent;
+}
+['closePrice','netProfit','stopPrice'].forEach(id=>{
+  const el=$(id); if(el) new MutationObserver(syncMobileDock).observe(el,{childList:true,subtree:true,characterData:true});
+});
+syncMobileDock();
+
+$('shareApp')?.addEventListener('click',async()=>{
+  const url=location.protocol==='file:' ? '' : location.href;
+  if(!url){
+    alert('El botón Compartir estará activo cuando publiques esta página en una URL pública.');
+    return;
+  }
+  const data={title:'SPXW Net Exit Trade Manager',text:'SPXW Net Exit Trade Manager',url};
+  try{
+    if(navigator.share){ await navigator.share(data); }
+    else if(navigator.clipboard){ await navigator.clipboard.writeText(url); const b=$('shareApp'); const old=b.textContent; b.textContent='Link copiado ✓'; setTimeout(()=>b.textContent=old,1400); }
+    else{ prompt('Copia este link:',url); }
+  }catch(e){ if(e?.name!=='AbortError') console.warn('Share failed',e); }
+});
+
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
