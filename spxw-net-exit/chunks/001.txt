@@ -1,4 +1,4 @@
-px solid var(--line)}table{border-collapse:collapse;width:100%;min-width:680px;background:#0b1626}th,td{padding:11px 12px;border-bottom:1px solid #1d2d44;text-align:right;font-size:13px}th:first-child,td:first-child{text-align:left}th{background:#101e31;color:#9fb0c7;font-size:11px;text-transform:uppercase;letter-spacing:.04em}tr:last-child td{border-bottom:0}.hit{background:#0d2a25}.hit td:last-child{color:#74edc4;font-weight:800}
+1d2d44;text-align:right;font-size:13px}th:first-child,td:first-child{text-align:left}th{background:#101e31;color:#9fb0c7;font-size:11px;text-transform:uppercase;letter-spacing:.04em}tr:last-child td{border-bottom:0}.hit{background:#0d2a25}.hit td:last-child{color:#74edc4;font-weight:800}
 .historyTable{min-width:760px}.foot{color:#74869e;font-size:11px;line-height:1.5;margin-top:14px}.mono{font-variant-numeric:tabular-nums}.right{text-align:right}.muted{color:var(--muted)}
 .statusPill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:800;border:1px solid #304763;background:#0b192a;color:#bed0e7}.statusPill.good{border-color:#2f6f5b;background:#0f2c25;color:#a8f0d3}.statusPill.bad{border-color:#723344;background:#32131c;color:#ffc4d0}.statusPill.warn{border-color:#6d5a25;background:#2d240d;color:#ffe19b}
 .savedNote{margin-top:10px;font-size:11px;color:#8fa5c0;min-height:16px}
@@ -68,7 +68,7 @@ input,select{min-height:46px}
     <div class="sub">Busca el <b>primer cierre válido</b> que alcanza tu objetivo <b>NETO</b>, descuenta fees, respeta ticks de <b>$0.05</b> y te muestra qué tan cerca estás del target, el stop neto y el time stop.</div>
   </div>
   <div>
-    <div class="badges"><div class="badge" id="brokerBadge">Robinhood Gold · SPXW</div><div class="badge secondary">v4.5 · Mobile · Multi-Broker</div></div>
+    <div class="badges"><div class="badge" id="brokerBadge">Robinhood Gold · SPXW</div><div class="badge secondary">v4.6 · Mobile · 5 Brokers</div></div>
     <div class="headerActions"><button class="shareBtn" id="shareApp" type="button">Compartir link</button></div>
   </div>
 </header>
@@ -77,5 +77,7 @@ input,select{min-height:46px}
   <section class="card">
     <h2>Datos de la operación</h2>
     <div class="formgrid">
-      <div class="field"><label>Broker</label><select id="broker"><option value="robinhood">Robinhood</option><option value="tradestation">TradeStation</option></select><small>Solo cambia el modelo de fees; la geometría y la lógica NET-first permanecen iguales.</small></div>
-      <div class="field"><label>Pricing profile</label><select id="brokerProfile"><option value="rh_gold">Gold</option><option value="rh_standard">Standard · sin Gold</option></select><small id="brokerPro
+      <div class="field"><label>Broker</label><select id="broker"><option value="robinhood">Robinhood</option><option value="tradestation">TradeStation</option><option value="tradier">Tradier</option><option value="tastytrade">tastytrade</option><option value="schwab">Charles Schwab / thinkorswim</option></select><small>Solo cambia el modelo de fees; la geometría y la lógica NET-first permanecen iguales.</small></div>
+      <div class="field"><label>Pricing profile</label><select id="brokerProfile"><option value="rh_gold">Gold</option><option value="rh_standard">Standard · sin Gold</option></select><small id="brokerProfileHint">Perfil de fees usado para apertura y cierre.</small></div>
+      <div class="field"><label>Estrategia</label><select id="strategy"><option value="2">Credit Spread · 2 legs</option><option value="4">Iron Condor · 4 legs</option></select></div>
+      <div class="field"><label>Posición / strikes (opcional)
