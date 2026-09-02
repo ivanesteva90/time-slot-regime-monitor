@@ -1,0 +1,105 @@
+destation'?'Auto · publicado':'Auto · mixto';
+  if($('conBtn')) $('conBtn').textContent=broker()==='tradestation'?'Auto · Tier 1 max':'Auto · conservador';
+}
+
+function updateFeeDesc(){
+  const avg=observedPerContract();
+  const n=currentBrokerObservations().length;
+  if(feeMode==='observed'){
+    $('feeDesc').textContent=avg!==null
+      ? `Observed history (${brokerDisplayLabel()}): usa ${money(avg)} por contrato por lado según ${n} fill(s) guardado(s).`
+      : `Observed history (${brokerDisplayLabel()}): todavía no hay fills guardados; temporalmente usa el estimado Auto del perfil ${profileLabel()}.`;
+    return;
+  }
+  if(broker()==='tradestation'){
+    const t=TS_TIERS[brokerProfile()]||TS_TIERS.ts_tier1;
+    const pc=tsPerContractSide();
+    $('feeDesc').textContent=feeMode==='mixed'
+      ? `${t.label}: $${t.multiLeg.toFixed(2)} multi-leg + $${t.indexFee.toFixed(2)} index fee + $${t.occ.toFixed(3)} OCC = ${money(pc)}/contract/side. ORF y cargos regulatorios variables no están incluidos en Auto.`
+      : feeMode==='conservative'
+      ? `Conservador TradeStation: usa Tier 1 publicado ($1.425/contract/side) aunque tengas un tier mejor. Aun así, ORF/regulatorios variables pueden aparecer en el fill.`
+      : `Manual: usa exactamente los fees reales de apertura y cierre que te muestre TradeStation.`;
+  } else {
+    const p=RH_PROFILES[brokerProfile()]||RH_PROFILES.rh_gold;
+    const low=rhPerContractSide(brokerProfile(),'low'), high=rhPerContractSide(brokerProfile(),'high');
+    $('feeDesc').textContent = feeMode==='mixed'
+      ? `${p.shortLabel} Robinhood: ${money(low)}/contract/side si la leg SPXW tiene premium < $1 y ${money(high)} si ≥ $1. Auto mixto aproxima mitad low / mitad high.`
+      : feeMode==='conservative'
+      ? `${p.shortLabel} Robinhood conservador: asume todas las legs a ${money(high)}/contract/side (premium ≥ $1).`
+      : `Manual: usa exactamente los fees reales de apertura y cierre que te muestre Robinhood (${p.shortLabel}).`;
+  }
+}
+
+function setMode(m){
+  feeMode=m;
+  ['observedBtn','autoBtn','conBtn','manualBtn'].forEach(id=>$(id).classList.remove('active'));
+  if(m==='observed')$('observedBtn').classList.add('active');
+  if(m==='mixed')$('autoBtn').classList.add('active');
+  if(m==='conservative')$('conBtn').classList.add('active');
+  if(m==='manual')$('manualBtn').classList.add('active');
+  $('manualFees').classList.toggle('show',m==='manual');
+  updateBrokerUI(); updateFeeDesc(); update();
+}
+
+function update(){
+  if(targetInputMode==='percent') syncTargetFields('percent'); else syncTargetFields('dollars');
+  if(stopRuleMode==='net'){
+    if(lossInputMode==='percent') syncLossFields('percent'); else syncLossFields('dollars');
+  }
+  const target=num('target'), targetPct=num('targetPct'), credit=num('credit'), q=qty(), f=calcFees();
+  const r=solveProfit(target), stop=activeStop(), cur=currentMetrics();
+  if(stopRuleMode==='multiple'){
+    const actualLoss=Math.max(0,-stop.net);
+    $('maxLoss').value=actualLoss.toFixed(2);
+    $('maxLossPct').value=Math.abs(netPct(stop.net)).toFixed(1);
+  }
+  const maxLoss=num('maxLoss'), maxLossPct=num('maxLossPct');
+  const totalFees=f.open+f.close;
+  const current=num('current');
+  const isIC=legs()===4;
+  $('icWidthWrap').classList.toggle('show',isIC);
+
+  if(!r.possible){
+    $('closePrice').textContent='< $0.05'; $('netProfit').textContent='No alcanzable'; $('capturePct').textContent='—'; $('netPct').textContent='—'; $('targetPctShow').textContent=targetPct.toFixed(1)+'%'; $('grossProfit').textContent='—'; $('feesRT').textContent=money(totalFees); $('targetMargin').textContent='—';
+    $('notice').className='notice bad'; $('notice').textContent=`Ese objetivo supera el máximo neto de una salida activa a $0.05. Máx. neto aproximado a $0.05: ${money((credit-.05)*100*q-totalFees)}.`;
+    $('orderLine').textContent='Reduce objetivo, aumenta crédito/cantidad o espera expiración si tu plan lo permite.';
+  } else {
+    $('closePrice').textContent='$'+r.close.toFixed(2);
+    $('netProfit').textContent=money(r.net);
+    $('capturePct').textContent=r.pct.toFixed(1)+'%';
+    $('netPct').textContent=netPct(r.net).toFixed(1)+'%';
+    $('targetPctShow').textContent=targetPct.toFixed(1)+'%';
+    $('grossProfit').textContent=money(r.gross);
+    $('feesRT').textContent=money(r.fees);
+    $('targetMargin').textContent=signedMoney(r.net-target);
+    $('orderLine').textContent=`BTC ${q} ${strategyName()}${q>1?'s':''} @ $${r.close.toFixed(2)} LIMIT`;
+    if(current<=r.close+1e-9){
+      $('notice').className='notice';
+      $('notice').textContent=`TARGET ALCANZADO: el precio actual ya está en/por debajo de $${r.close.toFixed(2)}. No necesitas esperar más decay para lograr al menos ${money(target)} netos (${targetPct.toFixed(1)}% NET del crédito inicial).`;
+    } else {
+      $('notice').className='notice info';
+      $('notice').textContent=`Tu primer exit válido para ${money(target)} netos (${targetPct.toFixed(1)}% NET del crédito inicial) es $${r.close.toFixed(2)}. El % bruto capturado queda solo como referencia.`;
+    }
+  }
+
+  $('currentNet').textContent=money(cur.net);
+  $('currentPriceShow').textContent='$'+current.toFixed(2);
+  if(r.possible){
+    const remain=target-cur.net;
+    const priceGap=current-r.close;
+    const ticks=priceGap>0?Math.ceil((priceGap-1e-9)/.05):0;
+    if(remain<=0){
+      $('distanceMoney').textContent='TARGET'; $('distanceTicks').textContent='Objetivo neto alcanzado'; $('currentStatus').textContent=`${signedMoney(cur.net)} · ${netPct(cur.net).toFixed(1)}% NET`;
+    } else {
+      $('distanceMoney').textContent=money(remain); $('distanceTicks').textContent=`${ticks} tick${ticks===1?'':'s'} de $0.05`; $('currentStatus').textContent=`Target no alcanzado · ahora ${netPct(cur.net).toFixed(1)}% NET`;
+    }
+    $('priceVsTarget').textContent = priceGap>0 ? `$${priceGap.toFixed(2)} sobre el exit` : priceGap<0 ? `$${Math.abs(priceGap).toFixed(2)} mejor que el exit` : 'En el precio objetivo';
+  } else {
+    $('distanceMoney').textContent='—'; $('distanceTicks').textContent='Target no alcanzable con cierre ≥ $0.05'; $('currentStatus').textContent=signedMoney(cur.net)+` · ${netPct(cur.net).toFixed(1)}% NET`; $('priceVsTarget').textContent='—';
+  }
+
+  $('stopPrice').textContent='$'+stop.close.toFixed(2);
+  const stopNetPct=Math.abs(netPct(stop.net));
+  const stopEyebrow=document.querySelector('.stopbox .eyebrow');
+  if(stopRuleMode==='multiple'){
+    stopEyebrow.textContent=`Stop sugerido · ${stopMultiple.toFixed(2
